@@ -44,6 +44,8 @@ import { toggleDark } from "~/composables";
   width: 24px;
 }
 
-
+.el-menu-demo {
+  background: linear-gradient(to right, #07bccd, #4371db, #6f3ce5);
+}
 
 </style>
