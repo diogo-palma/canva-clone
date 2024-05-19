@@ -1,8 +1,14 @@
 <template>
   <div class="vertical-menu">
-    <div class="menu-item" v-for="(menu, index) in menus" :key="index">
-      <component :is="menu.icon" class="menu-icon" />
-      <span class="menu-text">{{ $t(menu.text) }}</span>
+    <div v-for="(menu, index) in menus" :key="index" style="width: 100%">
+      <div
+        class="menu-item"
+        @click="openSubmenu(menu.text, index)"
+        :class="{ 'active': menu.text === submenuStore.activeMenu }"
+      >
+        <component :is="menu.icon" class="menu-icon" />
+        <span class="menu-text">{{ $t(menu.text) }}</span>
+      </div>
     </div>
   </div>
 </template>
@@ -13,8 +19,20 @@ import HugeiconsGeometricShapes01 from '~icons/hugeicons/geometric-shapes-01';
 import IconParkOutlineText from '~icons/icon-park-outline/text';
 import PhPixLogoBold from '~icons/ph/pix-logo-bold';
 import EpUploadFilled from '~icons/ep/upload-filled';
+import { useSubmenuStore } from '../../store/submenuStore'
+import { ref } from 'vue';
+
+const submenuStore = useSubmenuStore();
 
 const { t } = useI18n();
+
+
+const openSubmenu = (text) => {
+
+  submenuStore.openSubmenu(text)
+}
+
+
 
 const menus = [
   { icon: HugeiconsGeometricShapes01, text: 'sidebar.shapes' },
@@ -26,7 +44,7 @@ const menus = [
 
 <style scoped>
 .vertical-menu {
-  width: 120px;
+  width: 90px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -43,6 +61,14 @@ const menus = [
   transition: background-color 0.3s;
   color: #ccc;
   width: 100%;
+}
+.previous-menu{
+  border-top-right-radius: 5px;
+  border-top-left-radius: 5px;
+}
+
+.menu-item.active {
+  background-color: #252627;
 }
 
 .menu-item:hover {

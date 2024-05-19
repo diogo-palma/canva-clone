@@ -46,7 +46,8 @@ import { toggleDark } from "~/composables";
   font-size: 2em;
   font-weight: bold;
   line-height: 60px;
-  width: 69px;
+  width: 45px;
+  color: white;
 }
 
 .el-menu-demo {

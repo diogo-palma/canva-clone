@@ -55,6 +55,7 @@ const languageNames = {
 .locale-changer {
   display: flex;
   align-items: center;
+  width: 29px;
 }
 
 .flag-icon {  

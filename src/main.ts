@@ -2,6 +2,7 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import { createI18n } from 'vue-i18n'
 import locales from './locales.ts'
+import { createPinia } from 'pinia';
 
 // import "~/styles/element/index.scss";
 
@@ -23,8 +24,11 @@ const i18n = createI18n({
   legacy: false,
   messages: locales
 });
+const pinia = createPinia();
+
 
 const app = createApp(App);
 // app.use(ElementPlus);
 app.use(i18n);
+app.use(pinia);
 app.mount("#app");
