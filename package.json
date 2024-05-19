@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "element-plus": "^2.6.2",
+    "pinia": "^2.1.7",
     "vue": "^3.4.21",
     "vue-i18n": "^9.13.1"
   },
@@ -18,6 +19,8 @@
     "@iconify-json/circle-flags": "^1.1.47",
     "@iconify-json/ep": "^1.1.15",
     "@iconify-json/hugeicons": "^1.1.0",
+    "@iconify-json/icon-park-outline": "^1.1.15",
+    "@iconify-json/ph": "^1.1.13",
     "@types/node": "^20.11.30",
     "@vitejs/plugin-vue": "^5.0.4",
     "sass": "^1.72.0",

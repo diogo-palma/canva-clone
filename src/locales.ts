@@ -4,7 +4,10 @@ const locales = {
       file: "File",
     },
     sidebar:{
-      shapes: "Shapes"
+      shapes: "Shapes",
+      text: "Text",
+      logo: "Logo",
+      upload: "Upload"
     },
     message: {
       hello: 'hello world',
@@ -19,7 +22,10 @@ const locales = {
       hello: 'Olá mundo',
     },    
     sidebar:{
-      shapes: "Formas"
+      shapes: "Formas",
+      text: "Textos",
+      logo: "Logomarcas",
+      upload: "Arquivo"
     },
   },
   

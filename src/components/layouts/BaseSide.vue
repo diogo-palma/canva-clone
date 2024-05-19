@@ -10,11 +10,17 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import HugeiconsGeometricShapes01 from '~icons/hugeicons/geometric-shapes-01';
+import IconParkOutlineText from '~icons/icon-park-outline/text';
+import PhPixLogoBold from '~icons/ph/pix-logo-bold';
+import EpUploadFilled from '~icons/ep/upload-filled';
 
 const { t } = useI18n();
 
 const menus = [
   { icon: HugeiconsGeometricShapes01, text: 'sidebar.shapes' },
+  { icon: IconParkOutlineText, text: 'sidebar.text'},
+  { icon: PhPixLogoBold, text: 'sidebar.logo' },
+  { icon: EpUploadFilled, text: 'sidebar.upload' },
 ];
 </script>
 
@@ -24,7 +30,7 @@ const menus = [
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: #e8e8e8;
+  background-color: #18191b
 }
 
 .menu-item {
@@ -32,22 +38,30 @@ const menus = [
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 0;
+  padding: 15px 0;
   cursor: pointer;
   transition: background-color 0.3s;
+  color: #ccc;
+  width: 100%;
 }
 
 .menu-item:hover {
-  color: #cac1c1;
+  color: white;
+}
+
+.menu-item:hover > .menu-text {
+  color: white;
 }
 
 .menu-icon {
   width: 20px;
   height: 20px;
   margin-bottom: 5px;
+  
 }
 
 .menu-text {
   font-size: 12px;
+  color: #ccc;  
 }
 </style>

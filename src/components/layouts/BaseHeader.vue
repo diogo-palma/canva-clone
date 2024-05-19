@@ -29,14 +29,14 @@ import { toggleDark } from "~/composables";
       </el-sub-menu>
     </el-sub-menu>
     <div class="flex-grow" />
-    <el-menu-item h="full" @click="toggleDark()">
+    <!-- <el-menu-item h="full" @click="toggleDark()">
       <button
         class="border-none w-full bg-transparent cursor-pointer"
         style="height: var(--ep-menu-item-height)"
       >
         <i inline-flex i="dark:ep-moon ep-sunny" />
       </button>
-    </el-menu-item>
+    </el-menu-item> -->
     <LocaleChanger/>
   </el-menu>
 </template>
@@ -50,6 +50,7 @@ import { toggleDark } from "~/composables";
 }
 
 .el-menu-demo {
+  border-bottom: none;
   background: linear-gradient(to right, #07bccd, #4371db, #6f3ce5);
 }
 

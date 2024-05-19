@@ -31,7 +31,7 @@ const toggleMenu = () => {
   width: 0;
   overflow: hidden;
   transition: width 0.3s ease;
-  background: #f7f7f7;
+  background: #252627;
 }
 
 .menu-open {
