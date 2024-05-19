@@ -3,8 +3,8 @@
     <BaseHeader />
     <div class="flex main-container">
       <BaseSide />
-      <div w="full" py="4">
-        
+      <div w="full">
+        <BaseContent/>
       </div>
     </div>
   </el-config-provider>

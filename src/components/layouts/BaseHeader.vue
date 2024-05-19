@@ -13,7 +13,11 @@ import { toggleDark } from "~/composables";
       </span>      
     </el-menu-item>
     <el-sub-menu index="2">
-      <template #title>Workspace</template>
+      <template #title>
+        <span style="color: white">
+          {{ $t('header.file') }}
+        </span>
+      </template>
       <el-menu-item index="2-1">item one</el-menu-item>
       <el-menu-item index="2-2">item two</el-menu-item>
       <el-menu-item index="2-3">item three</el-menu-item>
@@ -33,6 +37,7 @@ import { toggleDark } from "~/composables";
         <i inline-flex i="dark:ep-moon ep-sunny" />
       </button>
     </el-menu-item>
+    <LocaleChanger/>
   </el-menu>
 </template>
 
@@ -41,7 +46,7 @@ import { toggleDark } from "~/composables";
   font-size: 2em;
   font-weight: bold;
   line-height: 60px;
-  width: 24px;
+  width: 69px;
 }
 
 .el-menu-demo {

@@ -2,6 +2,9 @@ import path from 'path'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
+import Icons from 'unplugin-icons/vite'
+import IconsResolve from 'unplugin-icons/resolver'
+
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
@@ -41,6 +44,7 @@ export default defineConfig({
         ElementPlusResolver({
           importStyle: 'sass',
         }),
+        IconsResolve()
       ],
       dts: 'src/components.d.ts',
     }),
@@ -60,6 +64,10 @@ export default defineConfig({
         transformerDirectives(),
         transformerVariantGroup(),
       ]
+    }),
+    Icons({
+      compiler: 'vue3',
+      autoInstall: true,
     }),
   ],
 })

@@ -1,58 +1,53 @@
 <template>
-  <el-menu
-    default-active="2"
-    class="el-menu-vertical-demo"
-    :collapse="isCollapse"
-    @open="handleOpen"
-    @close="handleClose"
-  >
-    <el-sub-menu index="1">
-      <template #title>
-        <el-icon><location /></el-icon>
-        <span>Navigator One</span>
-      </template>
-      <el-menu-item-group>
-        <template #title><span>Group One</span></template>
-        <el-menu-item index="1-1">item one</el-menu-item>
-        <el-menu-item index="1-2">item two</el-menu-item>
-      </el-menu-item-group>
-      <el-menu-item-group title="Group Two">
-        <el-menu-item index="1-3">item three</el-menu-item>
-      </el-menu-item-group>
-      <el-sub-menu index="1-4">
-        <template #title><span>item four</span></template>
-        <el-menu-item index="1-4-1">item one</el-menu-item>
-      </el-sub-menu>
-    </el-sub-menu>
-    <el-menu-item index="2">
-      <el-icon><icon-menu /></el-icon>
-      <template #title>Navigator Two</template>
-    </el-menu-item>
-    <el-menu-item index="3" disabled>
-      <el-icon><document /></el-icon>
-      <template #title>Navigator Three</template>
-    </el-menu-item>
-    <el-menu-item index="4">
-      <el-icon><setting /></el-icon>
-      <template #title>Navigator Four</template>
-    </el-menu-item>
-  </el-menu>
+  <div class="vertical-menu">
+    <div class="menu-item" v-for="(menu, index) in menus" :key="index">
+      <component :is="menu.icon" class="menu-icon" />
+      <span class="menu-text">{{ $t(menu.text) }}</span>
+    </div>
+  </div>
 </template>
 
-<script lang="ts" setup>
-import { ref } from "vue";
-import {
-  Location,
-  Document,
-  Menu as IconMenu,
-  Setting,
-} from "@element-plus/icons-vue";
+<script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+import HugeiconsGeometricShapes01 from '~icons/hugeicons/geometric-shapes-01';
 
-const isCollapse = ref(true);
-const handleOpen = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
-};
-const handleClose = (key: string, keyPath: string[]) => {
-  console.log(key, keyPath);
-};
+const { t } = useI18n();
+
+const menus = [
+  { icon: HugeiconsGeometricShapes01, text: 'sidebar.shapes' },
+];
 </script>
+
+<style scoped>
+.vertical-menu {
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #e8e8e8;
+}
+
+.menu-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 0;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.menu-item:hover {
+  color: #cac1c1;
+}
+
+.menu-icon {
+  width: 20px;
+  height: 20px;
+  margin-bottom: 5px;
+}
+
+.menu-text {
+  font-size: 12px;
+}
+</style>
