@@ -60,6 +60,7 @@ const submenuStore = useSubmenuStore();
 
 .close-submenu-container {
   position: relative;
+  z-index: 100;
 }
 .icon-container{
   cursor: pointer;

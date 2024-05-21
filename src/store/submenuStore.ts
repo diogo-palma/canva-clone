@@ -3,7 +3,7 @@ import { defineStore } from 'pinia';
 export const useSubmenuStore = defineStore('submenu', {
   state: () => ({
     isOpen: false,
-    activeMenu: null,
+    activeMenu: '',
   }),
   actions: {
     openSubmenu(active: string) {
@@ -11,7 +11,7 @@ export const useSubmenuStore = defineStore('submenu', {
       this.isOpen = true;
     },
     closeSubmenu() {
-      this.activeMenu = null;
+      this.activeMenu = '';
       this.isOpen = false;
     },
   }

@@ -21,6 +21,9 @@
 <script setup>
 import { ref, onMounted, watch, markRaw } from 'vue';
 import { fabric } from 'fabric';
+import { useCanvasStore } from '../store/canvasStore'
+
+const canvasStore = useCanvasStore();
 
 const canvasInstances = ref([]);
 const activePageIndex = ref(0)
@@ -126,15 +129,39 @@ const zoomOut = () => {
   checkCanvasWidth()
 };
 
+const setZoom = () => {
+  let zoomLevel = (canvasStore.zoomLevel/100);
+  canvasInstances.value.forEach((canvas) => {
+    canvas.setZoom(zoomLevel);
+    
+    canvas.setDimensions({
+      width: pageWidth.value * zoomLevel,
+      height: pageHeight.value * zoomLevel
+    });
+  })
+  checkCanvasWidth()
+}
+
+watch(
+  () => canvasStore.zoomLevel,
+  (newVal, oldVal) => {
+    setZoom();
+  }
+);
+
+
+
 const checkCanvasWidth = () => {
   const editorContainer = document.querySelector('.editor-container');
   const canvasMain = document.querySelector('.canvas-main');
+  scrollToCenter()
   
   if (canvasMain.scrollWidth < editorContainer.clientWidth) {
+    editorContainer.classList.remove('overflow-scroll')
     canvasMain.classList.remove('start-aligned');
   } else {
-    canvasMain.classList.add('start-aligned');
-    scrollToCenter()
+    editorContainer.classList.add('overflow-scroll')
+    canvasMain.classList.add('start-aligned');    
   }
 };
 
@@ -171,7 +198,7 @@ watch([pageWidth, pageHeight], resizeCanvas);
   height: 100%;
   padding: 20px;
   box-sizing: border-box;
-  overflow: scroll;
+  overflow: hidden scroll;
   background: #e8e8e8;
   position: absolute;
 }
@@ -210,6 +237,9 @@ canvas {
 
 .start-aligned {
   align-items: start;
+}
+.overflow-scroll{
+  overflow: scroll;
 }
 
 </style>

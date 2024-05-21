@@ -3,19 +3,20 @@ import { reactive, ref } from 'vue'
 import type { CSSProperties } from 'vue'
 import TdesignZoomIn from '~icons/tdesign/zoom-in';
 import TdesignZoomOut from '~icons/tdesign/zoom-out';
+import { useCanvasStore } from '../store/canvasStore'
 
-
+const canvasStore = useCanvasStore();
 const value = ref(100)
 
 const handleZoomIn = () => {
-  if (value.value < 300) {
-    value.value += 10
+  if (canvasStore.zoomLevel < 300) {
+    canvasStore.zoomLevel += 10
   }
 }
 
 const handleZoomOut = () => {
-  if (value.value > 0) {
-    value.value -= 10
+  if (canvasStore.zoomLevel > 0) {
+    canvasStore.zoomLevel -= 10
   }
 }
 </script>
@@ -25,12 +26,12 @@ const handleZoomOut = () => {
     <div >
       <div class="slider-demo-block">
         <TdesignZoomOut class="zoom" @click="handleZoomOut" />
-        <el-slider v-model="value" :show-tooltip="false" max="300"  />
+        <el-slider v-model="canvasStore.zoomLevel" :show-tooltip="false" max="300"  />
         <TdesignZoomIn class="zoom" @click="handleZoomIn" />
       </div>
       <div class="zoom-value">
         <div class="zoom-text">
-          <span>{{value}} % </span>
+          <span>{{canvasStore.zoomLevel}} % </span>
         </div>        
       </div>
       
