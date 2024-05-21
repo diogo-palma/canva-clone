@@ -105,33 +105,55 @@ const resizeCanvas = () => {
 
 
 const zoomIn = () => {
-  setZoom(1 * 1.1, false); 
+  canvasInstances.value.forEach((canvas) => {
+    const zoom = canvas.getZoom();
+    canvas.setZoom(zoom * 1.1); 
+    canvas.setWidth(pageWidth.value * canvas.getZoom());
+    canvas.setHeight(pageHeight.value * canvas.getZoom());
+    canvas.renderAll();
+  });
+  checkCanvasWidth()
 };
-
-
 
 const zoomOut = () => {
-  setZoom(1 / 1.1, true); 
+  canvasInstances.value.forEach((canvas) => {
+    const zoom = canvas.getZoom();
+    canvas.setZoom(zoom / 1.1); 
+    canvas.setWidth(pageWidth.value * canvas.getZoom());
+    canvas.setHeight(pageHeight.value * canvas.getZoom());
+    canvas.renderAll();
+  });
+  checkCanvasWidth()
 };
 
-function setZoom(newZoomLevel, out) {
+const checkCanvasWidth = () => {
+  const editorContainer = document.querySelector('.editor-container');
+  const canvasMain = document.querySelector('.canvas-main');
   
-  canvasInstances.value.forEach((canvas) => {
-    let zoomLevel = null
-    if (out)
-      zoomLevel = canvas.getZoom() / newZoomLevel
-    else    
-      zoomLevel = canvas.getZoom() * newZoomLevel
+  if (canvasMain.scrollWidth < editorContainer.clientWidth) {
+    canvasMain.classList.remove('start-aligned');
+  } else {
+    canvasMain.classList.add('start-aligned');
+    scrollToCenter()
+  }
+};
 
-    canvas.setZoom(zoomLevel);
-    
-    canvas.setDimensions({
-      width: pageWidth.value * zoomLevel,
-      height: pageHeight.value * zoomLevel
-    });
-  })
-}
-
+const scrollToCenter = () => {
+  const editorContainer = document.querySelector('.editor-container');
+  const canvasMain = document.querySelector('.canvas-container');
+  
+  // Centralizar verticalmente
+  const containerHeight = editorContainer.clientHeight;
+  const contentHeight = canvasMain.clientHeight;
+  const scrollTopValue = Math.max(0, (contentHeight - containerHeight) / 2);
+  editorContainer.scrollTop = scrollTopValue;
+  
+  // Centralizar horizontalmente
+  const containerWidth = editorContainer.clientWidth;
+  const contentWidth = canvasMain.clientWidth;
+  const scrollRightValue = Math.max(0, (contentWidth - containerWidth) / 2);
+  editorContainer.scrollLeft = scrollRightValue;
+};
 
 
 watch([pageWidth, pageHeight], resizeCanvas);
@@ -144,8 +166,6 @@ watch([pageWidth, pageHeight], resizeCanvas);
   height: 79vh;
 }
 .editor-container {
-  display: flex;
-  flex-direction: column;
   align-items: center;
   width: 100%;
   height: 100%;
@@ -188,5 +208,8 @@ canvas {
   
 }
 
+.start-aligned {
+  align-items: start;
+}
 
 </style>
