@@ -23,44 +23,43 @@ const languageNames = {
 
 </script>
 
-<template>
-  <el-menu-item>
-    <div class="locale-changer">
-      <el-dropdown>
-        <span class="el-dropdown-link">
-          <component :is="flagIcons[locale]" class="flag-icon" />
-          <el-icon class="el-icon--right">
-            <arrow-down />
-          </el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item 
-              v-for="(name, loc) in languageNames" 
-              :key="loc" 
-              :command="loc"
-              @click="changeLocale(loc)"
-            >
-              <component :is="flagIcons[loc]" class="flag-icon" />
-              {{ name }}
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </div>
-  </el-menu-item>
+<template>  
+  <div class="locale-changer">
+    <el-dropdown>
+      <span class="el-dropdown-link">
+        <component :is="flagIcons[locale]" class="flag-icon" />
+        <el-icon class="el-icon--right">
+          <arrow-down />
+        </el-icon>
+      </span>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item 
+            v-for="(name, loc) in languageNames" 
+            :key="loc" 
+            :command="loc"
+            @click="changeLocale(loc)"
+          >
+            <component :is="flagIcons[loc]" class="flag-icon" />
+            {{ name }}
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
+  </div>
+  
 </template>
 
 <style scoped>
 .locale-changer {
   display: flex;
   align-items: center;
-  width: 29px;
+  width: 50px;
 }
 
 .flag-icon {  
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   vertical-align: middle;
 }
 </style>

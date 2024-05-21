@@ -12,10 +12,16 @@
       </div>
       
     </div>
-    <div>
-      2
-      <canvas></canvas>
-    </div>
+      
+    <el-main style="padding: 0px">
+      <MenuHeader/>
+      <Canvas/>
+      <MenuFooter/>
+    </el-main>
+      
+
+    
+    
   </div>
 </template>
 
