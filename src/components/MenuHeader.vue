@@ -17,9 +17,9 @@ import SolarUndoRightRoundBroken from '~icons/solar/undo-right-round-broken';
 <style scoped>
 .menu-header{
   display: flex;
-  padding: 10px 20px;
+  padding: 0px 20px;
   align-items: center;
-  min-height: 3vh;
+  min-height: 7vh;
   box-shadow: var(--el-box-shadow);
 }
 </style>

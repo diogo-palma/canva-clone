@@ -6,7 +6,8 @@ import TdesignZoomOut from '~icons/tdesign/zoom-out';
 import { useCanvasStore } from '../store/canvasStore'
 
 const canvasStore = useCanvasStore();
-const value = ref(100)
+const maxValue = ref(300)
+const minValue = ref(10)
 
 const handleZoomIn = () => {
   if (canvasStore.zoomLevel < 300) {
@@ -25,14 +26,21 @@ const handleZoomOut = () => {
     <div class="flex-grow" />
     <div >
       <div class="slider-demo-block">
-        <TdesignZoomOut class="zoom" @click="handleZoomOut" />
-        <el-slider v-model="canvasStore.zoomLevel" :show-tooltip="false" max="300"  />
-        <TdesignZoomIn class="zoom" @click="handleZoomIn" />
+        <el-slider v-model="canvasStore.zoomLevel" :show-tooltip="false" :min="minValue" :max="maxValue"  />
       </div>
       <div class="zoom-value">
-        <div class="zoom-text">
-          <span>{{canvasStore.zoomLevel}} % </span>
-        </div>        
+          <el-input-number v-model="canvasStore.zoomLevel" size="small" :min="minValue" :max="maxValue" :value-on-clear="minValue">
+            <template #decrease-icon>
+              <el-icon>
+                <TdesignZoomOut />
+              </el-icon>
+            </template>
+            <template #increase-icon>
+              <el-icon>
+                <TdesignZoomIn />
+              </el-icon>
+            </template>
+          </el-input-number>   
       </div>
       
     </div>
@@ -44,31 +52,27 @@ const handleZoomOut = () => {
 <style scoped>
 .menu-footer{
   display: flex;
-  padding: 12px 20px;
+  padding: 0px 20px;
   align-items: center;
-  min-height: 3vh;
+  min-height: 7.7vh;
   box-shadow: var(--el-box-shadow);
+}
+.zoom-value{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: -5px;
 }
 .zoom{
   cursor: pointer;
-  font-size: 26px;
-  margin: 0px 10px;
 }
-.zoom-value{
-  position: relative;
-}
-.zoom-text{
-  position: absolute;
-  left: 45%;
-  top: -10px;
-  font-size: 12px;
-}
+
 
 .slider-demo-block {
   width: 200px;
   display: flex;
   align-items: center;
-  margin-top: -10px;
+  margin-top: -15px;
 }
 .slider-demo-block .el-slider {
   margin-top: 0;

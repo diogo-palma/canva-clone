@@ -9,6 +9,14 @@ const locales = {
       logo: "Logo",
       upload: "Upload"
     },
+    canvas:{
+      page: "Page",
+      new_page: "New Page",
+      duplicate: "Duplicate",
+      remove: "Remove",
+      move_up: "Move Up",
+      move_down: "Move Down"
+    },
     message: {
       hello: 'hello world',
     },

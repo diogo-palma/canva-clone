@@ -1,39 +1,32 @@
-<template>
-  <div class="editor" style="position: relative">
-    <div class="editor-container">
-      <div class="buttons">
-        <input type="number" v-model="pageWidth" placeholder="Width" />
-        <input type="number" v-model="pageHeight" placeholder="Height" />
-        <button @click="zoomIn">Zoom In</button>
-        <button @click="zoomOut">Zoom Out</button>
-        <button @click="addCanvas">Add Page</button>
-        <button @click="addText">Add Text</button>
-        <button @click="addCircle">Add Circle</button>
-      </div>
-      <div id="content" class="canvas-main">
-        
-      </div>
-    </div>
-  </div>
-  
-</template>
-
 <script setup>
-import { ref, onMounted, watch, markRaw } from 'vue';
+import { ref, onMounted, watch, markRaw, nextTick  } from 'vue';
 import { fabric } from 'fabric';
 import { useCanvasStore } from '../store/canvasStore'
+import IconoirAddPageAlt from '~icons/iconoir/add-page-alt';
+import IonDuplicateOutline from '~icons/ion/duplicate-outline';
+import LetsIconsTrash from '~icons/lets-icons/trash';
+import MingcuteUpLine from '~icons/mingcute/up-line';
+import MingcuteDownLine from '~icons/mingcute/down-line';
 
 const canvasStore = useCanvasStore();
 
 const canvasInstances = ref([]);
+const pagesCount = ref([1])
 const activePageIndex = ref(0)
+const idCanvas = ref(0)
 
 const pageWidth = ref(500);
 const pageHeight = ref(500);
-const zoomLevel = ref(1);
 
-const addCanvas = () => {
-  const content = document.getElementById("content");
+const addCanvas = async () => {
+  idCanvas.value = canvasInstances.value.length + 1;
+  if (!pagesCount.value.includes(idCanvas.value)){
+    pagesCount.value.push(idCanvas.value)
+  }
+
+  await nextTick();
+  
+  const content = document.getElementById("canvas" + idCanvas.value);
   const newCanvasElement = document.createElement("canvas");
   
   newCanvasElement.width = pageWidth.value;
@@ -47,12 +40,15 @@ const addCanvas = () => {
   canvasInstances.value.push(fabricCanvasObj);
   
   fabricCanvasObj.on('mouse:up', () => {
-    console.log("oi")
     const canvasIndex = canvasInstances.value.indexOf(fabricCanvasObj);
     setActivePage(canvasIndex);
   });
 
+  document.getElementById("canvas" + idCanvas.value).scrollIntoView({ behavior: 'smooth', block: 'start' });
+
   setActivePage(canvasInstances.value.length - 1);
+
+  
 };
 
 const addText = () => {
@@ -130,7 +126,13 @@ const zoomOut = () => {
 };
 
 const setZoom = () => {
-  let zoomLevel = (canvasStore.zoomLevel/100);
+  let zoomLevel = canvasStore.zoomLevel
+
+  if (zoomLevel < 10){
+    zoomLevel = 10
+  }
+  zoomLevel = (zoomLevel/100);
+
   canvasInstances.value.forEach((canvas) => {
     canvas.setZoom(zoomLevel);
     
@@ -153,15 +155,16 @@ watch(
 
 const checkCanvasWidth = () => {
   const editorContainer = document.querySelector('.editor-container');
-  const canvasMain = document.querySelector('.canvas-main');
+  const canvasMain = document.querySelectorAll('.canvas-main');
+  const canvasContainer = document.querySelector('.canvas-container');
   scrollToCenter()
   
-  if (canvasMain.scrollWidth < editorContainer.clientWidth) {
+  if (canvasContainer.scrollWidth < editorContainer.clientWidth) {
     editorContainer.classList.remove('overflow-scroll')
-    canvasMain.classList.remove('start-aligned');
+    canvasMain.forEach(canvas => canvas.classList.remove('start-aligned'));
   } else {
     editorContainer.classList.add('overflow-scroll')
-    canvasMain.classList.add('start-aligned');    
+    canvasMain.forEach(canvas => canvas.classList.add('start-aligned'));
   }
 };
 
@@ -169,11 +172,11 @@ const scrollToCenter = () => {
   const editorContainer = document.querySelector('.editor-container');
   const canvasMain = document.querySelector('.canvas-container');
   
-  // Centralizar verticalmente
-  const containerHeight = editorContainer.clientHeight;
-  const contentHeight = canvasMain.clientHeight;
-  const scrollTopValue = Math.max(0, (contentHeight - containerHeight) / 2);
-  editorContainer.scrollTop = scrollTopValue;
+  // // Centralizar verticalmente
+  // const containerHeight = editorContainer.clientHeight;
+  // const contentHeight = canvasMain.clientHeight;
+  // const scrollTopValue = Math.max(0, (contentHeight - containerHeight) / 2);
+  // editorContainer.scrollTop = scrollTopValue;
   
   // Centralizar horizontalmente
   const containerWidth = editorContainer.clientWidth;
@@ -186,33 +189,94 @@ const scrollToCenter = () => {
 watch([pageWidth, pageHeight], resizeCanvas);
 </script>
 
+
+<template>
+  <div class="editor" style="position: relative">
+    <div class="editor-container">
+      <div id="content"  v-for="(item, index) in pagesCount" :key="index">
+
+        <div class="actions" >
+          <div style="display: block;margin-top: 2px;">
+            <span>
+              {{ $t('canvas.page') }} {{ pagesCount[index]}}
+            </span>
+          </div>  
+          <div class="actions-buttons">
+            <el-tooltip :content="$t('canvas.move_up')"  v-if="pagesCount.length > 1 && index != 0" placement="bottom" effect="light">
+              <el-button color="#e8e8e8"  class="btn-actions"><MingcuteUpLine/></el-button>
+            </el-tooltip>
+            <el-tooltip :content="$t('canvas.move_down')" v-if="pagesCount.length > 1 && index != (pagesCount.length - 1)"  placement="bottom" effect="light">
+              <el-button color="#e8e8e8" class="btn-actions"><MingcuteDownLine/></el-button>
+            </el-tooltip>
+            <el-tooltip :content="$t('canvas.new_page')"  placement="bottom" effect="light">
+              <el-button color="#e8e8e8" @click="addCanvas" class="btn-actions"><IconoirAddPageAlt/></el-button>
+            </el-tooltip>
+            <el-tooltip :content="$t('canvas.duplicate')" placement="bottom" effect="light">
+              <el-button color="#e8e8e8" class="btn-actions"><IonDuplicateOutline/></el-button>
+            </el-tooltip>
+            <el-tooltip :content="$t('canvas.remove')" placement="bottom" v-if="pagesCount.length > 1"  effect="light">
+              <el-button color="#e8e8e8" class="btn-actions"><LetsIconsTrash/></el-button>
+            </el-tooltip>
+            
+          </div>
+        </div>
+        <div :id="'canvas'+ (+index + +1) " class="canvas-main">
+
+        </div>
+        
+      </div>
+    </div>
+  </div>
+  
+</template>
+
+
 <style scoped>
 .editor{
   position: relative;
   width: 100%;
-  height: 79vh;
+  height: 78vh;
 }
 .editor-container {
   align-items: center;
   width: 100%;
   height: 100%;
-  padding: 20px;
   box-sizing: border-box;
   overflow: hidden scroll;
   background: #e8e8e8;
   position: absolute;
+  padding-top: 10px
 }
 
 .buttons {
   margin-bottom: 20px;
 }
+
+.actions{    
+  margin-bottom: -8px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.actions-buttons{
+  margin-left: 15px;
+  display: flex;
+  flex-direction: row;
+}
+
+.btn-actions{
+  padding: 7px;
+  margin-left: 5px;
+}
+
 :deep(.canvas-container){
   border: 1px solid #000;
   background: #fff;
 }
 
 :deep(.active-canvas) {
-  border-color: red;
+  border: 2px solid #6a91f0
 }
 
 .canvas-main {
