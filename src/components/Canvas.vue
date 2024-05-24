@@ -10,92 +10,14 @@ import MingcuteDownLine from '~icons/mingcute/down-line';
 
 const canvasStore = useCanvasStore();
 
-const canvasInstances = ref([]);
-const pagesCount = ref([1])
-const activePageIndex = ref(0)
-const idCanvas = ref(0)
 
-const pageWidth = ref(500);
-const pageHeight = ref(500);
-
-const addCanvas = async () => {
-  idCanvas.value = canvasInstances.value.length + 1;
-  if (!pagesCount.value.includes(idCanvas.value)){
-    pagesCount.value.push(idCanvas.value)
-  }
-
-  await nextTick();
-  
-  const content = document.getElementById("canvas" + idCanvas.value);
-  const newCanvasElement = document.createElement("canvas");
-  
-  newCanvasElement.width = pageWidth.value;
-  
-
-  content.appendChild(newCanvasElement);
-  const fabricCanvasObj = new fabric.Canvas(newCanvasElement, {
-    width: pageWidth.value,
-    height: pageWidth.value
-  });
-  canvasInstances.value.push(fabricCanvasObj);
-  
-  fabricCanvasObj.on('mouse:up', () => {
-    const canvasIndex = canvasInstances.value.indexOf(fabricCanvasObj);
-    setActivePage(canvasIndex);
-  });
-
-  document.getElementById("canvas" + idCanvas.value).scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-  setActivePage(canvasInstances.value.length - 1);
-
-  
-};
-
-const addText = () => {
-  const canvas = canvasInstances.value[activePageIndex.value];
-
-  const text = new fabric.Textbox('Sample Text', {
-    left: 10,
-    top: 10,
-    width: 200,
-    selectable: true,
-    hasControls: true,
-    hasBorders: true
-  });
-  canvas.add(markRaw(text)).renderAll();
-};
-
-const addCircle = () => {
-  const canvas = canvasInstances.value[activePageIndex.value];
-  const circle = new fabric.Circle({
-    radius: 50,
-    left: 10,
-    top: 10,
-    selectable: true,
-    hasControls: true,
-  });
-  canvas.add(markRaw(circle)).renderAll();
-};
-
-const setActivePage = (index) => {
-  console.log(index)
-  activePageIndex.value = index;
-  const canvasContainers = document.querySelectorAll(".canvas-container");
-  canvasContainers.forEach((container, i) => {
-    if (i === index) {
-      container.classList.add("active-canvas");
-    } else {
-      container.classList.remove("active-canvas");
-    }
-  });
-};
 
 onMounted(() => {
-  addCanvas();
+  canvasStore.addNewPage();
 });
 
 const resizeCanvas = () => {
-  canvasInstances.value.forEach((canvas) => {
+  canvasStore.canvasInstances.forEach((canvas) => {
     canvas.setWidth(pageWidth.value);
     canvas.setHeight(pageHeight.value);
     canvas.renderAll();
@@ -103,27 +25,6 @@ const resizeCanvas = () => {
 };
 
 
-const zoomIn = () => {
-  canvasInstances.value.forEach((canvas) => {
-    const zoom = canvas.getZoom();
-    canvas.setZoom(zoom * 1.1); 
-    canvas.setWidth(pageWidth.value * canvas.getZoom());
-    canvas.setHeight(pageHeight.value * canvas.getZoom());
-    canvas.renderAll();
-  });
-  checkCanvasWidth()
-};
-
-const zoomOut = () => {
-  canvasInstances.value.forEach((canvas) => {
-    const zoom = canvas.getZoom();
-    canvas.setZoom(zoom / 1.1); 
-    canvas.setWidth(pageWidth.value * canvas.getZoom());
-    canvas.setHeight(pageHeight.value * canvas.getZoom());
-    canvas.renderAll();
-  });
-  checkCanvasWidth()
-};
 
 const setZoom = () => {
   let zoomLevel = canvasStore.zoomLevel
@@ -133,12 +34,12 @@ const setZoom = () => {
   }
   zoomLevel = (zoomLevel/100);
 
-  canvasInstances.value.forEach((canvas) => {
+  canvasStore.canvasInstances.forEach((canvas) => {
     canvas.setZoom(zoomLevel);
     
     canvas.setDimensions({
-      width: pageWidth.value * zoomLevel,
-      height: pageHeight.value * zoomLevel
+      width: canvasStore.pageWidth * zoomLevel,
+      height: canvasStore.pageHeight * zoomLevel
     });
   })
   checkCanvasWidth()
@@ -186,35 +87,35 @@ const scrollToCenter = () => {
 };
 
 
-watch([pageWidth, pageHeight], resizeCanvas);
+watch([canvasStore.pageWidth, canvasStore.pageHeight], resizeCanvas);
 </script>
 
 
 <template>
   <div class="editor" style="position: relative">
     <div class="editor-container">
-      <div id="content"  v-for="(item, index) in pagesCount" :key="index">
+      <div id="content"  v-for="(item, index) in canvasStore.pagesCount" :key="index">
 
         <div class="actions" >
           <div style="display: block;margin-top: 2px;">
             <span>
-              {{ $t('canvas.page') }} {{ pagesCount[index]}}
+              {{ $t('canvas.page') }} {{ canvasStore.pagesCount[index]}}
             </span>
           </div>  
           <div class="actions-buttons">
-            <el-tooltip :content="$t('canvas.move_up')"  v-if="pagesCount.length > 1 && index != 0" placement="bottom" effect="light">
+            <el-tooltip :content="$t('canvas.move_up')"  v-if="canvasStore.pagesCount.length > 1 && index != 0" placement="bottom" effect="light">
               <el-button color="#e8e8e8"  class="btn-actions"><MingcuteUpLine/></el-button>
             </el-tooltip>
-            <el-tooltip :content="$t('canvas.move_down')" v-if="pagesCount.length > 1 && index != (pagesCount.length - 1)"  placement="bottom" effect="light">
+            <el-tooltip :content="$t('canvas.move_down')" v-if="canvasStore.pagesCount.length > 1 && index != (canvasStore.pagesCount.length - 1)"  placement="bottom" effect="light">
               <el-button color="#e8e8e8" class="btn-actions"><MingcuteDownLine/></el-button>
             </el-tooltip>
             <el-tooltip :content="$t('canvas.new_page')"  placement="bottom" effect="light">
-              <el-button color="#e8e8e8" @click="addCanvas" class="btn-actions"><IconoirAddPageAlt/></el-button>
+              <el-button color="#e8e8e8" @click="canvasStore.addNewPage()" class="btn-actions"><IconoirAddPageAlt/></el-button>
             </el-tooltip>
             <el-tooltip :content="$t('canvas.duplicate')" placement="bottom" effect="light">
               <el-button color="#e8e8e8" class="btn-actions"><IonDuplicateOutline/></el-button>
             </el-tooltip>
-            <el-tooltip :content="$t('canvas.remove')" placement="bottom" v-if="pagesCount.length > 1"  effect="light">
+            <el-tooltip :content="$t('canvas.remove')" placement="bottom" v-if="canvasStore.pagesCount.length > 1"  effect="light">
               <el-button color="#e8e8e8" class="btn-actions"><LetsIconsTrash/></el-button>
             </el-tooltip>
             
