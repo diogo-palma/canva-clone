@@ -42,7 +42,8 @@ const setZoom = () => {
       height: canvasStore.pageHeight * zoomLevel
     });
   })
-  checkCanvasWidth()
+  
+  checkCanvasWidth(zoomLevel)
 }
 
 watch(
@@ -54,7 +55,7 @@ watch(
 
 
 
-const checkCanvasWidth = () => {
+const checkCanvasWidth = (zoomLevel) => {
   const editorContainer = document.querySelector('.editor-container');
   const canvasMain = document.querySelectorAll('.canvas-main');
   const canvasContainer = document.querySelector('.canvas-container');
@@ -63,7 +64,9 @@ const checkCanvasWidth = () => {
   if (canvasContainer.scrollWidth < editorContainer.clientWidth) {
     editorContainer.classList.remove('overflow-scroll')
     canvasMain.forEach(canvas => canvas.classList.remove('start-aligned'));
+    document.getElementById("content").style.width = '100%'
   } else {
+    document.getElementById("content").style.width = canvasStore.pageWidth * zoomLevel + "px"
     editorContainer.classList.add('overflow-scroll')
     canvasMain.forEach(canvas => canvas.classList.add('start-aligned'));
   }

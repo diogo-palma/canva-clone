@@ -37,9 +37,11 @@ declare module 'vue' {
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     HeaderMenu: typeof import('./components/HeaderMenu.vue')['default']
     HelloWorld: typeof import('./components/HelloWorld.vue')['default']
+    Layers: typeof import('./components/submenu/Layers.vue')['default']
     LocaleChanger: typeof import('./components/config/LocaleChanger.vue')['default']
     Logos: typeof import('./components/Logos.vue')['default']
     MenuFooter: typeof import('./components/MenuFooter.vue')['default']
     MenuHeader: typeof import('./components/MenuHeader.vue')['default']
+    Text: typeof import('./components/submenu/Text.vue')['default']
   }
 }

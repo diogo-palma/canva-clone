@@ -2,7 +2,7 @@
   <div class="main">
     <div class="menu" :class="{ 'menu-open': submenuStore.isOpen }">
       <div class="menu-container">
-        oi
+        <component :is="submenuStore.currentComponent" />
       </div>
       
     </div>
@@ -28,8 +28,13 @@
 <script setup lang="ts">
 import MingcuteLeftFill from '~icons/mingcute/left-fill';
 import { useSubmenuStore } from '../../store/submenuStore'
+import Layers from '../submenu/Layers.vue';
+import Text from '../submenu/Text.vue'
 
 const submenuStore = useSubmenuStore();
+
+
+
 
 
 </script>
