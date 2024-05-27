@@ -3,7 +3,7 @@
     <div v-for="(menu, index) in menus" :key="index" style="width: 100%">
       <div
         class="menu-item"
-        @click="openSubmenu(menu.text, index)"
+        @click="openSubmenu(menu, index)"
         :class="{ 'active': menu.text === submenuStore.activeMenu }"
       >
         <component :is="menu.icon" class="menu-icon" />
@@ -27,18 +27,19 @@ const submenuStore = useSubmenuStore();
 const { t } = useI18n();
 
 
-const openSubmenu = (text) => {
+const openSubmenu = (menu) => {
 
-  submenuStore.openSubmenu(text)
+  submenuStore.openSubmenu(menu.text, menu.link)
 }
 
 
 
 const menus = [
-  { icon: HugeiconsGeometricShapes01, text: 'sidebar.shapes' },
-  { icon: IconParkOutlineText, text: 'sidebar.text'},
-  { icon: PhPixLogoBold, text: 'sidebar.logo' },
-  { icon: EpUploadFilled, text: 'sidebar.upload' },
+  { icon: HugeiconsGeometricShapes01, text: 'sidebar.shapes', link: 'Shapes' },
+  { icon: IconParkOutlineText, text: 'sidebar.text', link: 'Text'},
+  { icon: PhPixLogoBold, text: 'sidebar.logo', link: 'Logo' },
+  { icon: EpUploadFilled, text: 'sidebar.upload', link: 'Upload' },
+  { icon: EpUploadFilled, text: 'sidebar.layers', link: 'Layers' },
 ];
 </script>
 

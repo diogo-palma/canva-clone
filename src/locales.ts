@@ -15,7 +15,10 @@ const locales = {
       duplicate: "Duplicate",
       remove: "Remove",
       move_up: "Move Up",
-      move_down: "Move Down"
+      move_down: "Move Down",
+      create_title: "Create title",
+      create_subtitle: "Create subtitle",
+      create_text: "Create text",
     },
     message: {
       hello: 'hello world',
