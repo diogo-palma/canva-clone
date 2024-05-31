@@ -7,7 +7,8 @@ const locales = {
       shapes: "Shapes",
       text: "Text",
       logo: "Logo",
-      upload: "Upload"
+      upload: "Upload",
+      layers: "Layers"
     },
     canvas:{
       page: "Page",

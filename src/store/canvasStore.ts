@@ -1,12 +1,13 @@
 import { defineStore } from 'pinia';
 import { fabric } from 'fabric';
 import { nextTick } from 'vue';
-import * as fabricLayer from "@arch-inc/fabricjs-layer";
 import { markRaw } from 'vue';
+import ControlsPlugin from '~/core/ControlHandlers';
+
 
 export const useCanvasStore = defineStore('canvasStore', {
   state: () => ({
-    canvasInstances: [] as { canvas: fabric.Canvas, manager: fabricLayer.LayerManager }[],
+    canvasInstances: [] as { canvas: fabric.Canvas, activeLayerIndex: number }[],
     pagesCount: [1] as number[],
     canvasHistory: [] as any[],
     canvasHistoryIndex: -1,
@@ -29,30 +30,29 @@ export const useCanvasStore = defineStore('canvasStore', {
     async addPage(contentCanvas: string) {
       const content = document.getElementById(contentCanvas);
       const newCanvasElement = document.createElement("canvas");
-
       newCanvasElement.width = this.pageWidth * (this.zoomLevel / 100);
       newCanvasElement.height = this.pageHeight * (this.zoomLevel / 100);
-
       content?.appendChild(newCanvasElement);
       const fabricCanvasObj = markRaw(new fabric.Canvas(newCanvasElement, {
         width: this.pageWidth * (this.zoomLevel / 100),
-        height: this.pageHeight * (this.zoomLevel / 100)
+        height: this.pageHeight * (this.zoomLevel / 100),
+        fireRightClick: true,
+        stopContextMenu: true,
+        controlsAboveOverlay: true,
+        imageSmoothingEnabled: false,
+        preserveObjectStacking: true,
       }));
 
-      const manager = markRaw(new fabricLayer.LayerManager(fabricCanvasObj));
-      manager.addLayer();
+      const controlsPlugin = new ControlsPlugin();
 
       fabricCanvasObj.on('mouse:up', () => {
-        const canvasIndex = this.canvasInstances.findIndex(instance => {
-          return instance.canvas === fabricCanvasObj;
-        });
-      
+        const canvasIndex = this.canvasInstances.findIndex(instance => instance.canvas === fabricCanvasObj);
         this.setActivePage(canvasIndex);
       });
-
+      
       content?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       this.setActivePage(this.canvasInstances.length);
-      return { canvas: fabricCanvasObj, manager };
+      return { canvas: fabricCanvasObj, activeLayerIndex: -1 };
     },
     setActivePage(index: number) {
       this.activePageIndex = index;
@@ -65,7 +65,7 @@ export const useCanvasStore = defineStore('canvasStore', {
         }
       });
     },
-    addCanvasInstance(instance: { canvas: fabric.Canvas, manager: fabricLayer.LayerManager }) {
+    addCanvasInstance(instance: { canvas: fabric.Canvas, activeLayerIndex: number }) {
       this.canvasInstances.push(instance);
       this.saveCanvasState();
     },
@@ -74,11 +74,6 @@ export const useCanvasStore = defineStore('canvasStore', {
         const removedInstance = this.canvasInstances.pop();
         if (removedInstance) {
           removedInstance.canvas.dispose();
-          removedInstance.manager.dispose();
-          const canvasElement = removedInstance.canvas.lowerCanvasEl;
-          if (canvasElement && canvasElement.parentNode) {
-            canvasElement.parentNode.removeChild(canvasElement);
-          }
         }
         this.pagesCount.pop();
         this.setActivePage(this.canvasInstances.length - 1);
@@ -111,27 +106,19 @@ export const useCanvasStore = defineStore('canvasStore', {
     async loadCanvasState(historyState: any) {
       if (!historyState) return;
       this.pagesCount = [...historyState.pagesCount];
-
       await nextTick();
-
       while (this.canvasInstances.length < historyState.states.length) {
         const newCanvasId = `canvas${this.canvasInstances.length + 1}`;
         const instance = await this.addPage(newCanvasId);
         this.canvasInstances.push(instance);
       }
-
       while (this.canvasInstances.length > historyState.states.length) {
         const removedInstance = this.canvasInstances.pop();
         if (removedInstance) {
           removedInstance.canvas.dispose();
-          removedInstance.manager.dispose();
-          const canvasElement = removedInstance.canvas.lowerCanvasEl;
-          if (canvasElement && canvasElement.parentNode) {
-            canvasElement.parentNode.removeChild(canvasElement);
-          }
         }
+        this.setActivePage(this.canvasInstances.length - 1);
       }
-
       for (let index = 0; index < historyState.states.length; index++) {
         const state = historyState.states[index];
         const instance = this.canvasInstances[index];
@@ -150,49 +137,44 @@ export const useCanvasStore = defineStore('canvasStore', {
     setZoomLevel(newZoomLevel: number) {
       this.zoomLevel = newZoomLevel;
     },
-    addText(text: string, fontSize: number) {
-      console.log(this.canvasInstances[this.activePageIndex])
+    addText(attributes: any) {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      let lastLeft = 100;
+      let lastTop = 100;
 
-      const addText = new fabric.Textbox(text, {
-        left: 10,
-        top: 10,
+      if (canvas.getObjects().length > 0) {
+        const lastObject = canvas.getObjects()[canvas.getObjects().length - 1];
+        lastLeft = lastObject.left + lastLeft;
+        lastTop = lastObject.top + lastTop;
+      }
+
+      const addText = new fabric.Text(attributes.text, {
+        left: lastLeft,
+        top: lastTop,
         width: 200,
-        fontSize: fontSize,
-        selectable: true,
-        hasControls: true,
-        hasBorders: true
+        fill: 'blue',
+        ...attributes
       });
-      canvas.add(markRaw(addText)).setActiveObject(addText).renderAll();
+      
+      canvas.add(markRaw(addText)).setActiveObject(addText)
+    
+     
+      canvas.renderAll()
       this.saveCanvasState();
     },
-    addLayer(canvasIndex: number) {
+    addLayer(canvasIndex: number, object: fabric.Object) {
       const instance = this.canvasInstances[canvasIndex];
       if (instance) {
-        instance.manager.addLayer();
-        this.saveCanvasState();
+        instance.activeLayerIndex = instance.canvas.getObjects().indexOf(object);
       }
     },
-    removeLayer(canvasIndex: number, layerIndex: number) {
+    setActiveLayer(canvasIndex: number, layerIndex: number) {
       const instance = this.canvasInstances[canvasIndex];
       if (instance) {
-        const layer = instance.manager.getLayer(layerIndex);
-        if (layer) {
-          instance.manager.removeLayer(layer);
-          this.saveCanvasState();
-        }
-      }
-    },
-    moveLayer(canvasIndex: number, layerIndex: number, direction: 'up' | 'down') {
-      const instance = this.canvasInstances[canvasIndex];
-      if (instance) {
-        const currentIndex = layerIndex;
-        if (direction === 'up' && currentIndex < instance.manager.getLayers().length - 1) {
-          instance.manager.moveLayer(currentIndex, currentIndex + 1);
-        } else if (direction === 'down' && currentIndex > 0) {
-          instance.manager.moveLayer(currentIndex, currentIndex - 1);
-        }
-        this.saveCanvasState();
+        instance.activeLayerIndex = layerIndex;
+        const object = instance.canvas.item(layerIndex);
+        instance.canvas.setActiveObject(object);
+        instance.canvas.renderAll();
       }
     }
   },

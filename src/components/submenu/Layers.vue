@@ -1,59 +1,76 @@
 <template>
   <div class="layer-list">
-    <h3>Layers</h3>
-    <ul ref="layerList" @dragover.prevent @drop="dropLayer">
-      <li
-        v-for="(layer, index) in activeLayers"
-        :key="index"
-        :class="{ active: index === activeLayerIndex }"
-        draggable="true"
-        @dragstart="startDrag(index)"
-      >
-        Layer {{ index + 1 }}
-        <button @click="removeLayer(index)">Remove</button>
-      </li>
-    </ul>
-    <button @click="addLayer">Add Layer</button>
+    <draggable v-model="layers" @start="drag=true" @end="drag=false" item-key="id" @change="handleChange">
+      <template #item="{element}">
+        <div @click="selectLayer(element.index)" :class="{ 'active-layer': element.index === activeLayerIndex }">
+          {{ element.object.text }}
+        </div>
+      </template>
+    </draggable>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useCanvasStore } from '~/store/canvasStore';
+import draggable from 'vuedraggable';
 
 const canvasStore = useCanvasStore();
-const draggedIndex = ref(null);
+const layers = ref([]);
+const activeLayerIndex = ref(-1);
 
-const activeCanvas = computed(() => canvasStore.canvasInstances[canvasStore.activePageIndex]);
-const activeLayers = computed(() => activeCanvas.value?.manager?.getLayers() || []);
-const activeLayerIndex = computed(() => activeCanvas.value ? activeCanvas.value.manager.activeLayerIndex : -1);
-
-const addLayer = () => {
-  if (canvasStore.activePageIndex !== -1) {
-    canvasStore.addLayer(canvasStore.activePageIndex);
+const updateLayers = () => {
+  const activePageIndex = canvasStore.activePageIndex;
+  if (activePageIndex >= 0 && activePageIndex < canvasStore.canvasInstances.length) {
+    const canvasInstance = canvasStore.canvasInstances[activePageIndex];
+    layers.value = canvasInstance.canvas.getObjects().map((object, index) => ({
+      index,
+      object
+    }));
+    activeLayerIndex.value = canvasInstance.activeLayerIndex;
+  } else {
+    layers.value = [];
+    activeLayerIndex.value = -1;
   }
 };
 
-const removeLayer = (layerIndex) => {
-  if (canvasStore.activePageIndex !== -1) {
-    canvasStore.removeLayer(canvasStore.activePageIndex, layerIndex);
+const handleChange = (evt) => {
+  const activePageIndex = canvasStore.activePageIndex;
+  if (activePageIndex >= 0 && activePageIndex < canvasStore.canvasInstances.length) {
+    const canvasInstance = canvasStore.canvasInstances[activePageIndex];
+    const { newIndex, oldIndex } = evt.moved;
+
+    const movedLayer = layers.value.splice(oldIndex, 1)[0];
+    layers.value.splice(newIndex, 0, movedLayer);
+
+    const objects = canvasInstance.canvas.getObjects();
+    const movedObject = objects.splice(oldIndex, 1)[0];
+    objects.splice(newIndex, 0, movedObject);
+
+    canvasStore.canvasInstances[activePageIndex].canvas._objects = objects;
+
+    canvasInstance.canvas.renderAll();
+    updateLayers()
+    activeLayerIndex.value = newIndex
   }
 };
 
-const startDrag = (index) => {
-  draggedIndex.value = index;
+
+const selectLayer = (index) => {
+  activeLayerIndex.value = index
+  canvasStore.setActiveLayer(canvasStore.activePageIndex, index);
 };
 
-const dropLayer = (event) => {
-  const target = event.target.closest('li');
-  if (target) {
-    const targetIndex = Array.from(target.parentNode.children).indexOf(target);
-    if (draggedIndex.value !== targetIndex && draggedIndex.value !== null) {
-      canvasStore.moveLayer(canvasStore.activePageIndex, draggedIndex.value, targetIndex);
-      draggedIndex.value = null;
-    }
+onMounted(() => {
+  updateLayers();
+});
+
+watch(
+  () => canvasStore.activePageIndex,
+  (newVal, oldVal) => {
+    updateLayers();
   }
-};
+);
 </script>
 
 <style scoped>
@@ -62,26 +79,7 @@ const dropLayer = (event) => {
   padding: 1em;
   border: 1px solid #ccc;
 }
-
-.layer-list ul {
-  list-style-type: none;
-  padding: 0;
-}
-
-.layer-list li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0.5em;
-  border-bottom: 1px solid #eee;
-  cursor: move;
-}
-
-.layer-list li.active {
-  background-color: #f0f0f0;
-}
-
-.layer-list button {
-  margin-left: 0.5em;
+.active-layer {
+  background-color: lightblue;
 }
 </style>
