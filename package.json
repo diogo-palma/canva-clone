@@ -18,6 +18,9 @@
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
+    "@iconify-json/basil": "^1.1.5",
+    "@iconify-json/bi": "^1.1.23",
+    "@iconify-json/bxs": "^1.1.10",
     "@iconify-json/circle-flags": "^1.1.47",
     "@iconify-json/ep": "^1.1.15",
     "@iconify-json/fa6-solid": "^1.1.21",
@@ -27,6 +30,7 @@
     "@iconify-json/ion": "^1.1.18",
     "@iconify-json/lets-icons": "^1.1.2",
     "@iconify-json/mingcute": "^1.1.17",
+    "@iconify-json/pepicons-pencil": "^1.1.6",
     "@iconify-json/ph": "^1.1.13",
     "@iconify-json/solar": "^1.1.9",
     "@iconify-json/tdesign": "^1.1.3",

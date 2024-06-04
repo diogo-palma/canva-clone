@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { ArrowDown } from '@element-plus/icons-vue'
 import CircleFlagsBr from '~icons/circle-flags/br';
 import CircleFlagsUs from '~icons/circle-flags/us';
 

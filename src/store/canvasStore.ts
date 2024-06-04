@@ -16,6 +16,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     pageHeight: 1080,
     idPage: 0,
     activePageIndex: 0,
+    isObjectSelected: false,
   }),
   actions: {
     async addNewPage() {
@@ -43,12 +44,41 @@ export const useCanvasStore = defineStore('canvasStore', {
         preserveObjectStacking: true,
       }));
 
-      const controlsPlugin = new ControlsPlugin();
+      new ControlsPlugin();
 
-      fabricCanvasObj.on('mouse:up', () => {
+    
+
+      let isScaling = false;
+
+      const saveStateOnEvent = () => {
+        this.saveCanvasState();
+      };
+    
+      const handleScalingStart = () => {
+        isScaling = true;
+      };
+    
+      const handleMouseUp = () => {
+        if (isScaling) {
+          saveStateOnEvent();
+          isScaling = false;
+        }
         const canvasIndex = this.canvasInstances.findIndex(instance => instance.canvas === fabricCanvasObj);
         this.setActivePage(canvasIndex);
-      });
+      };
+
+      const handleSelectionChanged = () => {
+        this.updateObjectSelection(!!fabricCanvasObj.getActiveObject());
+      };
+
+
+      fabricCanvasObj.on('object:moving', saveStateOnEvent);
+      fabricCanvasObj.on('object:scaling', handleScalingStart);
+      fabricCanvasObj.on('mouse:up', handleMouseUp);
+      fabricCanvasObj.on('object:rotating', saveStateOnEvent);
+      fabricCanvasObj.on('selection:created', handleSelectionChanged);
+      fabricCanvasObj.on('selection:updated', handleSelectionChanged);
+      fabricCanvasObj.on('selection:cleared', handleSelectionChanged);
       
       content?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       this.setActivePage(this.canvasInstances.length);
@@ -151,13 +181,11 @@ export const useCanvasStore = defineStore('canvasStore', {
       const addText = new fabric.Text(attributes.text, {
         left: lastLeft,
         top: lastTop,
-        width: 200,
-        fill: 'blue',
+        width: 200,        
         ...attributes
       });
       
       canvas.add(markRaw(addText)).setActiveObject(addText)
-    
      
       canvas.renderAll()
       this.saveCanvasState();
@@ -176,11 +204,15 @@ export const useCanvasStore = defineStore('canvasStore', {
         instance.canvas.setActiveObject(object);
         instance.canvas.renderAll();
       }
-    }
+    },
+    updateObjectSelection(isSelected: boolean) {
+      this.isObjectSelected = isSelected;
+    },
   },
   getters: {
     currentCanvasState: (state) => state.canvasHistory[state.canvasHistoryIndex],
     canUndo: (state) => state.canvasHistoryIndex > 0,
     canRedo: (state) => state.canvasHistoryIndex < state.canvasHistory.length - 1,
+    isThisObjectSelected: (state) => state.isObjectSelected,
   }
 });

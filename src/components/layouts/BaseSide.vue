@@ -20,6 +20,7 @@ import IconParkOutlineText from '~icons/icon-park-outline/text';
 import PhPixLogoBold from '~icons/ph/pix-logo-bold';
 import EpUploadFilled from '~icons/ep/upload-filled';
 import { useSubmenuStore } from '../../store/submenuStore'
+import BxsLayer from '~icons/bxs/layer';
 import { ref } from 'vue';
 
 const submenuStore = useSubmenuStore();
@@ -39,7 +40,7 @@ const menus = [
   { icon: IconParkOutlineText, text: 'sidebar.text', link: 'Text'},
   { icon: PhPixLogoBold, text: 'sidebar.logo', link: 'Logo' },
   { icon: EpUploadFilled, text: 'sidebar.upload', link: 'Upload' },
-  { icon: EpUploadFilled, text: 'sidebar.layers', link: 'Layers' },
+  { icon: BxsLayer, text: 'sidebar.layers', link: 'Layers' },
 ];
 </script>
 

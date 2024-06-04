@@ -21,6 +21,17 @@ const locales = {
       create_subtitle: "Create subtitle",
       create_text: "Create text",
     },
+    menu_header: {
+      position: "Position",
+      change_position: "Change position",
+      layering: "Layering",
+      transparency: "Transparency",
+      duplicate: "Duplicate",
+      remove: "Remove"
+    },
+    shapes:{
+      lines: "Lines"
+    },
     message: {
       hello: 'hello world',
     },

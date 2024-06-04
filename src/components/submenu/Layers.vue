@@ -40,20 +40,37 @@ const handleChange = (evt) => {
     const canvasInstance = canvasStore.canvasInstances[activePageIndex];
     const { newIndex, oldIndex } = evt.moved;
 
+    // Reordenar a lista de camadas
     const movedLayer = layers.value.splice(oldIndex, 1)[0];
     layers.value.splice(newIndex, 0, movedLayer);
 
+    // Obter todos os objetos do canvas
     const objects = canvasInstance.canvas.getObjects();
-    const movedObject = objects.splice(oldIndex, 1)[0];
+    const movedObject = objects[oldIndex];
+
+    // Remover o objeto da posição antiga e inseri-lo na nova posição
+    objects.splice(oldIndex, 1);
     objects.splice(newIndex, 0, movedObject);
 
-    canvasStore.canvasInstances[activePageIndex].canvas._objects = objects;
+    // Atualizar a ordem dos objetos no canvas
+    canvasInstance.canvas._objects = objects;
+    if (newIndex === 0) {
+      canvasInstance.canvas.sendToBack(movedObject);
+    } else if (newIndex === objects.length - 1) {
+      canvasInstance.canvas.bringToFront(movedObject);
+    } else {
+      objects.forEach((obj, idx) => {
+        obj.moveTo(idx);
+      });
+    }
 
+    // Re-renderizar o canvas
     canvasInstance.canvas.renderAll();
-    updateLayers()
-    activeLayerIndex.value = newIndex
+    updateLayers();
+    activeLayerIndex.value = newIndex;
   }
 };
+
 
 
 const selectLayer = (index) => {

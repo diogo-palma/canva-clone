@@ -13,6 +13,7 @@ declare module 'vue' {
     Canvas: typeof import('./components/Canvas.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCol: typeof import('element-plus/es')['ElCol']
+    ElColorPicker: typeof import('element-plus/es')['ElColorPicker']
     ElConfigProvider: typeof import('element-plus/es')['ElConfigProvider']
     ElContainer: typeof import('element-plus/es')['ElContainer']
     ElDatePicker: typeof import('element-plus/es')['ElDatePicker']
@@ -28,6 +29,7 @@ declare module 'vue' {
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
     ElMenuItemGroup: typeof import('element-plus/es')['ElMenuItemGroup']
     ElOption: typeof import('element-plus/es')['ElOption']
+    ElPopover: typeof import('element-plus/es')['ElPopover']
     ElRow: typeof import('element-plus/es')['ElRow']
     ElSelect: typeof import('element-plus/es')['ElSelect']
     ElSlider: typeof import('element-plus/es')['ElSlider']
@@ -42,6 +44,7 @@ declare module 'vue' {
     Logos: typeof import('./components/Logos.vue')['default']
     MenuFooter: typeof import('./components/MenuFooter.vue')['default']
     MenuHeader: typeof import('./components/MenuHeader.vue')['default']
+    Shapes: typeof import('./components/submenu/Shapes.vue')['default']
     Text: typeof import('./components/submenu/Text.vue')['default']
   }
 }

@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { markRaw } from 'vue';
 import Layers from '../components/submenu/Layers.vue'
 import Text from '../components/submenu/Text.vue'
+import Shapes from '../components/submenu/Shapes.vue'
 
 export const useSubmenuStore = defineStore('submenu', {
   state: () => ({
@@ -22,7 +23,8 @@ export const useSubmenuStore = defineStore('submenu', {
     setCurrentComponent(componentName: string) {
       const availableComponents = {
         Layers,
-        Text
+        Text,
+        Shapes
       };
       
       this.currentComponent = markRaw(availableComponents[componentName]) || null;
