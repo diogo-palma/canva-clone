@@ -58,7 +58,7 @@ const submenuStore = useSubmenuStore();
 }
 
 .menu-open {
-  width: 300px;
+  width: 350px;
 }
 
 

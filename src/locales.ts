@@ -30,7 +30,8 @@ const locales = {
       remove: "Remove"
     },
     shapes:{
-      lines: "Lines"
+      lines: "Lines",
+      shapes: "Shapes"
     },
     message: {
       hello: 'hello world',
