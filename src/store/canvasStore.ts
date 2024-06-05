@@ -68,7 +68,11 @@ export const useCanvasStore = defineStore('canvasStore', {
       };
 
       const handleSelectionChanged = () => {
+        
         this.updateObjectSelection(!!fabricCanvasObj.getActiveObject());
+        if (fabricCanvasObj){
+          this.checkObjectType(fabricCanvasObj)
+        }
       };
 
 
@@ -190,6 +194,20 @@ export const useCanvasStore = defineStore('canvasStore', {
       canvas.renderAll()
       this.saveCanvasState();
     },
+    async addSvg(svgUrl: string) {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+  
+      console.log(svgUrl)
+      fabric.loadSVGFromURL(svgUrl, (objects, options) => {
+        const svgObject = fabric.util.groupSVGElements(objects, options);  
+        svgObject.top = 30;
+        svgObject.left = 50;
+        svgObject.scale(2.0)        
+        canvas.add(markRaw(svgObject)).setActiveObject();
+        canvas.renderAll()
+        this.saveCanvasState();
+      });
+    },
     addLayer(canvasIndex: number, object: fabric.Object) {
       const instance = this.canvasInstances[canvasIndex];
       if (instance) {
@@ -208,6 +226,10 @@ export const useCanvasStore = defineStore('canvasStore', {
     updateObjectSelection(isSelected: boolean) {
       this.isObjectSelected = isSelected;
     },
+    checkObjectType(obj) {
+      
+      console.log(obj.getActiveObject().get('type'))
+    }
   },
   getters: {
     currentCanvasState: (state) => state.canvasHistory[state.canvasHistoryIndex],
