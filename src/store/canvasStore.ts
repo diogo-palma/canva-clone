@@ -17,6 +17,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     idPage: 0,
     activePageIndex: 0,
     isObjectSelected: false,
+    selectedObjectColor: '',
   }),
   actions: {
     async addNewPage() {
@@ -68,10 +69,14 @@ export const useCanvasStore = defineStore('canvasStore', {
       };
 
       const handleSelectionChanged = () => {
-        
-        this.updateObjectSelection(!!fabricCanvasObj.getActiveObject());
-        if (fabricCanvasObj){
-          this.checkObjectType(fabricCanvasObj)
+        const activeObject = fabricCanvasObj.getActiveObject();
+        this.updateObjectSelection(!!activeObject);
+        if (activeObject) {
+          this.checkObjectType(fabricCanvasObj);
+          const canvasIndex = this.canvasInstances.findIndex(instance => instance.canvas === fabricCanvasObj);
+          const layerIndex = fabricCanvasObj.getObjects().indexOf(activeObject);
+          this.setActiveLayer(canvasIndex, layerIndex);
+          this.updateSelectedObjectColor(activeObject);
         }
       };
 
@@ -175,23 +180,28 @@ export const useCanvasStore = defineStore('canvasStore', {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       let lastLeft = 100;
       let lastTop = 100;
-
+    
       if (canvas.getObjects().length > 0) {
         const lastObject = canvas.getObjects()[canvas.getObjects().length - 1];
         lastLeft = lastObject.left + lastLeft;
         lastTop = lastObject.top + lastTop;
       }
-
-      const addText = new fabric.Text(attributes.text, {
-        left: lastLeft,
-        top: lastTop,
-        width: 200,        
+    
+      const tempText = new fabric.Textbox(attributes.text, {
         ...attributes
       });
-      
-      canvas.add(markRaw(addText)).setActiveObject(addText)
      
-      canvas.renderAll()
+      const textWidth = tempText.width;
+    
+      const addText = new fabric.Textbox(attributes.text, {
+        left: lastLeft,
+        top: lastTop,
+        width: textWidth,
+        ...attributes
+      });
+    
+      canvas.add(markRaw(addText)).setActiveObject(addText);
+      canvas.renderAll();
       this.saveCanvasState();
     },
     async addSvg(svgUrl: string) {
@@ -203,10 +213,57 @@ export const useCanvasStore = defineStore('canvasStore', {
         svgObject.top = 30;
         svgObject.left = 50;
         svgObject.scale(2.0)        
-        canvas.add(markRaw(svgObject)).setActiveObject();
+        canvas.add(markRaw(svgObject)).setActiveObject(svgObject);
         canvas.renderAll()
         this.saveCanvasState();
       });
+    },
+    updateSelectedObjectColor(activeObject) {
+      
+      if (activeObject) {
+        if (activeObject.type === 'textbox' || activeObject.type === 'text') {
+          this.selectedObjectColor = activeObject.fill;
+        } else if (activeObject.type === 'group') {
+          const firstObject = activeObject.getObjects()[0];
+          if (firstObject) {
+            this.selectedObjectColor = firstObject.fill;
+          }
+        } else if (activeObject.isType('path') || activeObject.isType('path-group') || activeObject.isType('polygon') || activeObject.isType('polyline') || activeObject.isType('circle') || activeObject.isType('rect') || activeObject.isType('line')) {
+          this.selectedObjectColor = activeObject.fill || activeObject.stroke;
+        } else {
+          this.selectedObjectColor = activeObject.fill || activeObject.stroke;
+        }
+      } else {
+        this.selectedObjectColor = '';
+      }
+    },
+    changeColor(color: string) {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+
+      if (activeObject) {
+        if (activeObject.type === 'textbox' || activeObject.type === 'text') {
+          activeObject.set('fill', color);
+        } 
+        else if (activeObject.type === 'group') {
+          activeObject.forEachObject((obj) => {
+            if (obj.set) {
+              obj.set('fill', color);
+              obj.set('stroke', color);
+            }
+          });
+        }         
+        else if (activeObject.isType('path') || activeObject.isType('path-group') || activeObject.isType('polygon') || activeObject.isType('polyline') || activeObject.isType('circle') || activeObject.isType('rect') || activeObject.isType('line')) {
+          activeObject.set('fill', color);
+          activeObject.set('stroke', color);
+        } else {
+          activeObject.set('fill', color);
+          activeObject.set('stroke', color);
+        }
+
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
     },
     addLayer(canvasIndex: number, object: fabric.Object) {
       const instance = this.canvasInstances[canvasIndex];

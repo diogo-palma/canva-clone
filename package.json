@@ -15,6 +15,7 @@
     "pinia": "^2.1.7",
     "vue": "^3.4.21",
     "vue-i18n": "^9.13.1",
+    "vue3-colorpicker": "^2.3.0",
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {

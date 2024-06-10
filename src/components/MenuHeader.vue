@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, unref } from 'vue'
+import { ref, unref, watch } from 'vue'
 import { useI18n } from 'vue-i18n';
 import SolarUndoLeftRoundBroken from '~icons/solar/undo-left-round-broken';
 import SolarUndoRightRoundBroken from '~icons/solar/undo-right-round-broken';
@@ -8,9 +8,15 @@ import MingcuteLayerLine from '~icons/mingcute/layer-line';
 import BiTransparency from '~icons/bi/transparency';
 import PepiconsPencilDuplicate from '~icons/pepicons-pencil/duplicate';
 import BasilTrashOutline from '~icons/basil/trash-outline';
+import { ColorPicker } from "vue3-colorpicker";
+import "vue3-colorpicker/style.css";
 
 import { ClickOutside as vClickOutside } from 'element-plus'
 
+
+const gradientColor = ref("linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)");
+
+const buttonRefColor = ref()
 const buttonRef = ref()
 const popoverRef = ref()
 const onClickOutside = () => {
@@ -20,22 +26,9 @@ const onClickOutside = () => {
 const { t } = useI18n();
 
 const color = ref('#000')
-const predefineColors = ref([
-  '#ff4500',
-  '#ff8c00',
-  '#ffd700',
-  '#90ee90',
-  '#00ced1',
-  '#1e90ff',
-  '#c71585',
-  'rgba(255, 69, 0, 0.68)',
-  'rgb(255, 120, 0)',
-  'hsv(51, 100, 98)',
-  'hsva(120, 40, 94, 0.5)',
-  'hsl(181, 100%, 37%)',
-  'hsla(209, 100%, 56%, 0.73)',
-  '#c7158577',
-])
+const updateColor = () =>{
+  console.log("oi", color.value)
+}
 
 const canvasStore = useCanvasStore();
 
@@ -46,6 +39,26 @@ const undo = () => {
 const redo = () => {
   canvasStore.redo();
 };
+
+watch(
+  () => canvasStore.selectedObjectColor,
+  (newVal, oldVal) => {
+    color.value = canvasStore.selectedObjectColor
+    
+  }
+);
+watch(
+  () => color.value,
+  (newVal, oldVal) => {
+    if (newVal){
+      console.log("newvAL", newVal)
+      if (newVal == "currentColor")
+        canvasStore.changeColor("#000")  
+      else
+        canvasStore.changeColor(newVal)
+    }
+  }
+)
 </script>
 
 <template>
@@ -57,9 +70,9 @@ const redo = () => {
           <el-button circle :disabled="!canvasStore.canRedo" @click="redo"><SolarUndoRightRoundBroken /></el-button>
           
         </div>
-        <div class="ml-2">
-          <div class="color-block">            
-            <el-color-picker v-model="color" />
+        <div class="ml-2" v-if="canvasStore.isThisObjectSelected" >
+          <div class="color-block"> 
+            <color-picker v-model:pureColor="color" v-model:gradientColor="gradientColor"/>
           </div>
         </div>
         
@@ -146,6 +159,15 @@ const redo = () => {
 .title_position{
   font-size: 12px;
   font-weight: 600;
+}
+.color-block{
+  padding: 3px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+:deep(.vc-color-wrap){
+  width: 25px;
+  margin-right: 0px;
 }
 
 </style>

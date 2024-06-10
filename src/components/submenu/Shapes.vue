@@ -1,32 +1,46 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue';
 import { useCanvasStore } from '~/store/canvasStore';
 
 const canvasStore = useCanvasStore();
 
+const lines = ref([]);
+const shapes = ref([]);
+const isLoading = ref(true);
+
 const lineImports = import.meta.glob('~/assets/lines/*.svg', { eager: true });
 const shapeImports = import.meta.glob('~/assets/shapes/*.svg', { eager: true });
 
-const lines = Object.entries(lineImports).sort((a, b) => {
-  const aName = a[0].split('/').pop();
-  const bName = b[0].split('/').pop();
+const sortAndMapEntries = async (entries) => {
+  return Object.entries(entries)
+    .sort((a, b) => {
+      const aName = a[0].split('/').pop();
+      const bName = b[0].split('/').pop();
+      
+      if (aName < bName) return 1;
+      if (aName > bName) return -1;
+      return 0;
+    })
+    .map(entry => entry[1]);
+};
+
+const addSvg = (url) => {
+  const newUrl = window.location.href.replace(/\/$/, '') + url.split('?')[0];
+  canvasStore.addSvg(newUrl);
+};
+
+onMounted(async () => {
+  lines.value = await sortAndMapEntries(lineImports);
+  shapes.value = Object.values(shapeImports);
   
-  if (aName < bName) return 1;
-  if (aName > bName) return -1;
-  return 0;
-}).map(entry => entry[1]);
-
-const shapes = Object.values(shapeImports);
-
-const addSvg = (url) =>{
-  const newUrl = window.location.href.replace(/\/$/, '') +  url.split('?')[0];
-  canvasStore.addSvg(newUrl)
-}
-
-
+  isLoading.value = false;  
+  
+  
+});
 </script>
 
 <template>
-  <div class="shapes">
+  <div class="shapes" v-loading="isLoading">
     <span class="title-shape">{{$t('shapes.lines')}}</span>
     <el-row :gutter="20" style="margin-top: 10px">
       <el-col v-for="(line, index) in lines" :key="index" :span="8" >
