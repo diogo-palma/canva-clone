@@ -27,7 +27,8 @@ const locales = {
       layering: "Layering",
       transparency: "Transparency",
       duplicate: "Duplicate",
-      remove: "Remove"
+      remove: "Remove",
+      send_font: "Send font"
     },
     shapes:{
       lines: "Lines",

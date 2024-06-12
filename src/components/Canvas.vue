@@ -34,10 +34,11 @@ const setZoom = () => {
   }
   zoomLevel = (zoomLevel/100);
 
-  canvasStore.canvasInstances.forEach((canvas) => {
-    canvas.setZoom(zoomLevel);
+  
+  canvasStore.canvasInstances.forEach((obj) => {
+    obj.canvas.setZoom(zoomLevel);
     
-    canvas.setDimensions({
+    obj.canvas.setDimensions({
       width: canvasStore.pageWidth * zoomLevel,
       height: canvasStore.pageHeight * zoomLevel
     });

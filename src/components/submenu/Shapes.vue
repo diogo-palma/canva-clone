@@ -66,6 +66,7 @@ onMounted(async () => {
   width: 100%;
   height: 25px;
   filter: invert(100%);
+  cursor: pointer;
 }
 
 .ep-col {
@@ -79,6 +80,7 @@ onMounted(async () => {
 
 .filterit {
   filter: invert(100%);
+  cursor: pointer;
 }
 
 </style>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, unref, watch } from 'vue'
+import { onMounted, ref, unref, watch } from 'vue'
 import { useI18n } from 'vue-i18n';
 import SolarUndoLeftRoundBroken from '~icons/solar/undo-left-round-broken';
 import SolarUndoRightRoundBroken from '~icons/solar/undo-right-round-broken';
@@ -10,14 +10,16 @@ import PepiconsPencilDuplicate from '~icons/pepicons-pencil/duplicate';
 import BasilTrashOutline from '~icons/basil/trash-outline';
 import { ColorPicker } from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
-
 import { ClickOutside as vClickOutside } from 'element-plus'
+import { loadFonts } from '~/utils/loadFonts'
 
 
 const gradientColor = ref("linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)");
 
 const buttonRefColor = ref()
 const buttonRef = ref()
+const fontInputRef = ref()
+const fontSelectRef = ref()
 const popoverRef = ref()
 const onClickOutside = () => {
   unref(popoverRef).popperRef?.delayHide?.()
@@ -39,6 +41,76 @@ const undo = () => {
 const redo = () => {
   canvasStore.redo();
 };
+
+const fonts = ref([]);
+const selectedFont = ref('');
+const recentFonts = ref([]);
+const maxRecentFonts = 10;
+
+const updateRecentFonts = (font) => {  
+  recentFonts.value = recentFonts.value.filter((f) => f.value !== font.value);  
+  recentFonts.value.unshift(font);  
+  if (recentFonts.value.length > maxRecentFonts) {
+    recentFonts.value.pop();
+  }
+};
+
+const selectRecentFont = (font) => {
+  
+  changeFont(font);  
+  fontSelectRef.value.blur();
+};
+
+const changeFont = (font) => {
+  console.log(font)
+  selectedFont.value = font;
+  canvasStore.changeFont(font);
+
+  const selectedFontObj = fonts.value.find((f) => f.value === font);
+  if (selectedFontObj) {
+    updateRecentFonts(selectedFontObj);
+  }
+};
+
+const loadFontFaces = async (fontsObj) => {
+  fontsObj.forEach((font) => {
+    const fontFace = new FontFace(font.value, `url(${font.url})`);
+    fontFace.load().then(() => {
+      document.fonts.add(fontFace);
+    }).catch((error) => {
+      console.error(`Erro ao carregar a fonte ${font.label}:`, error);
+      fonts.value = fonts.value.filter(f => f.value !== font.value);
+    });
+  });
+};
+
+const openFontFile = () => { 
+  fontInputRef.value.click();
+};
+
+const handleFileChange = (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const fontData = e.target.result;
+    const fontName = file.name.split('/').pop()?.split('.')[0];
+    const newFont = { label: fontName, value: fontName, url: fontData };
+    fonts.value.push(newFont);
+    selectedFont.value = fontData; 
+    await loadFontFaces([newFont])
+    changeFont(newFont.label);
+    
+  };
+  reader.readAsDataURL(file);
+};
+
+onMounted(async () => {
+  fonts.value = await loadFonts();
+  await loadFontFaces(fonts.value);
+});
+
 
 watch(
   () => canvasStore.selectedObjectColor,
@@ -70,9 +142,40 @@ watch(
           <el-button circle :disabled="!canvasStore.canRedo" @click="redo"><SolarUndoRightRoundBroken /></el-button>
           
         </div>
-        <div class="ml-2" v-if="canvasStore.isThisObjectSelected" >
+        <div  class="tools ml-2" v-if="canvasStore.isThisObjectSelected" >
           <div class="color-block"> 
             <color-picker v-model:pureColor="color" v-model:gradientColor="gradientColor"/>
+          </div>
+          <div class="font-text">
+            <el-select
+              ref="fontSelectRef"
+              v-model="selectedFont"
+              filterable
+              placeholder="Select Font"
+              @change="changeFont"
+              style="width: 150px"
+              :style="{ fontFamily: selectedFont }"
+            >
+              <template #header v-if="recentFonts.length > 0">
+                <div  >
+                  <span>Recent Fonts:</span>
+                  <div v-for="font in recentFonts" :key="font.value" @click="selectRecentFont(font.value)" class="recents-fonts" :style="{ fontFamily: font.value, cursor: 'pointer' }">
+                    {{ font.label }}
+                  </div>
+                </div>
+              </template>
+              <el-option
+                v-for="font in fonts"
+                :key="font.value"
+                :label="font.label"
+                :value="font.value"
+                :style="{ fontFamily: font.value }"
+              />
+              <template #footer>
+                <el-button type="primary" @click="openFontFile">{{$t('menu_header.send_font') }}</el-button>                
+              </template>
+            </el-select>
+            <input type="file" ref="fontInputRef" style="display: none" @change="handleFileChange">
           </div>
         </div>
         
@@ -148,6 +251,7 @@ watch(
   align-items: center;
   min-height: 7vh;
   box-shadow: var(--el-box-shadow);
+  border-bottom: 1px solid #ccc;
 }
 .menu-select-object{
   display: flex;
@@ -168,6 +272,18 @@ watch(
 :deep(.vc-color-wrap){
   width: 25px;
   margin-right: 0px;
+}
+.tools{
+  display: flex;
+}
+.font-text{
+  margin-left: 5px;
+}
+.recents-fonts{
+  padding: 5px;
+}
+.recents-fonts:hover{
+  background-color: #ccc;
 }
 
 </style>

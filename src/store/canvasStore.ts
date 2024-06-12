@@ -50,6 +50,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     
 
       let isScaling = false;
+      let isMoving = false;
 
       const saveStateOnEvent = () => {
         this.saveCanvasState();
@@ -60,9 +61,10 @@ export const useCanvasStore = defineStore('canvasStore', {
       };
     
       const handleMouseUp = () => {
-        if (isScaling) {
+        if (isScaling || isMoving) {
           saveStateOnEvent();
           isScaling = false;
+          isMoving = false;
         }
         const canvasIndex = this.canvasInstances.findIndex(instance => instance.canvas === fabricCanvasObj);
         this.setActivePage(canvasIndex);
@@ -75,13 +77,20 @@ export const useCanvasStore = defineStore('canvasStore', {
           this.checkObjectType(fabricCanvasObj);
           const canvasIndex = this.canvasInstances.findIndex(instance => instance.canvas === fabricCanvasObj);
           const layerIndex = fabricCanvasObj.getObjects().indexOf(activeObject);
-          this.setActiveLayer(canvasIndex, layerIndex);
-          this.updateSelectedObjectColor(activeObject);
+          if (layerIndex > -1){
+            this.setActiveLayer(canvasIndex, layerIndex);
+            this.updateSelectedObjectColor(activeObject);
+          }
         }
       };
 
+      const handleMovingStart = () => {
+        isMoving = true;
+      };
+      
 
-      fabricCanvasObj.on('object:moving', saveStateOnEvent);
+
+      fabricCanvasObj.on('object:moving', handleMovingStart);
       fabricCanvasObj.on('object:scaling', handleScalingStart);
       fabricCanvasObj.on('mouse:up', handleMouseUp);
       fabricCanvasObj.on('object:rotating', saveStateOnEvent);
@@ -190,8 +199,19 @@ export const useCanvasStore = defineStore('canvasStore', {
       const tempText = new fabric.Textbox(attributes.text, {
         ...attributes
       });
-     
+    
       const textWidth = tempText.width;
+      const textHeight = tempText.height;
+      
+      
+      if (lastLeft + textWidth > (this.pageWidth * this.zoomLevel/100)) {
+        lastLeft =80;
+      }
+    
+      
+      if (lastTop + textHeight > (this.pageHeight* this.zoomLevel/100)) {
+        lastTop = 80;
+      }
     
       const addText = new fabric.Textbox(attributes.text, {
         left: lastLeft,
@@ -203,6 +223,16 @@ export const useCanvasStore = defineStore('canvasStore', {
       canvas.add(markRaw(addText)).setActiveObject(addText);
       canvas.renderAll();
       this.saveCanvasState();
+    },
+    changeFont(font: string) {
+      this.selectedFont = font; 
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+        activeObject.set('fontFamily', font); 
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
     },
     async addSvg(svgUrl: string) {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
@@ -283,9 +313,8 @@ export const useCanvasStore = defineStore('canvasStore', {
     updateObjectSelection(isSelected: boolean) {
       this.isObjectSelected = isSelected;
     },
-    checkObjectType(obj) {
-      
-      console.log(obj.getActiveObject().get('type'))
+    checkObjectType(obj) {      
+      return obj.getActiveObject().get('type')
     }
   },
   getters: {
