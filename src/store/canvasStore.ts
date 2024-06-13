@@ -18,6 +18,14 @@ export const useCanvasStore = defineStore('canvasStore', {
     activePageIndex: 0,
     isObjectSelected: false,
     selectedObjectColor: '',
+    selectedObjectType: null,
+    selectedFont: null,
+    fontSize: 30,
+    selectedTextAlign: 'center',
+    selectedTextBold: false,
+    selectedTextUnderline: false,
+    selectedTextItalic: false,
+    selectedTextStrikethrough: false
   }),
   actions: {
     async addNewPage() {
@@ -212,11 +220,14 @@ export const useCanvasStore = defineStore('canvasStore', {
       if (lastTop + textHeight > (this.pageHeight* this.zoomLevel/100)) {
         lastTop = 80;
       }
+
+      
     
       const addText = new fabric.Textbox(attributes.text, {
         left: lastLeft,
         top: lastTop,
-        width: textWidth,
+        width: textWidth + 40,
+        textAlign: 'center',
         ...attributes
       });
     
@@ -230,6 +241,78 @@ export const useCanvasStore = defineStore('canvasStore', {
       const activeObject = canvas.getActiveObject();
       if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
         activeObject.set('fontFamily', font); 
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
+    },
+    changeTextAlign(alignment: string) {
+      this.selectedTextAlign = alignment;
+      
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      
+      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+        activeObject.set('textAlign', alignment);
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
+    },
+    changeBold() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+    
+      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+        const isBold = activeObject.get('fontWeight') === 'bold';
+        this.selectedTextBold = !isBold
+        activeObject.set('fontWeight', isBold ? 'normal' : 'bold');
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
+    },
+    changeUnderline() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+    
+      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+        const isUnderline = activeObject.get('underline');
+        this.selectedTextUnderline = !isUnderline;
+        activeObject.set('underline', !isUnderline);
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
+    },
+    changeItalic() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+        const isItalic = activeObject.get('fontStyle') === 'italic';
+        this.selectedTextItalic = !isItalic;
+        activeObject.set('fontStyle', isItalic ? 'normal' : 'italic');
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
+    },
+    changeStrikethrough() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+        const isLinethrough = activeObject.get('linethrough');
+        this.selectedTextStrikethrough = !isLinethrough;
+        activeObject.set('linethrough', !isLinethrough);
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
+    },
+    changeFontSize(fontSize: number) {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+        activeObject.set('fontSize', fontSize); 
+        const tempText = new fabric.Textbox(activeObject.text, {
+          ...activeObject.toObject(),
+          fontSize: fontSize,
+        });
+        activeObject.set('width', tempText.width);
         canvas.renderAll();
         this.saveCanvasState();
       }
@@ -248,7 +331,7 @@ export const useCanvasStore = defineStore('canvasStore', {
         this.saveCanvasState();
       });
     },
-    updateSelectedObjectColor(activeObject) {
+    updateSelectedObjectColor(activeObject: any) {
       
       if (activeObject) {
         if (activeObject.type === 'textbox' || activeObject.type === 'text') {
@@ -313,8 +396,23 @@ export const useCanvasStore = defineStore('canvasStore', {
     updateObjectSelection(isSelected: boolean) {
       this.isObjectSelected = isSelected;
     },
-    checkObjectType(obj) {      
-      return obj.getActiveObject().get('type')
+    checkObjectType(obj: any) {      
+      this.selectedObjectType = obj.getActiveObject().get('type')
+      console.log(this.selectedObjectType)
+      const activeObject = obj.getActiveObject();
+      if (activeObject.type === 'text' || activeObject.type === 'textbox') {        
+        this.selectedFont = activeObject.fontFamily;
+        this.fontSize = activeObject.fontSize;
+        this.selectedTextAlign = activeObject.textAlign;
+        const isBold = activeObject.get('fontWeight') === 'bold';
+        this.selectedTextBold = isBold;
+        const isUnderline = activeObject.get('underline');
+        this.selectedTextUnderline = isUnderline
+        const isItalic = activeObject.get('fontStyle') === 'italic';
+        this.selectedTextItalic = isItalic;
+        const isLinethrough = activeObject.get('linethrough');
+        this.selectedTextStrikethrough = isLinethrough;
+      }
     }
   },
   getters: {

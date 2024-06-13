@@ -46,6 +46,7 @@ const submenuStore = useSubmenuStore();
 }
 .menu-container{
   width: 100%;
+  overflow-y: auto;
 }
 
 .menu {

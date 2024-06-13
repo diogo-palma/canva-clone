@@ -11,6 +11,8 @@ declare module 'vue' {
     BaseHeader: typeof import('./components/layouts/BaseHeader.vue')['default']
     BaseSide: typeof import('./components/layouts/BaseSide.vue')['default']
     Canvas: typeof import('./components/Canvas.vue')['default']
+    Color: typeof import('./components/tools/Color.vue')['default']
+    ColorPicker: typeof import('./components/tools/ColorPicker.vue')['default']
     ElButton: typeof import('element-plus/es')['ElButton']
     ElCol: typeof import('element-plus/es')['ElCol']
     ElColorPicker: typeof import('element-plus/es')['ElColorPicker']
@@ -37,6 +39,7 @@ declare module 'vue' {
     ElSkeleton: typeof import('element-plus/es')['ElSkeleton']
     ElSkeletonItem: typeof import('element-plus/es')['ElSkeletonItem']
     ElSlider: typeof import('element-plus/es')['ElSlider']
+    ElSpinner: typeof import('element-plus/es')['ElSpinner']
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTag: typeof import('element-plus/es')['ElTag']
@@ -50,6 +53,7 @@ declare module 'vue' {
     MenuHeader: typeof import('./components/MenuHeader.vue')['default']
     Shapes: typeof import('./components/submenu/Shapes.vue')['default']
     Text: typeof import('./components/submenu/Text.vue')['default']
+    TextFont: typeof import('./components/tools/TextFont.vue')['default']
   }
   export interface ComponentCustomProperties {
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']

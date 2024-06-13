@@ -28,7 +28,17 @@ const locales = {
       transparency: "Transparency",
       duplicate: "Duplicate",
       remove: "Remove",
-      send_font: "Send font"
+      lock: "Lock",
+      unlock: "Unlock",
+      new_font: "New font",
+      center: "Center",
+      left: "Left",
+      right: "Right",
+      justify: "Justify",
+      bold: "Bold",
+      underline: "Underlne",
+      italic: "Italic",
+      strike_through: "Strike through"
     },
     shapes:{
       lines: "Lines",
