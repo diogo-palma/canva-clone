@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, unref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, unref, watch } from 'vue'
 import { useI18n } from 'vue-i18n';
 import SolarUndoLeftRoundBroken from '~icons/solar/undo-left-round-broken';
 import SolarUndoRightRoundBroken from '~icons/solar/undo-right-round-broken';
@@ -9,22 +9,15 @@ import BiTransparency from '~icons/bi/transparency';
 import PepiconsPencilDuplicate from '~icons/pepicons-pencil/duplicate';
 import BasilTrashOutline from '~icons/basil/trash-outline';
 import MageUnlockedFill from '~icons/mage/unlocked-fill';
-import GgFormatCenter from '~icons/gg/format-center';
-import GgFormatLeft from '~icons/gg/format-left';
-import GgFormatRight from '~icons/gg/format-right';
-import GgFormatJustify from '~icons/gg/format-justify';
-import JamBold from '~icons/jam/bold';
-import MingcuteUnderlineLine from '~icons/mingcute/underline-line';
-import TablerItalic from '~icons/tabler/italic';
-import RadixIconsStrikethrough from '~icons/radix-icons/strikethrough';
-import GgFormatLineHeight from '~icons/gg/format-line-height';
 import { ClickOutside as vClickOutside } from 'element-plus'
+import IconamoonMenuKebabVerticalBold from '~icons/iconamoon/menu-kebab-vertical-bold';
 
 
 const buttonRefPosition = ref()
+const buttonRefMoreTools = ref()
 
 const popoverRef = ref()
-const buttonRefChangeSpace = ref()
+
 const onClickOutside = () => {
   unref(popoverRef).popperRef?.delayHide?.()
 }
@@ -42,174 +35,133 @@ const redo = () => {
   canvasStore.redo();
 };
 
+const tools = ref(null);
+const moreTools = ref(null);
+const toolsRight = ref(null)
+const hasMoreTools = ref(false)
+const menuHeader = ref(null);
+const lastWindowWidth = ref(null)
 
 
-function getAlignmentIcon(textAlign) {
-  switch (textAlign) {
-    case 'center':
-      return GgFormatCenter;
-    case 'left':
-      return GgFormatLeft;
-    case 'right':
-      return GgFormatRight;
-    case 'justify':
-      return GgFormatJustify;
-    default:
-      return GgFormatCenter; 
+const handleResize = () => {
+  const toolsPosition = tools.value.getBoundingClientRect();
+  const toolsRoghtPosition = toolsRight.value.getBoundingClientRect();
+  const currentWindowWidth = menuHeader.value.clientWidth;
+
+  if (toolsPosition.right + 100 >= toolsRoghtPosition.left && currentWindowWidth < lastWindowWidth.value) {
+    const toolComponents = Array.from(tools.value.children);
+    const componentToMove = toolComponents.pop(); 
+    if (componentToMove) {
+      hasMoreTools.value = true;
+      // moreTools.value.appendChild(componentToMove);
+      moreTools.value.insertAdjacentElement('afterbegin', componentToMove)      
+    }
+  } else if (currentWindowWidth > lastWindowWidth.value && toolsPosition.right + 100 <= toolsRoghtPosition.left) {
+    const moreToolComponents = Array.from(moreTools.value.children);
+    const componentToMoveBack = moreToolComponents.shift();
+    if (componentToMoveBack) {
+      tools.value.appendChild(componentToMoveBack);
+    }
   }
-}
+  lastWindowWidth.value = menuHeader.value.clientWidth;
 
-function getTooltipContent(textAlign) {  
-  switch (textAlign) {
-    case 'center':
-      return t('menu_header.center');
-    case 'left':
-      return t('menu_header.left');
-    case 'right':
-      return t('menu_header.right');
-    case 'justify':
-      return t('menu_header.justify');
-    default:
-      return t('menu_header.center'); 
+  hasMoreTools.value = moreTools.value?.children.length > 0;
+};
+
+
+const handleMoreTools = () => {
+  
+  const toolsPosition = tools.value.getBoundingClientRect();
+  const toolsRoghtPosition = toolsRight.value.getBoundingClientRect();
+
+  if (toolsPosition.right + 100 >= toolsRoghtPosition.left){
+    const toolComponents = Array.from(tools.value.children);
+    const componentToMove = toolComponents.pop(); 
+    if (componentToMove) {
+      hasMoreTools.value = true;
+      // moreTools.value.appendChild(componentToMove);
+      moreTools.value.insertAdjacentElement('afterbegin', componentToMove)      
+    }
+    if (toolsPosition.right + 100 >= toolsRoghtPosition.left)
+      handleMoreTools()
   }
+
 }
 
-function changeTextAlign() {
-  const alignments = ['left', 'center', 'right', 'justify'];
-  const currentIndex = alignments.indexOf(canvasStore.selectedTextAlign);
-  const nextIndex = (currentIndex + 1) % alignments.length; 
-  const nextAlign = alignments[nextIndex];
-
-  canvasStore.changeTextAlign(nextAlign)    
-}
-
-const handleChangeFontSize = () =>{
-  canvasStore.changeFontSize(canvasStore.fontSize)
-}
-
+ 
+onMounted(() => {
+  if (menuHeader.value) {
+    const resizeObserver = new ResizeObserver(handleResize);
+    resizeObserver.observe(menuHeader.value);
+    
+    lastWindowWidth.value = menuHeader.value.clientWidth
+    onUnmounted(() => {
+      resizeObserver.unobserve(menuHeader.value);
+    });
+  }
+});
 
 
 watch(
-  () => canvasStore.selectedTextAlign,
+  () => canvasStore.isThisObjectSelected,
   (newVal, oldVal) => {
-    console.log(newVal)
-    if (newVal){
-      getAlignmentIcon(newVal)
-      getTooltipContent(newVal)
-    }
+    setTimeout(() => {
+      handleMoreTools();  
+    }, 100);
+    
   }
 );
+
+
 </script>
 
 <template>
   <el-row>
     <el-col :span="24">
-      <div class="menu-header">
+      <div class="menu-header" ref="menuHeader">
         <div class="" >
           <el-button circle :disabled="!canvasStore.canUndo" @click="undo"><SolarUndoLeftRoundBroken /></el-button>
           <el-button circle :disabled="!canvasStore.canRedo" @click="redo"><SolarUndoRightRoundBroken /></el-button>
           
         </div>
-        <div  class="tools ml-2" v-if="canvasStore.isThisObjectSelected" >
+        <div  class="tools ml-2" v-show="canvasStore.isThisObjectSelected" ref="tools" >
           <ColorPicker/>
           <TextFont/>
-          <div class="font-size">
-            <el-input-number
-              v-model="canvasStore.fontSize"
-              :min="1"              
-              controls-position="right"
-              @change="handleChangeFontSize"
-            />
-          </div>
-          <div class="text-align">
-            <el-tooltip
-              v-if="canvasStore.isThisObjectSelected"
-              class="box-item"
-              effect="dark"
-              :content="getTooltipContent(canvasStore.selectedTextAlign)"
-              placement="bottom"
-            >
-              <el-button style="padding: 0px 10px;" @click="changeTextAlign">
-                <component :is="getAlignmentIcon(canvasStore.selectedTextAlign)" />
-              </el-button>
-            </el-tooltip>
-          </div>
-          <div class="text-bold">
-            <el-tooltip
-              class="box-item"
-              effect="dark"
-              :content="t('menu_header.bold')"
-              placement="bottom"
-            >
-              <el-button @click="canvasStore.changeBold" style="padding: 0px 4px;" :disabled="!canvasStore.isThisObjectSelected" :class="{ 'text-select': canvasStore.selectedTextBold }">
-                <JamBold style="font-size: 22px"/>
-              </el-button>
-            </el-tooltip>
-          </div>
-          <div class="text-italic">
-            <el-tooltip
-              class="box-item"
-              effect="dark"
-              :content="t('menu_header.italic')"
-              placement="bottom"
-            >
-              <el-button @click="canvasStore.changeItalic" style="padding: 0px 9px;" :disabled="!canvasStore.isThisObjectSelected" :class="{ 'text-select': canvasStore.selectedTextItalic }">
-                <TablerItalic/>
-              </el-button>
-            </el-tooltip>
-          </div>
-          <div class="text-underline">
-            <el-tooltip
-              class="box-item"
-              effect="dark"
-              :content="t('menu_header.underline')"
-              placement="bottom"
-            >
-              <el-button @click="canvasStore.changeUnderline" style="padding: 0px 9px;" :disabled="!canvasStore.isThisObjectSelected" :class="{ 'text-select': canvasStore.selectedTextUnderline }">
-                <MingcuteUnderlineLine/>
-              </el-button>
-            </el-tooltip>
-          </div>
-          <div class="text-strike">
-            <el-tooltip
-              class="box-item"
-              effect="dark"
-              :content="t('menu_header.strike_through')"
-              placement="bottom"
-            >
-              <el-button @click="canvasStore.changeStrikethrough" style="padding: 0px 9px;" :disabled="!canvasStore.isThisObjectSelected" :class="{ 'text-select': canvasStore.selectedTextStrikethrough }">
-                <RadixIconsStrikethrough/>
-              </el-button>
-            </el-tooltip>
-          </div>
-          <div class="text-change-space">
-            <el-tooltip
-              class="box-item"
-              effect="dark"
-              :content="t('menu_header.change_space')"
-              placement="bottom"
-            >
-              <el-button :disabled="!canvasStore.isThisObjectSelected" ref="buttonRefChangeSpace" v-click-outside="onClickOutside">
-                <GgFormatLineHeight/>
-              </el-button>
-            </el-tooltip>
-          
-            <el-popover
-              ref="popoverRef"
-              :virtual-ref="buttonRefChangeSpace"
-              trigger="click"            
-              virtual-triggering
-            >
-              <div>
-                
-              </div>
-            </el-popover>
-          </div>
-          
+          <FontSize/>
+          <TextAlign/>
+          <TextBold/>
+          <TextUnderline/>            
+          <TextStrikeThrough/>
+          <TextChangeSpace/>
+          <EffectsTool/>
+        </div>
+        <div class="more-tools" v-show="canvasStore.isThisObjectSelected && hasMoreTools" >
+          <el-tooltip
+            class="box-item"
+            effect="dark"
+            :content="t('menu_header.more_tools')"
+            placement="bottom"
+          >
+            <el-button :disabled="!canvasStore.isThisObjectSelected" ref="buttonRefMoreTools" v-click-outside="onClickOutside">
+              <IconamoonMenuKebabVerticalBold/>
+            </el-button>
+          </el-tooltip>
+        
+          <el-popover
+            ref="popoverRef"
+            :virtual-ref="buttonRefMoreTools"
+            trigger="click"            
+            virtual-triggering
+            :width="200"
+          >
+            <div ref="moreTools" class="more-tools-content" style="">
+              
+            </div>
+          </el-popover>
         </div>
         
         <div class="flex-grow" />
-        <div class="tools-right">
+        <div class="tools-right" ref="toolsRight">
           <el-tooltip
             class="box-item"
             effect="dark"
@@ -316,38 +268,28 @@ watch(
 .recents-fonts:hover{
   background-color: var(--ep-fill-color-light)
 }
-.font-size{
-  margin-left: 5px;  
-}
-.font-size > .ep-input-number{
-  width: 80px;
-}
-
 .ep-button + .ep-button {
   margin-left: 5px;
 }
 
-.text-align{
-  margin-left: 5px;
-}
-.text-bold{
-  margin-left: 5px;
-}
-.text-select {
+:deep(.text-select) {
   background-color: #dfdfdf;
   box-shadow: 1px 1px 1px #a8a8a8;
 }
-.text-underline{
+
+.more-tools{
   margin-left: 5px;
 }
-.text-italic{
-  margin-left: 5px;
+
+.more-tools-content{
+  display: flex;
+  flex-flow: wrap;
 }
-.text-strike{
-  margin-left: 5px;
+.more-tools-content > div{
+  margin: 4px;
 }
-.text-change-space{
-  margin-left: 5px;
-}
+
+
+
 
 </style>

@@ -1,3 +1,5 @@
+import { effect } from "vue";
+
 const locales = {
   en: {
     header:{
@@ -38,8 +40,22 @@ const locales = {
       bold: "Bold",
       underline: "Underlne",
       italic: "Italic",
-      strike_through: "Strike through"
+      strike_through: "Strike through",
+      more_tools: "More tools",
+      change_space: "Change space",
+      line_height: "Line height",
+      letter_space: "Letter space",
+      effects: "Effects",
+      blur: "Blur",
+      text_stroke: "Text Stroke",
+      background: "Background",
+      background_color: "Background color",      
+      padding: "Padding",
+      color: "Color",
+      corner_radius: "Corner radius"
+
     },
+    
     shapes:{
       lines: "Lines",
       shapes: "Shapes"

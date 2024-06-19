@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { ColorPicker } from "vue3-colorpicker";
 import "vue3-colorpicker/style.css";
 import { useCanvasStore } from "~/store/canvasStore";
 
 const canvasStore = useCanvasStore();
 const gradientColor = ref("linear-gradient(0deg, rgba(0, 0, 0, 1) 0%, rgba(0, 0, 0, 1) 100%)");
+
+watch(
+  () => canvasStore.selectedObjectColor,
+  () => {
+    canvasStore.changeColor(canvasStore.selectedObjectColor);
+  }
+);
 
 </script>
 
