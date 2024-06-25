@@ -39,8 +39,10 @@ export const useCanvasStore = defineStore('canvasStore', {
     selectedShadowBlur: 0,
     selectedBlur: 0,
     selectedAnimationDuration: 1,
-    selectdElevationAnimationInitial: 0,
-    selectdElevationAnimationFinal: 0
+    selectdElevationAnimationInitialTop: 0,
+    selectdElevationAnimationFinalTop: 0,
+    selectdElevationAnimationInitialLeft: 0,
+    selectdElevationAnimationFinalLeft: 0
   }),
   actions: {
     async addNewPage() {
@@ -477,8 +479,8 @@ export const useCanvasStore = defineStore('canvasStore', {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
       
-      const initialTop = this.selectdElevationAnimationInitial
-      const finalTop = this.selectdElevationAnimationFinal
+      const initialTop = this.selectdElevationAnimationInitialTop
+      const finalTop = this.selectdElevationAnimationFinalTop
       
       if (this.selectedAnimationDuration == 0){
         this.selectedAnimationDuration = 1
@@ -504,6 +506,76 @@ export const useCanvasStore = defineStore('canvasStore', {
         }
       });
 
+    },
+    animateLandscape(){
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      
+      const initialLeft = this.selectdElevationAnimationInitialLeft
+      const finalLeft = this.selectdElevationAnimationFinalLeft
+      
+      if (this.selectedAnimationDuration == 0){
+        this.selectedAnimationDuration = 1
+      }
+
+      const duration = this.selectedAnimationDuration  * 1000
+
+
+      activeObject.set({
+        left: initialLeft
+      });
+    
+      fabric.util.animate({
+        startValue: initialLeft,
+        endValue: finalLeft,
+        duration: duration,  
+        onChange: (value: any) => {
+          activeObject.set('left', value);
+          canvas.renderAll();
+        },
+        onComplete: () => {
+          activeObject.setCoords();
+        }
+      });
+
+    },
+    animateEmerge(animationIn: boolean){
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+
+      const initialLeft = this.selectdElevationAnimationInitialLeft;
+      const finalLeft = this.selectdElevationAnimationFinalLeft;
+
+      if (this.selectedAnimationDuration == 0) {
+        this.selectedAnimationDuration = 1;
+      }
+
+      const duration = this.selectedAnimationDuration * 1000;
+
+      const startValue = animationIn ? 0 : 1
+      const endValue = animationIn ? 1 : 0
+
+      activeObject.set({        
+        opacity: 0 
+      });
+
+      fabric.util.animate({
+        startValue: startValue,
+        endValue: endValue,
+        duration: duration,
+        onChange: (value) => {
+          activeObject.set({            
+            opacity: value
+          });
+          canvas.renderAll();
+        },
+        onComplete: () => {
+          activeObject.set({            
+            opacity: 1
+          });
+          activeObject.setCoords();
+        }
+      });
     },
     async addSvg(svgUrl: string) {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
@@ -614,8 +686,10 @@ export const useCanvasStore = defineStore('canvasStore', {
         this.selectedBackgroundPadding = activeObject.get('textPadding');
         this.selectedTextBackgroundColor = activeObject.get('backgroundColor');
         this.selectedBackgroundCornerRadius = activeObject.get('cornerRadius')
-        this.selectdElevationAnimationInitial = obj.height;
-        this.selectdElevationAnimationFinal = activeObject.top
+        this.selectdElevationAnimationInitialTop = obj.height;
+        this.selectdElevationAnimationFinalTop = activeObject.top;
+        this.selectdElevationAnimationInitialLeft = obj.width;
+        this.selectdElevationAnimationFinalLeft = activeObject.left;
         if (activeObject.backgroundRect) {
           if (activeObject.backgroundRect.get('fill'))
             this.selectedTextBackgroundColor = activeObject.backgroundRect.get('fill');

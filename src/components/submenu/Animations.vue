@@ -9,8 +9,14 @@
       <span style="font-size: 14px">{{ $t('menu_header.subtle')}}</span>
     </div>
     <el-row class="mt-2">
-      <el-col>
+      <el-col :span="8">
        <ElevationAnimation/>
+      </el-col>
+      <el-col :span="8">
+        <LandscapeAnimation/>
+      </el-col>
+      <el-col :span="8">
+        <EmergeAnimation/>
       </el-col>
     </el-row>
     

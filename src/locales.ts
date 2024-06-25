@@ -63,7 +63,11 @@ const locales = {
       elevation: "Elevation",
       duration_in_sec: "Duration (seconds)",
       initial_position: "Initial position",
-      final_position: "Final position"
+      final_position: "Final position",
+      landscape: "Landscape",
+      emerge: "Emerge",
+      in: "In",
+      out: "Out"
 
     },
     
