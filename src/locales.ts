@@ -52,7 +52,18 @@ const locales = {
       background_color: "Background color",      
       padding: "Padding",
       color: "Color",
-      corner_radius: "Corner radius"
+      corner_radius: "Corner radius",
+      shadow: "Shadow",
+      offset_x: "Offset X",
+      offset_y: "Offset Y",
+      animations: "Animations",
+      combinations: "Combinations",
+      subtle: "Subtle",
+      elegant: "Elegant",
+      elevation: "Elevation",
+      duration_in_sec: "Duration (seconds)",
+      initial_position: "Initial position",
+      final_position: "Final position"
 
     },
     

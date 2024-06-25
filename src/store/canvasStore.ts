@@ -32,7 +32,15 @@ export const useCanvasStore = defineStore('canvasStore', {
     selectedTextStrokeColor: "#000",
     selectedTextBackgroundColor: '',
     selectedBackgroundPadding: 0,
-    selectedBackgroundCornerRadius: 0
+    selectedBackgroundCornerRadius: 0,
+    selectedShadowColor: '',
+    selectedShadowOffSetX: 5,
+    selectedShadowOffSetY: 5,
+    selectedShadowBlur: 0,
+    selectedBlur: 0,
+    selectedAnimationDuration: 1,
+    selectdElevationAnimationInitial: 0,
+    selectdElevationAnimationFinal: 0
   }),
   actions: {
     async addNewPage() {
@@ -64,7 +72,7 @@ export const useCanvasStore = defineStore('canvasStore', {
 
       new ControlsPlugin();
 
-    
+      
 
       let isScaling = false;
       let isMoving = false;
@@ -325,7 +333,10 @@ export const useCanvasStore = defineStore('canvasStore', {
   
       if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
         activeObject.set('backgroundColor', this.selectedTextBackgroundColor);
-        if (this.selectedBackgroundPadding){
+        if (this.selectedBackgroundPadding > 0){
+          this.changeBackgroundPadding()
+        }
+        if (this.selectedBackgroundCornerRadius > 0){
           this.changeBackgroundPadding()
         }
         canvas.renderAll();
@@ -370,6 +381,15 @@ export const useCanvasStore = defineStore('canvasStore', {
     
         canvas.renderAll();
         this.saveCanvasState();
+      }
+    },
+    changeBlur() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+  
+      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+        activeObject.setBlur(this.selectedBlur);
+        canvas.renderAll();
       }
     },
     changeBackgroundCornerRadius() {
@@ -448,9 +468,42 @@ export const useCanvasStore = defineStore('canvasStore', {
           fontSize: fontSize,
         });
         activeObject.set('width', tempText.width);
+        this.changeBackgroundPadding()
         canvas.renderAll();
         this.saveCanvasState();
       }
+    },
+    animateElevation(){
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      
+      const initialTop = this.selectdElevationAnimationInitial
+      const finalTop = this.selectdElevationAnimationFinal
+      
+      if (this.selectedAnimationDuration == 0){
+        this.selectedAnimationDuration = 1
+      }
+
+      const duration = this.selectedAnimationDuration  * 1000
+
+
+      activeObject.set({
+        top: initialTop
+      });
+    
+      fabric.util.animate({
+        startValue: initialTop,
+        endValue: finalTop,
+        duration: duration,  
+        onChange: (value: any) => {
+          activeObject.set('top', value);
+          canvas.renderAll();
+        },
+        onComplete: () => {
+          activeObject.setCoords();
+        }
+      });
+
     },
     async addSvg(svgUrl: string) {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
@@ -513,6 +566,16 @@ export const useCanvasStore = defineStore('canvasStore', {
         this.saveCanvasState();
       }
     },   
+    changeShadow() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+    
+      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+        activeObject.set('shadow', { color: this.selectedShadowColor,  offsetX: this.selectedShadowOffSetX,  offsetY: this.selectedShadowOffSetY, blur: this.selectedShadowBlur });
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
+    },
     addLayer(canvasIndex: number, object: fabric.Object) {
       const instance = this.canvasInstances[canvasIndex];
       if (instance) {
@@ -551,9 +614,14 @@ export const useCanvasStore = defineStore('canvasStore', {
         this.selectedBackgroundPadding = activeObject.get('textPadding');
         this.selectedTextBackgroundColor = activeObject.get('backgroundColor');
         this.selectedBackgroundCornerRadius = activeObject.get('cornerRadius')
+        this.selectdElevationAnimationInitial = obj.height;
+        this.selectdElevationAnimationFinal = activeObject.top
         if (activeObject.backgroundRect) {
-          this.selectedTextBackgroundColor = activeObject.backgroundRect.get('fill');
+          if (activeObject.backgroundRect.get('fill'))
+            this.selectedTextBackgroundColor = activeObject.backgroundRect.get('fill');
+          
         }
+        console.log("this.selectedTextBackgroundColor", this.selectedTextBackgroundColor)
       }
     }
   },

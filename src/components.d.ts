@@ -7,6 +7,8 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    Animations: typeof import('./components/submenu/Animations.vue')['default']
+    AnimationsTool: typeof import('./components/tools/AnimationsTool.vue')['default']
     BaseContent: typeof import('./components/layouts/BaseContent.vue')['default']
     BaseHeader: typeof import('./components/layouts/BaseHeader.vue')['default']
     BaseSide: typeof import('./components/layouts/BaseSide.vue')['default']
@@ -25,6 +27,8 @@ declare module 'vue' {
     ElDropdown: typeof import('element-plus/es')['ElDropdown']
     ElDropdownItem: typeof import('element-plus/es')['ElDropdownItem']
     ElDropdownMenu: typeof import('element-plus/es')['ElDropdownMenu']
+    ElegantAnimation: typeof import('./components/tools/ElegantAnimation.vue')['default']
+    ElevationAnimation: typeof import('./components/tools/ElevationAnimation.vue')['default']
     ElHeader: typeof import('element-plus/es')['ElHeader']
     ElIcon: typeof import('element-plus/es')['ElIcon']
     ElInput: typeof import('element-plus/es')['ElInput']
