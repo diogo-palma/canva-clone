@@ -3,6 +3,8 @@ import { fabric } from 'fabric';
 import { nextTick } from 'vue';
 import { markRaw } from 'vue';
 import ControlsPlugin from '~/core/ControlHandlers';
+import shortid from 'shortid'
+
 
 
 export const useCanvasStore = defineStore('canvasStore', {
@@ -42,7 +44,10 @@ export const useCanvasStore = defineStore('canvasStore', {
     selectdElevationAnimationInitialTop: 0,
     selectdElevationAnimationFinalTop: 0,
     selectdElevationAnimationInitialLeft: 0,
-    selectdElevationAnimationFinalLeft: 0
+    selectdElevationAnimationFinalLeft: 0,
+    selectedVisibility: true,
+    mediaRecorder: null,
+    canvasAnimations: [],    
   }),
   actions: {
     async addNewPage() {
@@ -85,7 +90,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     
       const handleScalingStart = () => {
         isScaling = true;
-        this.changeBackgroundCornerRadius
+        this.changeBackgroundPadding
       };
     
       const handleMouseUp = () => {
@@ -113,7 +118,8 @@ export const useCanvasStore = defineStore('canvasStore', {
       };
 
       const handleMovingStart = () => {
-        isMoving = true;
+        isMoving = true;        
+        this.changeBackgroundColor()
       };
       
 
@@ -125,7 +131,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       fabricCanvasObj.on('selection:created', handleSelectionChanged);
       fabricCanvasObj.on('selection:updated', handleSelectionChanged);
       fabricCanvasObj.on('selection:cleared', handleSelectionChanged);
-      fabricCanvasObj.on('object:modified', this.changeBackgroundCornerRadius)
+      fabricCanvasObj.on('object:modified', this.changeBackgroundColor)
       
       content?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       this.setActivePage(this.canvasInstances.length);
@@ -225,26 +231,25 @@ export const useCanvasStore = defineStore('canvasStore', {
         lastTop = lastObject.top + lastTop;
       }
     
-      const tempText = new fabric.Textbox(attributes.text, {
+      const newText = new fabric.Textbox(attributes.text, {
         ...attributes
       });
     
-      const textWidth = tempText.width;
-      const textHeight = tempText.height;
-      
-      
-      if (lastLeft + textWidth > (this.pageWidth * this.zoomLevel/100)) {
-        lastLeft =80;
+      const textWidth = newText.width;
+      const textHeight = newText.height;
+    
+      if (lastLeft + textWidth > (this.pageWidth * this.zoomLevel / 100)) {
+        lastLeft = 80;
       }
     
-      
-      if (lastTop + textHeight > (this.pageHeight* this.zoomLevel/100)) {
+      if (lastTop + textHeight > (this.pageHeight * this.zoomLevel / 100)) {
         lastTop = 80;
       }
-
-      
+    
+      const id = shortid.generate();
     
       const addText = new fabric.Textbox(attributes.text, {
+        id,
         left: lastLeft,
         top: lastTop,
         width: textWidth + 40,
@@ -345,15 +350,41 @@ export const useCanvasStore = defineStore('canvasStore', {
         this.saveCanvasState();
       }
     },
+    changeVisibility() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+    
+      if (activeObject) {
+        activeObject.visible = !activeObject.visible; 
+        this.selectedVisibility = activeObject.visible
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
+    },
+    changeCanvasBackgroundColor(color: string) {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+    
+      if (canvas) {
+        canvas.setBackgroundImage(null, canvas.renderAll.bind(canvas));
+        canvas.setBackgroundColor(color, canvas.renderAll.bind(canvas));
+        this.saveCanvasState();
+      }
+    },
+    changeCanvasBackgroundImage(imageUrl: string){
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      fabric.Image.fromURL(imageUrl, (image) => {
+        canvas.setBackgroundImage(image, canvas.renderAll.bind(canvas), {
+          scaleX: canvas.width / image.width,
+          scaleY: canvas.height / image.height
+        });        
+      })
+    },
     changeBackgroundPadding() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
     
       if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
-        const padding = this.selectedBackgroundPadding; 
     
-        activeObject.set('textPadding', padding);
-
         if (this.selectedBackgroundCornerRadius){
           this.changeBackgroundCornerRadius()
           return
@@ -362,9 +393,13 @@ export const useCanvasStore = defineStore('canvasStore', {
         if (activeObject.backgroundRect) {
           canvas.remove(activeObject.backgroundRect);
         }
+
+        const padding = this.selectedBackgroundPadding || 1; 
+
+        activeObject.set('textPadding', padding);
     
-        const rectWidth = activeObject.width + padding * 2;
-        const rectHeight = activeObject.height + padding * 2;
+        const rectWidth = activeObject.width * activeObject.scaleX + padding * 2;
+        const rectHeight = activeObject.height * activeObject.scaleY  + padding * 2;
         
         const backgroundRect = new fabric.Rect({
           left: activeObject.left - padding,
@@ -373,7 +408,8 @@ export const useCanvasStore = defineStore('canvasStore', {
           height: rectHeight,
           fill: this.selectedTextBackgroundColor,
           selectable: false,
-          evented: false
+          evented: false,
+          id: "background"
         });
     
         canvas.add(backgroundRect);
@@ -398,32 +434,35 @@ export const useCanvasStore = defineStore('canvasStore', {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
       if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
-        const cornerRadius = this.selectedBackgroundCornerRadius; 
-        activeObject.set('cornerRadius', cornerRadius);        
-        activeObject.set('backgroundColor', 'transparent');
-        if (activeObject.backgroundRect) {
-          canvas.remove(activeObject.backgroundRect);
+        if (this.selectedBackgroundCornerRadius){
+          const cornerRadius = this.selectedBackgroundCornerRadius; 
+          activeObject.set('cornerRadius', cornerRadius);        
+          activeObject.set('backgroundColor', 'transparent');
+          if (activeObject.backgroundRect) {
+            canvas.remove(activeObject.backgroundRect);
+          }
+          const padding = this.selectedBackgroundPadding || 1
+          const rectWidth = activeObject.width * activeObject.scaleX + padding * 2;
+          const rectHeight = activeObject.height * activeObject.scaleY  + padding * 2;
+          const backgroundRect = new fabric.Rect({
+            left: activeObject.left - padding,
+            top: activeObject.top - padding,
+            width: rectWidth,
+            height: rectHeight,
+            fill: this.selectedTextBackgroundColor,
+            selectable: false,
+            evented: false,
+            rx: cornerRadius,
+            ry: cornerRadius,
+            id: "background"
+          });
+          canvas.add(backgroundRect);
+          canvas.sendToBack(backgroundRect);
+          activeObject.backgroundRect = backgroundRect;
+          
+          canvas.renderAll();
+          this.saveCanvasState();
         }
-        const padding = this.selectedBackgroundPadding || 1
-        const rectWidth = activeObject.width * activeObject.scaleX + padding * 2;
-        const rectHeight = activeObject.height * activeObject.scaleY  + padding * 2;
-        const backgroundRect = new fabric.Rect({
-          left: activeObject.left - padding,
-          top: activeObject.top - padding,
-          width: rectWidth,
-          height: rectHeight,
-          fill: this.selectedTextBackgroundColor,
-          selectable: false,
-          evented: false,
-          rx: cornerRadius,
-          ry: cornerRadius
-        });
-        canvas.add(backgroundRect);
-        canvas.sendToBack(backgroundRect);
-        activeObject.backgroundRect = backgroundRect;
-        
-        canvas.renderAll();
-        this.saveCanvasState();
       }
     },
     changeUnderline() {
@@ -475,10 +514,11 @@ export const useCanvasStore = defineStore('canvasStore', {
         this.saveCanvasState();
       }
     },
-    animateElevation(){
-      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+    async animateElevation(){
+      const canvas = this.canvasInstances[this.activePageeIndex].canvas;
       const activeObject = canvas.getActiveObject();
       
+      console.log("activeObject", activeObject)
       const initialTop = this.selectdElevationAnimationInitialTop
       const finalTop = this.selectdElevationAnimationFinalTop
       
@@ -492,19 +532,21 @@ export const useCanvasStore = defineStore('canvasStore', {
       activeObject.set({
         top: initialTop
       });
-    
-      fabric.util.animate({
-        startValue: initialTop,
-        endValue: finalTop,
-        duration: duration,  
-        onChange: (value: any) => {
-          activeObject.set('top', value);
-          canvas.renderAll();
-        },
-        onComplete: () => {
-          activeObject.setCoords();
-        }
-      });
+      return new Promise((resolve) => {
+        fabric.util.animate({
+          startValue: initialTop,
+          endValue: finalTop,
+          duration: duration,  
+          onChange: (value: any) => {
+            activeObject.set('top', value);
+            canvas.renderAll();
+          },
+          onComplete: () => {
+            activeObject.setCoords();        
+            resolve()    
+          }
+        });
+      })
 
     },
     animateLandscape(){
@@ -577,10 +619,17 @@ export const useCanvasStore = defineStore('canvasStore', {
         }
       });
     },
+    async saveVideo() {
+      const canvasInstance = this.canvasInstances[this.activePageIndex];
+      const fabricCanvas = canvasInstance.canvas;
+
+     
+      
+    },   
     async addSvg(svgUrl: string) {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
-  
-      console.log(svgUrl)
+      const activeObject = canvas.getActiveObject();
+      
       fabric.loadSVGFromURL(svgUrl, (objects, options) => {
         const svgObject = fabric.util.groupSVGElements(objects, options);  
         svgObject.top = 30;
@@ -588,6 +637,38 @@ export const useCanvasStore = defineStore('canvasStore', {
         svgObject.scale(2.0)        
         canvas.add(markRaw(svgObject)).setActiveObject(svgObject);
         canvas.renderAll()
+        this.saveCanvasState();
+      });
+
+    },
+    async addImage(imageUrl: string) {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+    
+      fabric.Image.fromURL(imageUrl, (image) => {
+        const canvasWidth = canvas.width;
+        const canvasHeight = canvas.height;
+    
+        const isLandscape = image.width > image.height;
+    
+        if (isLandscape) {
+          const scaleFactor = canvasWidth / image.width;
+          image.scale(scaleFactor);
+          image.set({
+            top: 0,
+            left: 0,
+          });
+        } else {
+          
+          const scaleFactor = canvasHeight / image.height;
+          image.scale(scaleFactor);
+          image.set({
+            top: 0,
+            left: 0,
+          });
+        }
+    
+        canvas.add(image).setActiveObject(image);
+        canvas.renderAll();
         this.saveCanvasState();
       });
     },
@@ -670,6 +751,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       this.selectedObjectType = obj.getActiveObject().get('type')
       console.log(this.selectedObjectType)
       const activeObject = obj.getActiveObject();
+      this.selectedVisibility = activeObject.visible
       if (activeObject.type === 'text' || activeObject.type === 'textbox') {        
         this.selectedFont = activeObject.fontFamily;
         this.fontSize = activeObject.fontSize;

@@ -17,10 +17,11 @@
 import { useI18n } from 'vue-i18n';
 import HugeiconsGeometricShapes01 from '~icons/hugeicons/geometric-shapes-01';
 import IconParkOutlineText from '~icons/icon-park-outline/text';
-import PhPixLogoBold from '~icons/ph/pix-logo-bold';
+import BiImages from '~icons/bi/images';
 import EpUploadFilled from '~icons/ep/upload-filled';
 import { useSubmenuStore } from '../../store/submenuStore'
 import BxsLayer from '~icons/bxs/layer';
+import FluentColorBackground24Regular from '~icons/fluent/color-background-24-regular';
 import { ref } from 'vue';
 
 const submenuStore = useSubmenuStore();
@@ -38,8 +39,9 @@ const openSubmenu = (menu) => {
 const menus = [
   { icon: HugeiconsGeometricShapes01, text: 'sidebar.shapes', link: 'Shapes' },
   { icon: IconParkOutlineText, text: 'sidebar.text', link: 'Text'},
-  { icon: PhPixLogoBold, text: 'sidebar.logo', link: 'Logo' },
+  { icon: BiImages, text: 'sidebar.photos', link: 'Photos' },
   { icon: EpUploadFilled, text: 'sidebar.upload', link: 'Upload' },
+  { icon: FluentColorBackground24Regular, text: 'sidebar.background', link: 'Background' },
   { icon: BxsLayer, text: 'sidebar.layers', link: 'Layers' },
 ];
 </script>

@@ -80,7 +80,7 @@ onMounted(() => {
   if (canvasStore.selectedTextStroke > 1 || canvasStore.selectedTextStrokeColor != "#000"){
     hasStroke.value = true
   }
-  if (canvasStore.selectedTextBackgroundColor) {
+  if (canvasStore.selectedTextBackgroundColor || canvasStore.selectedBackgroundCornerRadius > 0 || canvasStore.selectedBackgroundPadding > 0) {
     hasBackground.value = true
   }
   if (canvasStore.selectedShadowColor){
@@ -91,6 +91,7 @@ onMounted(() => {
 watch(
   () => canvasStore.isThisObjectSelected,
   (newVal, oldVal) => {
+    console.log("canvasStore.isThisObjectSelected", canvasStore.isThisObjectSelected)
     if (!newVal){
       if (submenuStore.lastActive){
         submenuStore.openSubmenu(submenuStore.lastActive, submenuStore.lastComponent)

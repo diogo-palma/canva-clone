@@ -4,13 +4,22 @@ const locales = {
   en: {
     header:{
       file: "File",
+      new: "New",
+      image: "Image",
+      video: "Video"
     },
     sidebar:{
       shapes: "Shapes",
       text: "Text",
       logo: "Logo",
       upload: "Upload",
-      layers: "Layers"
+      layers: "Layers",
+      photos: "Photos",
+      background: "Background",
+
+    },
+    upload:{
+      only_images: "Only images"
     },
     canvas:{
       page: "Page",
@@ -74,6 +83,9 @@ const locales = {
     shapes:{
       lines: "Lines",
       shapes: "Shapes"
+    },
+    photos:{
+      search_photos: "Search photos..."
     },
     message: {
       hello: 'hello world',

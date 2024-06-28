@@ -2,20 +2,41 @@
   <div class="layer-list">
     <draggable v-model="layers" @start="drag=true" @end="drag=false" item-key="id" @change="handleChange">
       <template #item="{element}">
-        <div @click="selectLayer(element.index)" class="layers" :class="{ 'active-layer': element.index === activeLayerIndex }">
-          <MingcuteDotsLine/>
-          <template v-if="element.object.type === 'text'">
-            {{ element.object.text }}
-          </template>
-          <template v-else-if="element.object.type === 'path'">
-            Figure
-          </template>
-          <template v-else-if="element.object.type === 'group'">
-            Group
-          </template>
-          <template v-else-if="element.object.type === 'textbox'">
-            {{ element.object.text }}
-          </template>
+        <div @click="selectLayer(element.index)" class="layers" :class="{ 'active-layer': element.index === activeLayerIndex }" v-if="element.object.type != 'rect'">
+          <div>
+            <MingcuteDotsLine style="padding-top: 6px;"/>
+          </div>
+          <div >
+            <template v-if="element.object.type === 'text'">
+              {{ element.object.text }}
+            </template>
+            <template v-else-if="element.object.type === 'path'">
+              Figure
+            </template>
+            <template v-else-if="element.object.type === 'image'">
+              Image
+            </template>
+            <template v-else-if="element.object.type === 'group'">
+              Group
+            </template>
+            <template v-else-if="element.object.type === 'textbox'">
+              {{ element.object.text }}
+            </template>            
+          </div>
+          <div class="flex-grow"/>
+          <div style="cursor: pointer;" @click.stop="selectLayer(element.index)" @click="() => canvasStore.changeVisibility(element.index)"  >
+            <MdiEye v-if="element.object.visible" style="padding-top: 6px; font-size: 13px;" />
+              <IconamoonEyeOffBold v-else style="padding-top: 6px; font-size: 13px;" />
+          </div>
+          <div class="ml-2">
+            <MageUnlockedFill style="padding-top: 6px;font-size: 13px;"/>
+          </div>
+          <div class="ml-2">
+            <BasilTrashOutline style="padding-top: 6px;font-size: 13px;"/>
+          </div>
+
+          
+         
         </div>
       </template>
     </draggable>
@@ -28,6 +49,10 @@ import { ref, onMounted, watch } from 'vue';
 import { useCanvasStore } from '~/store/canvasStore';
 import draggable from 'vuedraggable';
 import MingcuteDotsLine from '~icons/mingcute/dots-line';
+import MdiEye from '~icons/mdi/eye';
+import IconamoonEyeOffBold from '~icons/iconamoon/eye-off-bold';
+import MageUnlockedFill from '~icons/mage/unlocked-fill';
+import BasilTrashOutline from '~icons/basil/trash-outline';
 
 const canvasStore = useCanvasStore();
 const layers = ref([]);
@@ -41,6 +66,7 @@ const updateLayers = () => {
       index,
       object
     }));
+    console.log("layers", layers)
     activeLayerIndex.value = canvasInstance.activeLayerIndex;
   } else {
     layers.value = [];
@@ -84,7 +110,7 @@ onMounted(() => {
 });
 
 watch(
-  () => canvasStore.activePageIndex,
+  () => [canvasStore.activePageIndex, canvasStore.selectedVisibility],
   () => {
     updateLayers();
   }

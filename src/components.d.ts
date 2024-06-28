@@ -9,6 +9,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     Animations: typeof import('./components/submenu/Animations.vue')['default']
     AnimationsTool: typeof import('./components/tools/AnimationsTool.vue')['default']
+    Background: typeof import('./components/submenu/Background.vue')['default']
     BaseContent: typeof import('./components/layouts/BaseContent.vue')['default']
     BaseHeader: typeof import('./components/layouts/BaseHeader.vue')['default']
     BaseSide: typeof import('./components/layouts/BaseSide.vue')['default']
@@ -31,8 +32,10 @@ declare module 'vue' {
     ElevationAnimation: typeof import('./components/tools/ElevationAnimation.vue')['default']
     ElHeader: typeof import('element-plus/es')['ElHeader']
     ElIcon: typeof import('element-plus/es')['ElIcon']
+    ElImage: typeof import('element-plus/es')['ElImage']
     ElInput: typeof import('element-plus/es')['ElInput']
     ElInputNumber: typeof import('element-plus/es')['ElInputNumber']
+    ElLoading: typeof import('element-plus/es')['ElLoading']
     ElMain: typeof import('element-plus/es')['ElMain']
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
@@ -50,6 +53,7 @@ declare module 'vue' {
     ElSwitch: typeof import('element-plus/es')['ElSwitch']
     ElTag: typeof import('element-plus/es')['ElTag']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
+    ElUpload: typeof import('element-plus/es')['ElUpload']
     EmergeAnimation: typeof import('./components/tools/EmergeAnimation.vue')['default']
     FontSize: typeof import('./components/tools/FontSize.vue')['default']
     HeaderMenu: typeof import('./components/HeaderMenu.vue')['default']
@@ -60,6 +64,7 @@ declare module 'vue' {
     Logos: typeof import('./components/Logos.vue')['default']
     MenuFooter: typeof import('./components/MenuFooter.vue')['default']
     MenuHeader: typeof import('./components/MenuHeader.vue')['default']
+    Photos: typeof import('./components/submenu/Photos.vue')['default']
     Shapes: typeof import('./components/submenu/Shapes.vue')['default']
     Text: typeof import('./components/submenu/Text.vue')['default']
     TextAlign: typeof import('./components/tools/TextAlign.vue')['default']
@@ -69,8 +74,10 @@ declare module 'vue' {
     TextItalic: typeof import('./components/tools/TextItalic.vue')['default']
     TextStrikeThrough: typeof import('./components/tools/TextStrikeThrough.vue')['default']
     TextUnderline: typeof import('./components/tools/TextUnderline.vue')['default']
+    Upload: typeof import('./components/submenu/Upload.vue')['default']
   }
   export interface ComponentCustomProperties {
+    vInfiniteScroll: typeof import('element-plus/es')['ElInfiniteScroll']
     vLoading: typeof import('element-plus/es')['ElLoadingDirective']
   }
 }

@@ -134,7 +134,6 @@ watch(
           <TextStrikeThrough/>
           <TextChangeSpace/>
           <EffectsTool/>
-          <AnimationsTool/>
         </div>
         <div class="more-tools" v-show="canvasStore.isThisObjectSelected && hasMoreTools" >
           <el-tooltip

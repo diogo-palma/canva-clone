@@ -5,6 +5,9 @@ import Text from '../components/submenu/Text.vue'
 import Shapes from '../components/submenu/Shapes.vue'
 import Effects from '../components/submenu/Effects.vue'
 import Animations from '../components/submenu/Animations.vue'
+import Photos from '../components/submenu/Photos.vue'
+import Upload from '../components/submenu/Upload.vue'
+import Background from '../components/submenu/Background.vue'
 
 export const useSubmenuStore = defineStore('submenu', {
   state: () => ({
@@ -17,7 +20,7 @@ export const useSubmenuStore = defineStore('submenu', {
   actions: {
     openSubmenu(active: string, link: string) {
       
-      if (active != 'effects' || active != 'animations' ){
+      if (active != 'effects' ){
         this.lastActive = active
         this.lastComponent = link
       }
@@ -38,7 +41,10 @@ export const useSubmenuStore = defineStore('submenu', {
         Text,
         Shapes,
         Effects,
-        Animations
+        Animations,
+        Photos,
+        Upload,
+        Background
       };
       
       this.currentComponent = markRaw(availableComponents[componentName]) || null;

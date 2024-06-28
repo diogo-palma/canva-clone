@@ -1,6 +1,8 @@
 <script lang="ts" setup>
-import { ArrowDown } from '@element-plus/icons-vue'
+import { useCanvasStore } from "~/store/canvasStore";
 
+
+const canvasStore = useCanvasStore();
 </script>
 
 <template>
@@ -8,21 +10,24 @@ import { ArrowDown } from '@element-plus/icons-vue'
       <div class="logo">
         C
       </div>
-      <div class="flex-align-center">
-        <el-dropdown>
-          <el-button color="transparent" style="width: 70px">
-            {{ $t('header.file')}} <el-icon class="el-icon--right"><arrow-down /></el-icon>
-          </el-button>
-          <template #dropdown>
-            <el-dropdown-menu>
-              <el-dropdown-item>Action 1</el-dropdown-item>
-              <el-dropdown-item>Action 2</el-dropdown-item>
-              <el-dropdown-item>Action 3</el-dropdown-item>
-              <el-dropdown-item>Action 4</el-dropdown-item>
-              <el-dropdown-item>Action 5</el-dropdown-item>
-            </el-dropdown-menu>
-          </template>
-        </el-dropdown>
+      <div class="flex-align-center">        
+        <el-menu
+          class="menu-dropdown"
+          mode="horizontal"
+          :ellipsis="false"     
+        >
+          <el-sub-menu index="1">
+            <template #title>{{ $t('header.file')}}</template>
+            <el-menu-item index="2-1">New</el-menu-item>           
+            <el-sub-menu index="2-2">
+              <template #title>Save as...</template>
+              <el-menu-item index="2-2-1">{{ $t('header.image') }} </el-menu-item>
+              <el-menu-item index="2-2-2" @click="canvasStore.saveVideo">{{ $t('header.video') }} </el-menu-item>
+              <el-menu-item index="2-2-3">PDF</el-menu-item>
+            </el-sub-menu>
+          </el-sub-menu>
+          
+        </el-menu>
       </div>
       <div class="flex-grow" />
       <div class="flex-align-center">
@@ -52,6 +57,13 @@ import { ArrowDown } from '@element-plus/icons-vue'
   height: 7vh;
   border-bottom: none;
   background: linear-gradient(to right, #07bccd, #4371db, #6f3ce5);
+}
+
+:deep(.ep-menu--horizontal) > .ep-sub-menu .ep-sub-menu__title{
+  color: white !important
+}
+.ep-menu--horizontal{
+  height: 50px;
 }
 
 </style>
