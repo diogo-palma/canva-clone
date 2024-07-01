@@ -22,6 +22,7 @@ import EpUploadFilled from '~icons/ep/upload-filled';
 import { useSubmenuStore } from '../../store/submenuStore'
 import BxsLayer from '~icons/bxs/layer';
 import FluentColorBackground24Regular from '~icons/fluent/color-background-24-regular';
+import MdiResize from '~icons/mdi/resize';
 import { ref } from 'vue';
 
 const submenuStore = useSubmenuStore();
@@ -43,6 +44,7 @@ const menus = [
   { icon: EpUploadFilled, text: 'sidebar.upload', link: 'Upload' },
   { icon: FluentColorBackground24Regular, text: 'sidebar.background', link: 'Background' },
   { icon: BxsLayer, text: 'sidebar.layers', link: 'Layers' },
+  { icon: MdiResize, text: 'sidebar.resize', link: 'Resize' },
 ];
 </script>
 

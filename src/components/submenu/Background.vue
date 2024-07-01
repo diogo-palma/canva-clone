@@ -4,7 +4,7 @@ import { ColorPicker } from "vue3-colorpicker";
 import FluentColor24Regular from '~icons/fluent/color-24-regular';
 import { useCanvasStore } from '~/store/canvasStore'
 
-const backgroundColor  = ref('#fff')
+const backgroundColor  = ref('rgba(0, 0, 0, 0)')
 const canvasStore = useCanvasStore();
 const strokeColor = ref('#000');
 

@@ -1,8 +1,19 @@
 <script lang="ts" setup>
+import { ref } from "vue";
 import { useCanvasStore } from "~/store/canvasStore";
+import { useI18n } from 'vue-i18n';
 
 
 const canvasStore = useCanvasStore();
+const dialogVisible = ref(false)
+const imageFormat = ref('png')
+const { t } = useI18n();
+
+const saveImage = () => {
+  console.log("imageFormat.value", imageFormat.value)
+  canvasStore.saveImage(imageFormat.value)
+  dialogVisible.value = false
+}
 </script>
 
 <template>
@@ -14,6 +25,7 @@ const canvasStore = useCanvasStore();
         <el-menu
           class="menu-dropdown"
           mode="horizontal"
+          active-text-color="#000"
           :ellipsis="false"     
         >
           <el-sub-menu index="1">
@@ -21,8 +33,9 @@ const canvasStore = useCanvasStore();
             <el-menu-item index="2-1">New</el-menu-item>           
             <el-sub-menu index="2-2">
               <template #title>Save as...</template>
-              <el-menu-item index="2-2-1">{{ $t('header.image') }} </el-menu-item>
-              <el-menu-item index="2-2-2" @click="canvasStore.saveVideo">{{ $t('header.video') }} </el-menu-item>
+              <el-menu-item index="2-2-1" @click="dialogVisible = true">
+                {{ $t('header.image') }} 
+              </el-menu-item>
               <el-menu-item index="2-2-3">PDF</el-menu-item>
             </el-sub-menu>
           </el-sub-menu>
@@ -34,8 +47,31 @@ const canvasStore = useCanvasStore();
         <LocaleChanger/>
       </div>
       
-      
-      
+      <el-dialog
+        v-model="dialogVisible"        
+        width="400"
+        :title="t('header.choose_format')"
+      >
+        <div>          
+          <el-radio-group v-model="imageFormat">
+            <el-radio value="png" size="small" border>PNG</el-radio>
+            <el-radio value="jpeg" size="small" border>JPEG</el-radio>
+            <el-radio value="bmp" size="small" border>BMP</el-radio>
+            <el-radio value="webp" size="small" border>WEBP</el-radio>
+          </el-radio-group>
+        </div>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button @click="dialogVisible = false">
+              {{ $t('header.cancel') }}
+            </el-button>
+            <el-button type="primary" @click="saveImage">
+              {{ $t('header.save') }}
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
+          
   </div>
 </template>
 

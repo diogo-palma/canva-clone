@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { fontWeight } from 'html2canvas/dist/types/css/property-descriptors/font-weight';
 import { ref } from 'vue';
 import { useCanvasStore } from '~/store/canvasStore';
 
@@ -7,19 +8,21 @@ const textItems = ref([
   {
     title: {
       text: 'Title',
-      fontSize: 22,
+      fontSize: 80,
+      fontWeight: 'bold'
     }
   },
   {
     subtitle: {
       text: 'Subitle',
-      fontSize: 18,
+      fontSize: 50,
+      fontWeight: 'bold'
     }
   },
   {
     text: {
       text: 'Text',
-      fontSize: 14
+      fontSize: 30
     }
   }
 ])

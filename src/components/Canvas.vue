@@ -1,6 +1,6 @@
 <script setup>
-import { ref, onMounted, watch, markRaw, nextTick  } from 'vue';
-import { fabric } from 'fabric';
+import { ref, onMounted, watch, markRaw, nextTick, onUpdated  } from 'vue';
+import debounce from 'lodash/debounce'
 import { useCanvasStore } from '../store/canvasStore'
 import IconoirAddPageAlt from '~icons/iconoir/add-page-alt';
 import IonDuplicateOutline from '~icons/ion/duplicate-outline';
@@ -10,11 +10,30 @@ import MingcuteDownLine from '~icons/mingcute/down-line';
 
 const canvasStore = useCanvasStore();
 
+const loading = ref(true)
 
 
-onMounted(() => {
-  canvasStore.addNewPage();
+
+onMounted(async () => {
+  
+  await nextTick()
+  setTimeout(() => {
+    canvasStore.addNewPage(); 
+    loading.value = false  
+  }, 1500);
+  
+ 
 });
+
+
+
+const debouncedFunc = debounce(async  () => {
+      console.log('test'); 
+      await nextTick(() => {
+        console.log('test2'); 
+         
+      })
+}, 250);
 
 const resizeCanvas = () => {
   canvasStore.canvasInstances.forEach((canvas) => {
@@ -96,11 +115,11 @@ watch([canvasStore.pageWidth, canvasStore.pageHeight], resizeCanvas);
 
 
 <template>
-  <div class="editor" style="position: relative">
+  <div class="editor" style="position: relative" v-loading="loading">
     <div class="editor-container">
       <div id="content"  v-for="(item, index) in canvasStore.pagesCount" :key="index">
 
-        <div class="actions" >
+        <div class="actions" v-if="!loading">
           <div style="display: block;margin-top: 2px;">
             <span>
               {{ $t('canvas.page') }} {{ canvasStore.pagesCount[index]}}

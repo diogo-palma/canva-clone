@@ -17,6 +17,7 @@ const fileList = ref<UploadUserFile[]>([])
 
 const handlePictureCardPreview = (file) => {
   if (file.url) {
+    console.log("file.raw.type", file.raw.type)
     const isImage = file.raw.type.startsWith('image/');
     if (!isImage) {
       ElMessage.error(t('upload.only_images'));
@@ -34,7 +35,7 @@ const handleRemove = (file) => {
 </script>
 
 <template>
-  <div class="p-2">
+  <div class="p-3">
     <el-upload
       v-model:file-list="fileList"
       list-type="picture-card"

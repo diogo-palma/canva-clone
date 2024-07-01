@@ -20,7 +20,7 @@ const page = ref(1);
 const fetchPhotos = async () => {
   loading.value = true;
   try {
-    const newPhotos = await getPhotos(page.value, 10);
+    const newPhotos = await getPhotos(page.value, 6);
     photos.value.push(...newPhotos);
     
     distributePhotos();
@@ -50,7 +50,10 @@ const searchPhotosAPI = async (query) => {
 const distributePhotos = () => {
   col1.value = [];
   col2.value = [];
-  photos.value.forEach((photo, index) => {
+  const uniquePhotos = Array.from(new Set(photos.value.map(photo => photo.id))).map(id => {
+    return photos.value.find(photo => photo.id === id);
+  });
+  uniquePhotos.forEach((photo, index) => {
     if (index % 2 === 0) {
       col1.value.push(photo);
     } else {
@@ -130,6 +133,14 @@ watch(photos, distributePhotos);
     <el-col :span="12">
       <div v-for="photo in col1" :key="photo.id" class="photo-item">
         <img @click="handleAddImage(photo.urls.full)" :src="photo.urls.small" :alt="photo.alt_description" />
+      </div>
+      <div v-if="loading">
+        <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
+          <circle cx="50" cy="50" r="40" stroke="#ccc" stroke-width="10" fill="none" />
+          <circle cx="50" cy="50" r="40" stroke="#007bff" stroke-width="10" fill="none" stroke-dasharray="180 200" transform="rotate(90 50 50)">
+            <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1" />
+          </circle>
+        </svg>
       </div>
     </el-col>
     <el-col :span="12">

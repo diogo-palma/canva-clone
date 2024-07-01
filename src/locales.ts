@@ -6,7 +6,10 @@ const locales = {
       file: "File",
       new: "New",
       image: "Image",
-      video: "Video"
+      video: "Video",
+      choose_format: "Choose Format",
+      save: "Save",
+      cancel: "Cancel"
     },
     sidebar:{
       shapes: "Shapes",
@@ -16,10 +19,16 @@ const locales = {
       layers: "Layers",
       photos: "Photos",
       background: "Background",
-
+      resize: "Resize"
     },
     upload:{
       only_images: "Only images"
+    },
+    resize:{
+      width: "Width",
+      height: "Height",
+      use_magic_resize: "Use magic resize",
+      magic_resize: "Magic resize will automatically resize and move all elements on the canvas"
     },
     canvas:{
       page: "Page",

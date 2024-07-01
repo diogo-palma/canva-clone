@@ -2,8 +2,14 @@
   <path
     stroke="#000"
     stroke-width="3"
-    d="M 90 15 L 100 20 L 90 25"
-    fill="none"
+    d="M 90 15 L 100 20 "    
+    stroke-linejoin="round"
+    stroke-linecap="round"
+  ></path>
+  <path
+    stroke="#000"
+    stroke-width="3"
+    d="M 90 25 L 100 20"
     stroke-linejoin="round"
     stroke-linecap="round"
   ></path>

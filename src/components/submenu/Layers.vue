@@ -10,6 +10,9 @@
             <template v-if="element.object.type === 'text'">
               {{ element.object.text }}
             </template>
+            <template v-if="element.object.type === 'line'">
+              Line
+            </template>
             <template v-else-if="element.object.type === 'path'">
               Figure
             </template>
@@ -28,8 +31,9 @@
             <MdiEye v-if="element.object.visible" style="padding-top: 6px; font-size: 13px;" />
               <IconamoonEyeOffBold v-else style="padding-top: 6px; font-size: 13px;" />
           </div>
-          <div class="ml-2">
-            <MageUnlockedFill style="padding-top: 6px;font-size: 13px;"/>
+          <div class="ml-2" style="cursor: pointer;" @click.stop="selectLayer(element.index)" @click="canvasStore.changeLock(element.index)">
+            <MageUnlockedFill v-if="!element.object.lockRotation" style="padding-top: 6px;font-size: 13px;"/>
+            <MageLockFill v-else style="padding-top: 6px;font-size: 13px;"/>            
           </div>
           <div class="ml-2">
             <BasilTrashOutline style="padding-top: 6px;font-size: 13px;"/>
@@ -53,6 +57,7 @@ import MdiEye from '~icons/mdi/eye';
 import IconamoonEyeOffBold from '~icons/iconamoon/eye-off-bold';
 import MageUnlockedFill from '~icons/mage/unlocked-fill';
 import BasilTrashOutline from '~icons/basil/trash-outline';
+import MageLockFill from '~icons/mage/lock-fill';
 
 const canvasStore = useCanvasStore();
 const layers = ref([]);
@@ -66,7 +71,7 @@ const updateLayers = () => {
       index,
       object
     }));
-    console.log("layers", layers)
+    console.log("layers", JSON.stringify(layers))
     activeLayerIndex.value = canvasInstance.activeLayerIndex;
   } else {
     layers.value = [];
@@ -110,8 +115,9 @@ onMounted(() => {
 });
 
 watch(
-  () => [canvasStore.activePageIndex, canvasStore.selectedVisibility],
+  () => [canvasStore.activePageIndex, canvasStore.selectedVisibility, canvasStore.selectedLock, canvasStore.canvasHistoryIndex],
   () => {
+    console.log("canvasStore.canvasHistoryIndex", canvasStore.canvasHistoryIndex)
     updateLayers();
   }
 );

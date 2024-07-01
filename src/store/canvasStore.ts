@@ -47,7 +47,8 @@ export const useCanvasStore = defineStore('canvasStore', {
     selectdElevationAnimationFinalLeft: 0,
     selectedVisibility: true,
     mediaRecorder: null,
-    canvasAnimations: [],    
+    canvasAnimations: [],
+    selectedLock: false,
   }),
   actions: {
     async addNewPage() {
@@ -67,14 +68,14 @@ export const useCanvasStore = defineStore('canvasStore', {
       content?.appendChild(newCanvasElement);
       const fabricCanvasObj = markRaw(new fabric.Canvas(newCanvasElement, {
         width: this.pageWidth * (this.zoomLevel / 100),
-        height: this.pageHeight * (this.zoomLevel / 100),
+        height: this.pageHeight * (this.zoomLevel / 100),            
         fireRightClick: true,
         stopContextMenu: true,
         controlsAboveOverlay: true,
         imageSmoothingEnabled: false,
         preserveObjectStacking: true,
       }));
-
+      fabricCanvasObj.setZoom(this.zoomLevel / 100)
       fabricCanvasObj.devicePixelRatio = 2;
 
       new ControlsPlugin();
@@ -167,7 +168,21 @@ export const useCanvasStore = defineStore('canvasStore', {
       if (this.canvasHistoryIndex < this.canvasHistory.length - 1) {
         this.canvasHistory.splice(this.canvasHistoryIndex + 1);
       }
-      const allCanvasStates = this.canvasInstances.map(instance => instance.canvas.toJSON());
+      // const allCanvasStates = this.canvasInstances.map(instance => instance.canvas.toJSON());
+      
+
+      const allCanvasStates = this.canvasInstances.map(instance => {
+        const json = instance.canvas.toJSON();
+        json.objects.forEach(obj => {
+          console.log("obj", JSON.stringify(obj))
+          console.log("obj lock", this.selectedLock)
+          const isLocked = this.selectedLock;
+          console.log("isLocked", isLocked)
+          obj.rotateControlsVisible = isLocked
+        });
+        return json;
+      });
+      console.log("allCanvasStates", allCanvasStates)
       this.canvasHistory.push({
         states: allCanvasStates,
         pagesCount: [...this.pagesCount]
@@ -208,6 +223,23 @@ export const useCanvasStore = defineStore('canvasStore', {
         if (instance) {
           await new Promise<void>((resolve) => {
             instance.canvas.loadFromJSON(state, () => {
+              instance.canvas.getObjects().forEach(obj => {
+                console.log("obj", obj)
+                console.log("obj get", obj.get('lockRotation'))
+              if (obj.rotateControlsVisible !== undefined) {
+                  obj.setControlsVisibility({
+                    mt: !obj.rotateControlsVisible,
+                    mb: !obj.rotateControlsVisible,
+                    ml: !obj.rotateControlsVisible,
+                    mr: !obj.rotateControlsVisible,
+                    tl: !obj.rotateControlsVisible,
+                    tr: !obj.rotateControlsVisible,
+                    bl: !obj.rotateControlsVisible,
+                    br: !obj.rotateControlsVisible,
+                    mtr: !obj.rotateControlsVisible 
+                  });
+                }
+              });
               instance.canvas.renderAll();
               resolve();
             });
@@ -260,7 +292,8 @@ export const useCanvasStore = defineStore('canvasStore', {
       canvas.add(markRaw(addText)).setActiveObject(addText);
       canvas.renderAll();
       this.saveCanvasState();
-    },
+      
+    },   
     changeFont(font: string) {
       this.selectedFont = font; 
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
@@ -357,6 +390,47 @@ export const useCanvasStore = defineStore('canvasStore', {
       if (activeObject) {
         activeObject.visible = !activeObject.visible; 
         this.selectedVisibility = activeObject.visible
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
+    },
+    changeLock() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+    
+      if (activeObject) {
+        const isLocked = activeObject.lockRotation;
+        activeObject.lockMovementX = !isLocked;
+        activeObject.lockMovementY = !isLocked;
+        activeObject.lockScalingX = !isLocked;
+        activeObject.lockScalingY = !isLocked;
+        activeObject.lockRotation = !isLocked;
+        activeObject.setControlsVisibility({
+          mt: isLocked, 
+          mb: isLocked, 
+          ml: isLocked, 
+          mr: isLocked, 
+          tl: isLocked, 
+          tr: isLocked, 
+          bl: isLocked, 
+          br: isLocked,
+          mtr: isLocked
+        });
+        this.selectedLock = !isLocked; 
+        if (activeObject.type === 'text' || activeObject.type === 'i-text' || activeObject.type === 'textbox') {
+          activeObject.editable = !isLocked;
+        } 
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
+    },
+    removeObject() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+    
+      if (activeObject) {
+        canvas.remove(activeObject);
+        canvas.discardActiveObject(); 
         canvas.renderAll();
         this.saveCanvasState();
       }
@@ -634,7 +708,7 @@ export const useCanvasStore = defineStore('canvasStore', {
         const svgObject = fabric.util.groupSVGElements(objects, options);  
         svgObject.top = 30;
         svgObject.left = 50;
-        svgObject.scale(2.0)        
+        svgObject.scale(2.0) 
         canvas.add(markRaw(svgObject)).setActiveObject(svgObject);
         canvas.renderAll()
         this.saveCanvasState();
@@ -718,7 +792,53 @@ export const useCanvasStore = defineStore('canvasStore', {
         canvas.renderAll();
         this.saveCanvasState();
       }
-    },   
+    },  
+    saveImage(imageType: string) {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      
+      if (canvas) {
+        
+        const supportedFormats = ['png', 'jpeg', 'bmp', 'webp'];
+        const format = supportedFormats.includes(imageType) ? imageType : 'png';
+        const quality = (format === 'jpeg' || format === 'webp') ? 0.8 : 1.0;
+
+        canvas.setZoom(1)
+        canvas.setDimensions({
+          width: this.pageWidth,
+          height: this.pageHeight
+        });
+
+        const dataURL = canvas.toDataURL({
+          left: 0,
+          top: 0,
+          format, 
+          quality
+        });
+
+        let zoomLevel = this.zoomLevel
+
+        if (zoomLevel < 10){
+          zoomLevel = 10
+        }
+        zoomLevel = (zoomLevel/100);
+
+        canvas.setZoom(zoomLevel);
+
+        canvas.setDimensions({
+          width: this.pageWidth * zoomLevel,
+          height: this.pageHeight * zoomLevel
+        });
+
+        
+    
+        const link = document.createElement('a');
+        link.href = dataURL;
+        link.download = `canvas.${format}`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      }
+    },
     changeShadow() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
@@ -752,6 +872,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       console.log(this.selectedObjectType)
       const activeObject = obj.getActiveObject();
       this.selectedVisibility = activeObject.visible
+      this.selectedLock = activeObject.get('lockRotation')
       if (activeObject.type === 'text' || activeObject.type === 'textbox') {        
         this.selectedFont = activeObject.fontFamily;
         this.fontSize = activeObject.fontSize;
