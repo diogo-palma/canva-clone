@@ -26,10 +26,10 @@ const handleZoomOut = () => {
     <div class="flex-grow" />
     <div >
       <div class="slider-demo-block">
-        <el-slider v-model="canvasStore.zoomLevel" :show-tooltip="false" :min="minValue" :max="maxValue"  />
+        <el-slider v-model="canvasStore.zoomLevel" @input="canvasStore.setZoom" :show-tooltip="false" :min="minValue" :max="maxValue"  />
       </div>
       <div class="zoom-value">
-          <el-input-number v-model="canvasStore.zoomLevel" size="small" :min="minValue" :max="maxValue" :value-on-clear="minValue">
+          <el-input-number v-model="canvasStore.zoomLevel" @change="canvasStore.setZoom" size="small" :min="minValue" :max="maxValue" :value-on-clear="minValue">
             <template #decrease-icon>
               <el-icon>
                 <TdesignZoomOut />

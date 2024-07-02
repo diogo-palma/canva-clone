@@ -13,9 +13,9 @@ export const useCanvasStore = defineStore('canvasStore', {
     pagesCount: [1] as number[],
     canvasHistory: [] as any[],
     canvasHistoryIndex: -1,
-    zoomLevel: 47,
-    pageWidth: 1080,
-    pageHeight: 1080,
+    zoomLevel: 100,
+    pageWidth: 1300,
+    pageHeight: 507,
     idPage: 0,
     activePageIndex: 0,
     isObjectSelected: false,
@@ -59,6 +59,14 @@ export const useCanvasStore = defineStore('canvasStore', {
       await nextTick();
       const canvasInstance = await this.addPage("canvas" + this.idPage);
       this.addCanvasInstance(canvasInstance);
+      return canvasInstance;
+    },
+    removeActiveObject(canvasIndex: number){
+      this.canvasInstances.forEach((instance, index) => {
+        if (index !== canvasIndex) {
+          instance.canvas.discardActiveObject().renderAll();
+        }
+      });
     },
     async addPage(contentCanvas: string) {
       const content = document.getElementById(contentCanvas);
@@ -102,6 +110,7 @@ export const useCanvasStore = defineStore('canvasStore', {
         }
         const canvasIndex = this.canvasInstances.findIndex(instance => instance.canvas === fabricCanvasObj);
         this.setActivePage(canvasIndex);
+        this.removeActiveObject(canvasIndex)
       };
 
       const handleSelectionChanged = () => {
@@ -136,6 +145,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       
       content?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       this.setActivePage(this.canvasInstances.length);
+      this.removeActiveObject(this.canvasInstances.length)
       return { canvas: fabricCanvasObj, activeLayerIndex: -1 };
     },
     setActivePage(index: number) {
@@ -251,6 +261,48 @@ export const useCanvasStore = defineStore('canvasStore', {
     },
     setZoomLevel(newZoomLevel: number) {
       this.zoomLevel = newZoomLevel;
+    },
+    moveCanvas(oldIndex: number, newIndex: number) {
+      
+      const oldCanvasData = this.canvasInstances[oldIndex].canvas.toJSON()
+      const newCanvasData = this.canvasInstances[newIndex].canvas.toJSON()      
+            
+      this.canvasInstances[newIndex].canvas.clear()
+      this.canvasInstances[newIndex].canvas.loadFromJSON(oldCanvasData)
+
+      
+
+      this.canvasInstances[oldIndex].canvas.clear()
+      this.canvasInstances[oldIndex].canvas.loadFromJSON(newCanvasData)
+      
+      this.saveCanvasState();
+      this.setActivePage(newIndex);
+
+      const newCanvasId = newIndex + 1
+    
+      const content = document.getElementById('canvas'+ newCanvasId)
+      const closest = content?.closest('#content')
+      closest?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    },
+    async duplicateCanvas(canvasIndex: number) {
+      const canvasInstanceToDuplicate = this.canvasInstances[canvasIndex];
+      if (canvasInstanceToDuplicate) {
+        const duplicatedInstance = await this.addNewPage();
+        duplicatedInstance.canvas.loadFromJSON(canvasInstanceToDuplicate.canvas.toJSON())
+      } else {
+        console.error("Canvas instance not found for index:", canvasIndex);
+      }
+    },
+    removeCanvas(canvasIndex: number) {
+      if (canvasIndex >= 0 && canvasIndex < this.canvasInstances.length) {
+        const removedInstance = this.canvasInstances.splice(canvasIndex, 1)[0];
+        if (removedInstance) {
+          removedInstance.canvas.dispose();
+        }
+        this.pagesCount.splice(canvasIndex, 1);
+        this.setActivePage(this.canvasInstances.length - 1);
+        this.saveCanvasState();
+      }
     },
     addText(attributes: any) {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
@@ -900,6 +952,81 @@ export const useCanvasStore = defineStore('canvasStore', {
         }
         console.log("this.selectedTextBackgroundColor", this.selectedTextBackgroundColor)
       }
+    },
+    setZoom(applyZoom = true) {
+      let zoomLevel = this.zoomLevel;
+    
+      if (zoomLevel < 10) {
+        zoomLevel = 10;
+      }
+      zoomLevel = zoomLevel / 100;
+    
+      this.canvasInstances.forEach((obj) => {
+        const canvas = obj.canvas;
+    
+        if (applyZoom) {
+          canvas.setZoom(zoomLevel);
+        }
+    
+        const currentScreenWidth = this.pageWidth * zoomLevel;
+        const currentScreenHeight = this.pageHeight * zoomLevel;
+    
+        
+        canvas.setDimensions({
+          width: currentScreenWidth,
+          height: currentScreenHeight
+        });    
+    
+        canvas.renderAll();
+      });
+    
+      this.checkCanvasWidth(zoomLevel);
+    },
+    checkCanvasWidth(zoomLevel: number){
+      const editorContainer = document.querySelector('.editor-container');
+      const canvasMain = document.querySelectorAll('.canvas-main');
+      const canvasContainer = document.querySelector('.canvas-container');
+      this.scrollToCenter()
+      
+      if (canvasContainer.scrollWidth < editorContainer.clientWidth) {
+        editorContainer.classList.remove('overflow-scroll')
+        canvasMain.forEach(canvas => canvas.classList.remove('start-aligned'));
+        document.getElementById("content").style.width = '100%'
+      } else {
+        document.getElementById("content").style.width = this.pageWidth * zoomLevel + "px"
+        editorContainer.classList.add('overflow-scroll')
+        canvasMain.forEach(canvas => canvas.classList.add('start-aligned'));
+      }
+    },
+    scrollToCenter() {
+      const editorContainer = document.querySelector('.editor-container');
+      const canvasMain = document.querySelector('.canvas-container');
+      
+      // const containerHeight = editorContainer.clientHeight;
+      // const contentHeight = canvasMain.clientHeight;
+      // const scrollTopValue = Math.max(0, (contentHeight - containerHeight) / 2);
+      // editorContainer.scrollTop = scrollTopValue;
+        
+      const containerWidth = editorContainer.clientWidth;
+      const contentWidth = canvasMain.clientWidth;
+      const scrollRightValue = Math.max(0, (contentWidth - containerWidth) / 2);
+      editorContainer.scrollLeft = scrollRightValue;
+    },
+    resizeCanvas(width: number, height: number, applyZoom: boolean){
+      const contentElement = document.getElementById('content');
+      const maxWidth = contentElement.offsetWidth - 50;
+      const maxHeight = contentElement.offsetHeight - 50;      
+
+      const widthRatio = maxWidth / width;
+      const heightRatio = maxHeight / height;
+
+
+      const zoomLevel = Math.min(widthRatio, heightRatio)
+      this.pageWidth = width
+      this.pageHeight = height
+      this.zoomLevel = Number (Math.round(zoomLevel * 100).toFixed(2));
+      this.setZoom(applyZoom)
+    
     }
   },
   getters: {

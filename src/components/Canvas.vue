@@ -18,6 +18,14 @@ onMounted(async () => {
   
   await nextTick()
   setTimeout(() => {
+    const contentElement = document.querySelector('.editor');
+    
+    const width = contentElement.offsetWidth - 50;
+    console.log(width)
+    const height = contentElement.offsetHeight - 50;
+    console.log(height)
+    canvasStore.pageWidth = width
+    canvasStore.pageHeight = height
     canvasStore.addNewPage(); 
     loading.value = false  
   }, 1500);
@@ -27,90 +35,6 @@ onMounted(async () => {
 
 
 
-const debouncedFunc = debounce(async  () => {
-      console.log('test'); 
-      await nextTick(() => {
-        console.log('test2'); 
-         
-      })
-}, 250);
-
-const resizeCanvas = () => {
-  canvasStore.canvasInstances.forEach((canvas) => {
-    canvas.setWidth(pageWidth.value);
-    canvas.setHeight(pageHeight.value);
-    canvas.renderAll();
-  });
-};
-
-
-
-const setZoom = () => {
-  let zoomLevel = canvasStore.zoomLevel
-
-  if (zoomLevel < 10){
-    zoomLevel = 10
-  }
-  zoomLevel = (zoomLevel/100);
-
-  
-  canvasStore.canvasInstances.forEach((obj) => {
-    obj.canvas.setZoom(zoomLevel);
-    
-    obj.canvas.setDimensions({
-      width: canvasStore.pageWidth * zoomLevel,
-      height: canvasStore.pageHeight * zoomLevel
-    });
-  })
-  
-  checkCanvasWidth(zoomLevel)
-}
-
-watch(
-  () => canvasStore.zoomLevel,
-  (newVal, oldVal) => {
-    setZoom();
-  }
-);
-
-
-
-const checkCanvasWidth = (zoomLevel) => {
-  const editorContainer = document.querySelector('.editor-container');
-  const canvasMain = document.querySelectorAll('.canvas-main');
-  const canvasContainer = document.querySelector('.canvas-container');
-  scrollToCenter()
-  
-  if (canvasContainer.scrollWidth < editorContainer.clientWidth) {
-    editorContainer.classList.remove('overflow-scroll')
-    canvasMain.forEach(canvas => canvas.classList.remove('start-aligned'));
-    document.getElementById("content").style.width = '100%'
-  } else {
-    document.getElementById("content").style.width = canvasStore.pageWidth * zoomLevel + "px"
-    editorContainer.classList.add('overflow-scroll')
-    canvasMain.forEach(canvas => canvas.classList.add('start-aligned'));
-  }
-};
-
-const scrollToCenter = () => {
-  const editorContainer = document.querySelector('.editor-container');
-  const canvasMain = document.querySelector('.canvas-container');
-  
-  // // Centralizar verticalmente
-  // const containerHeight = editorContainer.clientHeight;
-  // const contentHeight = canvasMain.clientHeight;
-  // const scrollTopValue = Math.max(0, (contentHeight - containerHeight) / 2);
-  // editorContainer.scrollTop = scrollTopValue;
-  
-  // Centralizar horizontalmente
-  const containerWidth = editorContainer.clientWidth;
-  const contentWidth = canvasMain.clientWidth;
-  const scrollRightValue = Math.max(0, (contentWidth - containerWidth) / 2);
-  editorContainer.scrollLeft = scrollRightValue;
-};
-
-
-watch([canvasStore.pageWidth, canvasStore.pageHeight], resizeCanvas);
 </script>
 
 
@@ -127,16 +51,16 @@ watch([canvasStore.pageWidth, canvasStore.pageHeight], resizeCanvas);
           </div>  
           <div class="actions-buttons">
             <el-tooltip :content="$t('canvas.move_up')"  v-if="canvasStore.pagesCount.length > 1 && index != 0" placement="bottom" effect="light">
-              <el-button color="#e8e8e8"  class="btn-actions"><MingcuteUpLine/></el-button>
+              <el-button color="#e8e8e8" @click="canvasStore.moveCanvas(index, index-1)"  class="btn-actions"><MingcuteUpLine/></el-button>
             </el-tooltip>
             <el-tooltip :content="$t('canvas.move_down')" v-if="canvasStore.pagesCount.length > 1 && index != (canvasStore.pagesCount.length - 1)"  placement="bottom" effect="light">
-              <el-button color="#e8e8e8" class="btn-actions"><MingcuteDownLine/></el-button>
+              <el-button color="#e8e8e8" @click="canvasStore.moveCanvas(index, index+1)" class="btn-actions"><MingcuteDownLine/></el-button>
             </el-tooltip>
             <el-tooltip :content="$t('canvas.new_page')"  placement="bottom" effect="light">
               <el-button color="#e8e8e8" @click="canvasStore.addNewPage()" class="btn-actions"><IconoirAddPageAlt/></el-button>
             </el-tooltip>
             <el-tooltip :content="$t('canvas.duplicate')" placement="bottom" effect="light">
-              <el-button color="#e8e8e8" class="btn-actions"><IonDuplicateOutline/></el-button>
+              <el-button color="#e8e8e8" @click="canvasStore.duplicateCanvas(index)" class="btn-actions"><IonDuplicateOutline/></el-button>
             </el-tooltip>
             <el-tooltip :content="$t('canvas.remove')" placement="bottom" v-if="canvasStore.pagesCount.length > 1"  effect="light">
               <el-button color="#e8e8e8" class="btn-actions"><LetsIconsTrash/></el-button>

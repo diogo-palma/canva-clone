@@ -28,7 +28,10 @@ const locales = {
       width: "Width",
       height: "Height",
       use_magic_resize: "Use magic resize",
-      magic_resize: "Magic resize will automatically resize and move all elements on the canvas"
+      magic_resize: "Magic resize will automatically resize and move all elements on the canvas",
+      resize: "Resize",
+      invitation: "Invitation",
+      card: "Card"
     },
     canvas:{
       page: "Page",
