@@ -20,9 +20,9 @@ onMounted(async () => {
   setTimeout(() => {
     const contentElement = document.querySelector('.editor');
     
-    const width = contentElement.offsetWidth - 50;
+    const width = contentElement.offsetWidth - 100;
     console.log(width)
-    const height = contentElement.offsetHeight - 50;
+    const height = contentElement.offsetHeight - 100;
     console.log(height)
     canvasStore.pageWidth = width
     canvasStore.pageHeight = height
@@ -34,6 +34,13 @@ onMounted(async () => {
 });
 
 
+watch(
+  () => canvasStore.canvasHistoryIndex,
+  (newVal, oldVal) => {
+    console.log("newvaL canvashistory", newVal)
+    
+  }
+)
 
 </script>
 
@@ -41,12 +48,12 @@ onMounted(async () => {
 <template>
   <div class="editor" style="position: relative" v-loading="loading">
     <div class="editor-container">
-      <div id="content"  v-for="(item, index) in canvasStore.pagesCount" :key="index">
+      <div id="content"  v-for="(item, index) in canvasStore.pagesCount" :key="canvasStore.pagesCount[index]">
 
         <div class="actions" v-if="!loading">
           <div style="display: block;margin-top: 2px;">
             <span>
-              {{ $t('canvas.page') }} {{ canvasStore.pagesCount[index]}}
+              {{ $t('canvas.page') }} {{ index + 1 }}
             </span>
           </div>  
           <div class="actions-buttons">
@@ -63,12 +70,12 @@ onMounted(async () => {
               <el-button color="#e8e8e8" @click="canvasStore.duplicateCanvas(index)" class="btn-actions"><IonDuplicateOutline/></el-button>
             </el-tooltip>
             <el-tooltip :content="$t('canvas.remove')" placement="bottom" v-if="canvasStore.pagesCount.length > 1"  effect="light">
-              <el-button color="#e8e8e8" class="btn-actions"><LetsIconsTrash/></el-button>
+              <el-button color="#e8e8e8" @click="canvasStore.removeCanvas(index)" class="btn-actions"><LetsIconsTrash/></el-button>
             </el-tooltip>
             
           </div>
         </div>
-        <div :id="'canvas'+ (+index + +1) " class="canvas-main">
+        <div :id="'canvas'+ canvasStore.pagesCount[index] " class="canvas-main">
 
         </div>
         

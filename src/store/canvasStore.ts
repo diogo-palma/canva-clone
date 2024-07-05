@@ -49,15 +49,16 @@ export const useCanvasStore = defineStore('canvasStore', {
     mediaRecorder: null,
     canvasAnimations: [],
     selectedLock: false,
+    removedPagesCount: []
   }),
   actions: {
-    async addNewPage() {
+    async addNewPage(move: boolean = true) {
       this.idPage = this.canvasInstances.length + 1;
       if (!this.pagesCount.includes(this.idPage)) {
         this.pagesCount.push(this.idPage);
       }
       await nextTick();
-      const canvasInstance = await this.addPage("canvas" + this.idPage);
+      const canvasInstance = await this.addPage("canvas" + this.idPage, move);
       this.addCanvasInstance(canvasInstance);
       return canvasInstance;
     },
@@ -68,8 +69,8 @@ export const useCanvasStore = defineStore('canvasStore', {
         }
       });
     },
-    async addPage(contentCanvas: string) {
-      const content = document.getElementById(contentCanvas);
+    async addPage(canvasId: string, move: boolean = true) {
+      const content = document.getElementById(canvasId);
       const newCanvasElement = document.createElement("canvas");
       newCanvasElement.width = this.pageWidth * (this.zoomLevel / 100);
       newCanvasElement.height = this.pageHeight * (this.zoomLevel / 100);
@@ -108,7 +109,9 @@ export const useCanvasStore = defineStore('canvasStore', {
           isScaling = false;
           isMoving = false;
         }
+        
         const canvasIndex = this.canvasInstances.findIndex(instance => instance.canvas === fabricCanvasObj);
+        console.log("canvasIndex", canvasIndex)
         this.setActivePage(canvasIndex);
         this.removeActiveObject(canvasIndex)
       };
@@ -142,8 +145,10 @@ export const useCanvasStore = defineStore('canvasStore', {
       fabricCanvasObj.on('selection:updated', handleSelectionChanged);
       fabricCanvasObj.on('selection:cleared', handleSelectionChanged);
       fabricCanvasObj.on('object:modified', this.changeBackgroundColor)
-      
-      content?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      if (move)
+        content?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
       this.setActivePage(this.canvasInstances.length);
       this.removeActiveObject(this.canvasInstances.length)
       return { canvas: fabricCanvasObj, activeLayerIndex: -1 };
@@ -162,17 +167,6 @@ export const useCanvasStore = defineStore('canvasStore', {
     addCanvasInstance(instance: { canvas: fabric.Canvas, activeLayerIndex: number }) {
       this.canvasInstances.push(instance);
       this.saveCanvasState();
-    },
-    removeCanvasInstance() {
-      if (this.canvasInstances.length > 1) {
-        const removedInstance = this.canvasInstances.pop();
-        if (removedInstance) {
-          removedInstance.canvas.dispose();
-        }
-        this.pagesCount.pop();
-        this.setActivePage(this.canvasInstances.length - 1);
-        this.saveCanvasState();
-      }
     },
     saveCanvasState() {
       if (this.canvasHistoryIndex < this.canvasHistory.length - 1) {
@@ -195,38 +189,48 @@ export const useCanvasStore = defineStore('canvasStore', {
       console.log("allCanvasStates", allCanvasStates)
       this.canvasHistory.push({
         states: allCanvasStates,
-        pagesCount: [...this.pagesCount]
+        pagesCount: [...this.pagesCount],        
       });
       this.canvasHistoryIndex++;
     },
-    undo() {
+    async undo() {
       if (this.canvasHistoryIndex > 0) {
         this.canvasHistoryIndex--;
-        this.loadCanvasState(this.canvasHistory[this.canvasHistoryIndex]);
+        await this.loadCanvasState(this.canvasHistory[this.canvasHistoryIndex]);
       }
     },
-    redo() {
+    async redo() {
       if (this.canvasHistoryIndex < this.canvasHistory.length - 1) {
         this.canvasHistoryIndex++;
-        this.loadCanvasState(this.canvasHistory[this.canvasHistoryIndex]);
+        await this.loadCanvasState(this.canvasHistory[this.canvasHistoryIndex]);
       }
+    },
+    sleep(ms) {
+     return new Promise(resolve => setTimeout(resolve, ms));
     },
     async loadCanvasState(historyState: any) {
       if (!historyState) return;
+      const oldPagesCount = [...this.pagesCount]
       this.pagesCount = [...historyState.pagesCount];
+      
+      
       await nextTick();
-      while (this.canvasInstances.length < historyState.states.length) {
-        const newCanvasId = `canvas${this.canvasInstances.length + 1}`;
-        const instance = await this.addPage(newCanvasId);
-        this.canvasInstances.push(instance);
-      }
-      while (this.canvasInstances.length > historyState.states.length) {
-        const removedInstance = this.canvasInstances.pop();
-        if (removedInstance) {
-          removedInstance.canvas.dispose();
+      console.log("this.canvasHistoryIndex", this.canvasHistoryIndex)
+      console.log("this.canvasHistory", this.canvasHistory[this.canvasHistoryIndex+1])
+      // await this.sleep(500)
+
+      const oldCountMap = new Map(oldPagesCount.map((id, index) => [id, index]));
+      const newCountMap = new Map(this.pagesCount.map((id, index) => [id, index]));
+
+      for (const [id, newIndex] of newCountMap.entries()) {
+        if (!oldCountMap.has(id)) {
+          const newCanvasId = `canvas${id}`;
+          const instance = await this.addPage(newCanvasId, false);
+          this.canvasInstances.splice(newIndex, 0, instance);
         }
-        this.setActivePage(this.canvasInstances.length - 1);
       }
+
+     
       for (let index = 0; index < historyState.states.length; index++) {
         const state = historyState.states[index];
         const instance = this.canvasInstances[index];
@@ -263,7 +267,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       this.zoomLevel = newZoomLevel;
     },
     moveCanvas(oldIndex: number, newIndex: number) {
-      
+      console.log(oldIndex, newIndex)
       const oldCanvasData = this.canvasInstances[oldIndex].canvas.toJSON()
       const newCanvasData = this.canvasInstances[newIndex].canvas.toJSON()      
             
@@ -287,8 +291,9 @@ export const useCanvasStore = defineStore('canvasStore', {
     async duplicateCanvas(canvasIndex: number) {
       const canvasInstanceToDuplicate = this.canvasInstances[canvasIndex];
       if (canvasInstanceToDuplicate) {
-        const duplicatedInstance = await this.addNewPage();
+        const duplicatedInstance = await this.addNewPage(false);
         duplicatedInstance.canvas.loadFromJSON(canvasInstanceToDuplicate.canvas.toJSON())
+        // this.moveCanvas(this.canvasInstances.length - 1, canvasIndex + 1)
       } else {
         console.error("Canvas instance not found for index:", canvasIndex);
       }
@@ -299,9 +304,12 @@ export const useCanvasStore = defineStore('canvasStore', {
         if (removedInstance) {
           removedInstance.canvas.dispose();
         }
-        this.pagesCount.splice(canvasIndex, 1);
-        this.setActivePage(this.canvasInstances.length - 1);
+
+        this.pagesCount.splice(canvasIndex, 1)[0];
+        
+        this.setActivePage(this.canvasInstances.length > 0 ? canvasIndex : this.canvasInstances.length - 1);
         this.saveCanvasState();
+        this.updateObjectSelection(false)
       }
     },
     addText(attributes: any) {
