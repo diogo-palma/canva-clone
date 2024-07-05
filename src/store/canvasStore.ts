@@ -915,11 +915,11 @@ export const useCanvasStore = defineStore('canvasStore', {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
     
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+      // if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
         activeObject.set('shadow', { color: this.selectedShadowColor,  offsetX: this.selectedShadowOffSetX,  offsetY: this.selectedShadowOffSetY, blur: this.selectedShadowBlur });
         canvas.renderAll();
         this.saveCanvasState();
-      }
+      // }
     },
     addLayer(canvasIndex: number, object: fabric.Object) {
       const instance = this.canvasInstances[canvasIndex];

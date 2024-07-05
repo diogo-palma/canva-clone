@@ -44,7 +44,7 @@ watch(
 </script>
 
 <template>
-  <div class="text-change-space">
+  <div class="text-change-space" v-if="canvasStore.selectedObjectType == 'textbox' || canvasStore.selectedObjectType == 'text'">
     <el-tooltip
       class="box-item"
       effect="dark"

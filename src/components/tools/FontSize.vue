@@ -9,7 +9,7 @@ const handleChangeFontSize = () =>{
 </script>
 
 <template>
-  <div class="font-size">
+  <div class="font-size" v-if="canvasStore.selectedObjectType == 'textbox' || canvasStore.selectedObjectType == 'text'">
     <el-input-number
       v-model="canvasStore.fontSize"
       :min="1"              
