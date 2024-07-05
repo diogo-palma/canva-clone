@@ -222,13 +222,25 @@ export const useCanvasStore = defineStore('canvasStore', {
       const oldCountMap = new Map(oldPagesCount.map((id, index) => [id, index]));
       const newCountMap = new Map(this.pagesCount.map((id, index) => [id, index]));
 
+      
+      for (const [id, oldIndex] of oldCountMap.entries()) {
+        if (!newCountMap.has(id)) {
+          const removedInstance = this.canvasInstances.splice(oldIndex, 1)[0];
+          if (removedInstance) {
+            removedInstance.canvas.dispose();
+          }
+        }
+      }
+
       for (const [id, newIndex] of newCountMap.entries()) {
         if (!oldCountMap.has(id)) {
           const newCanvasId = `canvas${id}`;
-          const instance = await this.addPage(newCanvasId, false);
+          const instance = await this.addPage(newCanvasId, true);
           this.canvasInstances.splice(newIndex, 0, instance);
         }
       }
+
+      this.setActivePage(this.canvasInstances.length -1)
 
      
       for (let index = 0; index < historyState.states.length; index++) {
