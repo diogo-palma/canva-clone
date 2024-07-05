@@ -105,7 +105,7 @@ onMounted(() => {
 });
 
 const handleAddImage = (url: string) => {
-  if (submenuStore.activeMenu == 'Photos')
+  if (submenuStore.activeMenu == 'sidebar.photos')
     canvasStore.addImage(url)
   else
     canvasStore.changeCanvasBackgroundImage(url)
