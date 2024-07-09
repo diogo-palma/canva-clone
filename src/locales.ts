@@ -88,8 +88,19 @@ const locales = {
       landscape: "Landscape",
       emerge: "Emerge",
       in: "In",
-      out: "Out"
-
+      out: "Out",
+      up: "Up",
+      down: "Down",
+      to_forward: "To forward",
+      to_bottom: "To bottom",
+      align_left: "Align left",
+      align_top: "Align top",
+      align_center: "Align center",
+      align_middle: "Align middle",
+      align_right: "Align right",
+      align_bottom: "Align bottom",
+      group: "Group",
+      ungroup: "Ungroup"
     },
     
     shapes:{

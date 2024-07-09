@@ -151,7 +151,7 @@ watch(
     <span style="font-weight: 600;font-size: 16px;">{{ $t('menu_header.effects') }}</span>
     <div class="mt-5" >
       
-      <div class="mt-3" style="display: flex;">
+      <div class="mt-3" style="display: flex;"  v-if="canvasStore.selectedObjectType == 'textbox' || canvasStore.selectedObjectType == 'text'">
         <div class="mt-1">
           <span>{{ $t('menu_header.text_stroke') }}</span>
         </div>
@@ -169,7 +169,7 @@ watch(
           <el-input-number v-model="canvasStore.selectedTextStroke" :min="1"   controls-position="right" @change="handleChangeTextStroke" />
         </div>
       </div>   
-      <div style="display: flex;margin-top: 10px;">
+      <div style="display: flex;margin-top: 10px;"  v-if="canvasStore.selectedObjectType == 'textbox' || canvasStore.selectedObjectType == 'text'">
         <div class="mt-1">
           <span>{{ $t('menu_header.background') }}</span>
         </div>

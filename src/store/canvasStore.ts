@@ -20,7 +20,9 @@ export const useCanvasStore = defineStore('canvasStore', {
     activePageIndex: 0,
     isObjectSelected: false,
     selectedObjectColor: '',
-    selectedObjectType: null,
+    selectedObjectType: '',
+    selectedObjectAtFront: false,
+    selectedObjectAtBack: false,
     selectedFont: null,
     fontSize: 30,
     selectedTextAlign: 'center',
@@ -49,7 +51,8 @@ export const useCanvasStore = defineStore('canvasStore', {
     mediaRecorder: null,
     canvasAnimations: [],
     selectedLock: false,
-    removedPagesCount: []
+    removedPagesCount: [],
+    selectedOpacity: 1,
   }),
   actions: {
     async addNewPage(move: boolean = true) {
@@ -117,12 +120,20 @@ export const useCanvasStore = defineStore('canvasStore', {
       };
 
       const handleSelectionChanged = () => {
+        fabricCanvasObj.getObjects().forEach((obj) => {
+          if (obj.customSelectionBox) {
+              fabricCanvasObj.remove(obj.customSelectionBox);
+              delete obj.customSelectionBox;
+          }
+        });
         const activeObject = fabricCanvasObj.getActiveObject();
         this.updateObjectSelection(!!activeObject);
         if (activeObject) {
           this.checkObjectType(fabricCanvasObj);
           const canvasIndex = this.canvasInstances.findIndex(instance => instance.canvas === fabricCanvasObj);
           const layerIndex = fabricCanvasObj.getObjects().indexOf(activeObject);
+          this.selectedObjectAtBack = fabricCanvasObj.getObjects().indexOf(activeObject) === 0
+          this.selectedObjectAtFront = fabricCanvasObj.getObjects().indexOf(activeObject) === fabricCanvasObj.getObjects().length - 1;
           if (layerIndex > -1){
             this.setActiveLayer(canvasIndex, layerIndex);
             this.updateSelectedObjectColor(activeObject);
@@ -145,6 +156,61 @@ export const useCanvasStore = defineStore('canvasStore', {
       fabricCanvasObj.on('selection:updated', handleSelectionChanged);
       fabricCanvasObj.on('selection:cleared', handleSelectionChanged);
       fabricCanvasObj.on('object:modified', this.changeBackgroundColor)
+      fabricCanvasObj.on('mouse:move', (e) => {
+        const target = e.target;
+        const active = fabricCanvasObj.getActiveObjects().includes(target)
+        if (target && !active) {
+          if (!target.customSelectionBox) {
+              let targetLeft = target.left - 3
+              let targetTop =  target.top - 3
+              let targetWidth = target.width * target.scaleX + 6
+              let targetHeight = target.height * target.scaleY + 6
+
+              if (target.type == "path" ){
+                targetLeft = target.left - (target.width * target.scaleX) / 2 - 3;
+                targetTop = target.top - (target.height * target.scaleY) / 2 - 3;
+                targetWidth =  target.width * target.scaleX + 18
+                targetHeight = target.height * target.scaleY + 18
+              }
+  
+              const selectionBox = new fabric.Rect({
+                  width: targetWidth,
+                  height: targetHeight,
+                  left: targetLeft,
+                  top: targetTop,
+                  fill: 'transparent',
+                  stroke: 'red',
+                  strokeWidth: 2,
+                  selectable: false,
+                  evented: false,
+              });
+  
+              target.customSelectionBox = selectionBox;
+              fabricCanvasObj.add(selectionBox);
+          } else {
+              let targetLeft = target.left - 3
+              let targetTop =  target.top - 3
+              
+              if (target.type == "path"){
+                targetLeft = target.left - (target.width * target.scaleX) / 2 - 8;
+                targetTop = target.top - (target.height * target.scaleY) / 2 - 8;
+              }
+              
+  
+              target.customSelectionBox.set({ left: targetLeft, top: targetTop });
+          }
+          fabricCanvasObj.renderAll();
+        }
+      });
+    
+      fabricCanvasObj.on('mouse:out', (e) => {
+          const target = e.target;
+          if (target && target.customSelectionBox) {
+              fabricCanvasObj.remove(target.customSelectionBox);
+              delete target.customSelectionBox;
+              fabricCanvasObj.renderAll();
+          }
+      });
 
       if (move)
         content?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -490,7 +556,7 @@ export const useCanvasStore = defineStore('canvasStore', {
         });
         this.selectedLock = !isLocked; 
         if (activeObject.type === 'text' || activeObject.type === 'i-text' || activeObject.type === 'textbox') {
-          activeObject.editable = !isLocked;
+          activeObject.editable = isLocked;
         } 
         canvas.renderAll();
         this.saveCanvasState();
@@ -774,18 +840,24 @@ export const useCanvasStore = defineStore('canvasStore', {
     },   
     async addSvg(svgUrl: string) {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
-      const activeObject = canvas.getActiveObject();
+      const zoom = canvas.getZoom();  // Obtém o fator de zoom atual do canvas
       
       fabric.loadSVGFromURL(svgUrl, (objects, options) => {
-        const svgObject = fabric.util.groupSVGElements(objects, options);  
-        svgObject.top = 30;
-        svgObject.left = 50;
-        svgObject.scale(2.0) 
-        canvas.add(markRaw(svgObject)).setActiveObject(svgObject);
-        canvas.renderAll()
-        this.saveCanvasState();
+          const svgObject = fabric.util.groupSVGElements(objects, options);
+          
+          svgObject.set({
+              top: canvas.height / (2 * zoom),   // Ajusta a posição com base no fator de zoom
+              left: canvas.width / (2 * zoom),   // Ajusta a posição com base no fator de zoom
+              originX: 'center',
+              originY: 'center',
+              scaleX: 2.0 / zoom,  // Ajusta a escala com base no fator de zoom
+              scaleY: 2.0 / zoom   // Ajusta a escala com base no fator de zoom
+          });
+          
+          canvas.add(markRaw(svgObject)).setActiveObject(svgObject);
+          canvas.renderAll();
+          this.saveCanvasState();
       });
-
     },
     async addImage(imageUrl: string) {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
@@ -839,9 +911,9 @@ export const useCanvasStore = defineStore('canvasStore', {
     },
     changeColor(color: string) {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
-      const activeObject = canvas.getActiveObject();
+      const activeObjects = canvas.getActiveObjects();
 
-      if (activeObject) {
+      function changeColorObject(activeObject: any, color: string){
         if (activeObject.type === 'textbox' || activeObject.type === 'text') {
           activeObject.set('fill', color);
         } 
@@ -860,7 +932,21 @@ export const useCanvasStore = defineStore('canvasStore', {
           activeObject.set('fill', color);
           activeObject.set('stroke', color);
         }
+      }
 
+      if (activeObjects.length === 1) {
+        let activeObject = activeObjects[0]
+        if (activeObject) {
+          
+          changeColorObject(activeObject, color)
+          canvas.renderAll();
+          this.saveCanvasState();
+        }
+      }else{
+        for (let index = 0; index < activeObjects.length; index++) {
+          const activeObject = activeObjects[index];
+          changeColorObject(activeObject, color)
+        }
         canvas.renderAll();
         this.saveCanvasState();
       }
@@ -940,37 +1026,45 @@ export const useCanvasStore = defineStore('canvasStore', {
       this.isObjectSelected = isSelected;
     },
     checkObjectType(obj: any) {      
-      this.selectedObjectType = obj.getActiveObject().get('type')
-      console.log(this.selectedObjectType)
-      const activeObject = obj.getActiveObject();
-      this.selectedVisibility = activeObject.visible
-      this.selectedLock = activeObject.get('lockRotation')
-      if (activeObject.type === 'text' || activeObject.type === 'textbox') {        
-        this.selectedFont = activeObject.fontFamily;
-        this.fontSize = activeObject.fontSize;
-        this.selectedTextAlign = activeObject.textAlign;
-        const isBold = activeObject.get('fontWeight') === 'bold';
-        this.selectedTextBold = isBold;
-        const isUnderline = activeObject.get('underline');
-        this.selectedTextUnderline = isUnderline
-        const isItalic = activeObject.get('fontStyle') === 'italic';
-        this.selectedTextItalic = isItalic;
-        const isLinethrough = activeObject.get('linethrough');
-        this.selectedTextStrikethrough = isLinethrough;
-        this.selectedLineHeight = activeObject.get('lineHeight') * 10
-        this.selectedBackgroundPadding = activeObject.get('textPadding');
-        this.selectedTextBackgroundColor = activeObject.get('backgroundColor');
-        this.selectedBackgroundCornerRadius = activeObject.get('cornerRadius')
-        this.selectdElevationAnimationInitialTop = obj.height;
-        this.selectdElevationAnimationFinalTop = activeObject.top;
-        this.selectdElevationAnimationInitialLeft = obj.width;
-        this.selectdElevationAnimationFinalLeft = activeObject.left;
-        if (activeObject.backgroundRect) {
-          if (activeObject.backgroundRect.get('fill'))
-            this.selectedTextBackgroundColor = activeObject.backgroundRect.get('fill');
-          
+      const activeObjects = obj.getActiveObjects();
+
+      if (activeObjects.length === 1) {
+              
+        console.log("selectedObjectType", this.selectedObjectType) 
+        const activeObject = activeObjects[0];
+        this.selectedObjectType = activeObject.type 
+        this.selectedVisibility = activeObject.visible
+        this.selectedLock = activeObject.get('lockRotation')
+        this.selectedOpacity = activeObject.get('opacity') * 100
+        if (activeObject.type === 'text' || activeObject.type === 'textbox') {        
+          this.selectedFont = activeObject.fontFamily;
+          this.fontSize = activeObject.fontSize;
+          this.selectedTextAlign = activeObject.textAlign;
+          const isBold = activeObject.get('fontWeight') === 'bold';
+          this.selectedTextBold = isBold;
+          const isUnderline = activeObject.get('underline');
+          this.selectedTextUnderline = isUnderline
+          const isItalic = activeObject.get('fontStyle') === 'italic';
+          this.selectedTextItalic = isItalic;
+          const isLinethrough = activeObject.get('linethrough');
+          this.selectedTextStrikethrough = isLinethrough;
+          this.selectedLineHeight = activeObject.get('lineHeight') * 10
+          this.selectedBackgroundPadding = activeObject.get('textPadding');
+          this.selectedTextBackgroundColor = activeObject.get('backgroundColor');
+          this.selectedBackgroundCornerRadius = activeObject.get('cornerRadius')
+          this.selectdElevationAnimationInitialTop = obj.height;
+          this.selectdElevationAnimationFinalTop = activeObject.top;
+          this.selectdElevationAnimationInitialLeft = obj.width;
+          this.selectdElevationAnimationFinalLeft = activeObject.left;
+          if (activeObject.backgroundRect) {
+            if (activeObject.backgroundRect.get('fill'))
+              this.selectedTextBackgroundColor = activeObject.backgroundRect.get('fill');
+            
+          }
+          console.log("this.selectedTextBackgroundColor", this.selectedTextBackgroundColor)
         }
-        console.log("this.selectedTextBackgroundColor", this.selectedTextBackgroundColor)
+      }else{
+        this.selectedObjectType = 'groups';
       }
     },
     setZoom(applyZoom = true) {
@@ -1047,7 +1141,285 @@ export const useCanvasStore = defineStore('canvasStore', {
       this.zoomLevel = Number (Math.round(zoomLevel * 100).toFixed(2));
       this.setZoom(applyZoom)
     
-    }
+    },
+    checkPosition(canvas: any, activeObject: any){
+      const layerIndex = canvas.getObjects().indexOf(activeObject);
+      const canvasIndex = this.canvasInstances.findIndex(instance => instance.canvas === canvas);
+      this.setActiveLayer(canvasIndex, layerIndex)
+      this.selectedObjectAtFront = canvas.getObjects().indexOf(activeObject) === canvas.getObjects().length - 1;
+      this.selectedObjectAtBack = canvas.getObjects().indexOf(activeObject) === 0;
+      
+    },
+    sendToUp() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      
+      if (activeObject) {
+        canvas.bringForward(activeObject);
+        canvas.renderAll();
+        this.checkPosition(canvas, activeObject)
+        this.saveCanvasState();
+      }
+    },
+    
+    sendToDown() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      
+      if (activeObject) {
+        canvas.sendBackwards(activeObject);
+        canvas.renderAll();
+        this.checkPosition(canvas, activeObject)
+        this.saveCanvasState();
+      }
+    },
+    
+    sendToForward() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      
+      if (activeObject) {       
+        canvas.bringToFront(activeObject);
+        canvas.renderAll();
+        this.checkPosition(canvas, activeObject)
+        this.saveCanvasState();
+      }
+    },
+    
+    sendToBottom() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      
+      if (activeObject) {        
+        canvas.sendToBack(activeObject);
+        canvas.renderAll();
+        this.checkPosition(canvas, activeObject)
+        this.saveCanvasState();
+      }
+    },
+    alignLeft() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;      
+      const activeObjects = canvas.getActiveObjects();
+
+      function alignLeft(activeObject: any){
+        activeObject.set({ left: 0 });
+        activeObject.setCoords();
+      }
+      if (activeObjects.length == 1){
+        const activeObject = activeObjects[0]
+      
+        if (activeObject) {
+          alignLeft(activeObject)
+          this.checkPosition(canvas, activeObject);
+        }
+      }else{
+        for (let index = 0; index < activeObjects.length; index++) {
+          const activeObject = activeObjects[index];
+          alignLeft(activeObject)
+        }
+      }
+      canvas.renderAll();
+      this.saveCanvasState();
+    },
+    alignTop() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObjects = canvas.getActiveObjects();
+
+      function alignTop(activeObject: any){
+        activeObject.set({ top: 0 });
+        activeObject.setCoords();
+      }
+      if (activeObjects.length == 1){
+        const activeObject = activeObjects[0]
+        if (activeObject) {
+          alignTop(activeObject)  
+          this.checkPosition(canvas, activeObject);    
+        }
+      }else{
+        for (let index = 0; index < activeObjects.length; index++) {
+          const activeObject = activeObjects[index];
+          alignTop(activeObject)
+        }
+      }
+      canvas.renderAll();
+      this.saveCanvasState();
+    },
+    alignCenter() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObjects = canvas.getActiveObjects();
+
+      function alignCenter(activeObject: any){
+        const zoom = canvas.getZoom();
+        const canvasWidth = canvas.getWidth() / zoom;
+        const objectWidth = activeObject.getScaledWidth();
+        activeObject.set({ left: (canvasWidth - objectWidth) / 2 });
+        activeObject.setCoords();
+      }
+
+      if (activeObjects.length == 1){
+        const activeObject = activeObjects[0]
+        if (activeObject) {
+            alignCenter(activeObject)            
+            this.checkPosition(canvas, activeObject);
+        }
+      }else{
+        for (let index = 0; index < activeObjects.length; index++) {
+          const activeObject = activeObjects[index];
+          alignCenter(activeObject)
+        }
+      }
+      canvas.renderAll();
+      this.saveCanvasState();
+    },
+    alignMiddle() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObjects = canvas.getActiveObjects();
+
+      function alignMiddle(activeObject: any){
+        const zoom = canvas.getZoom();
+        const canvasHeight = canvas.getHeight() / zoom;
+        const objectHeight = activeObject.getScaledHeight();
+        
+        activeObject.set({ top: (canvasHeight - objectHeight) / 2 });
+        activeObject.setCoords();
+      }
+      
+      if (activeObjects.length == 1){
+        const activeObject = activeObjects[0]
+        if (activeObject) {
+          alignMiddle(activeObject)
+          this.checkPosition(canvas, activeObject);
+        }
+      }else{
+        for (let index = 0; index < activeObjects.length; index++) {
+          const activeObject = activeObjects[index];
+          alignMiddle(activeObject)
+        }
+      }
+
+      canvas.renderAll();
+      this.saveCanvasState();
+    },
+    alignRight() {
+        const canvas = this.canvasInstances[this.activePageIndex].canvas;
+        const activeObjects = canvas.getActiveObjects();
+
+        function alignRight(activeObject: any){
+          const zoom = canvas.getZoom();
+          const canvasWidth = canvas.getWidth() / zoom;
+          const objectWidth = activeObject.getScaledWidth();
+          
+          activeObject.set({ left: canvasWidth - objectWidth });
+          activeObject.setCoords();
+        }
+
+        if (activeObjects.length == 1){
+          const activeObject = activeObjects[0]
+          if (activeObject) {
+            alignRight(activeObject)
+            this.checkPosition(canvas, activeObject);
+          }
+        }else{
+          for (let index = 0; index < activeObjects.length; index++) {
+            const activeObject = activeObjects[index];
+            alignRight(activeObject)
+          }
+        }
+
+        canvas.renderAll();
+        this.saveCanvasState();
+    },
+    alignBottom() {
+        const canvas = this.canvasInstances[this.activePageIndex].canvas;
+        const activeObjects = canvas.getActiveObjects();
+
+        function alignBottom(activeObject: any){
+          const zoom = canvas.getZoom();
+          const canvasHeight = canvas.getHeight() / zoom;
+          const objectHeight = activeObject.getScaledHeight();
+          
+          activeObject.set({ top: canvasHeight - objectHeight });
+          activeObject.setCoords();
+        }
+        
+        if (activeObjects.length == 1){
+          const activeObject = activeObjects[0]
+          if (activeObject) {
+            alignBottom(activeObject)
+            this.checkPosition(canvas, activeObject);
+          }
+        }else{
+          for (let index = 0; index < activeObjects.length; index++) {
+            const activeObject = activeObjects[index];
+            alignBottom(activeObject)
+          }
+        }
+        
+        canvas.renderAll();
+        this.saveCanvasState();
+    },
+    changeTransparency() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      const opacity = this.selectedOpacity / 100
+      
+      if (activeObject) {
+        activeObject.set({ opacity: opacity });
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
+    },
+    duplicateObject() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      
+      if (activeObject) {
+        activeObject.clone((cloned) => {
+          cloned.set({
+            left: activeObject.left + 10, 
+            top: activeObject.top + 10,
+            evented: true
+          });
+          canvas.add(cloned);
+          canvas.setActiveObject(cloned);
+          canvas.renderAll();
+          this.saveCanvasState();
+        });
+      }
+    },
+    groupObjects() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      var activeObj = canvas.getActiveObject();
+      var activegroup = activeObj.toGroup();
+      var objectsInGroup = activegroup.getObjects();
+      activegroup.clone(function(newgroup) {
+          canvas.remove(activegroup);
+          objectsInGroup.forEach(function(object) {
+              canvas.remove(object);  
+          });
+          canvas.add(newgroup);
+          canvas.setActiveObject(newgroup)
+      });
+      this.saveCanvasState()
+    },  
+    ungroupObjects() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      
+  
+      if (activeObject && activeObject.type === 'group') {
+        var destroyedGroup = activeObject.destroy();
+        var items = destroyedGroup.getObjects();
+        
+        
+        items.forEach(function (item) {            
+            canvas.add(markRaw(item)).setActiveObject(item);
+        });
+        canvas.remove(activeObject);
+        canvas.renderAll()
+        this.saveCanvasState()
+      }
+    },
   },
   getters: {
     currentCanvasState: (state) => state.canvasHistory[state.canvasHistoryIndex],

@@ -115,7 +115,7 @@ onMounted(() => {
 });
 
 watch(
-  () => [canvasStore.activePageIndex, canvasStore.selectedVisibility, canvasStore.selectedLock, canvasStore.canvasHistoryIndex],
+  () => [canvasStore.activePageIndex, canvasStore.selectedVisibility, canvasStore.selectedLock, canvasStore.canvasHistoryIndex, ],
   () => {
     console.log("canvasStore.canvasHistoryIndex", canvasStore.canvasHistoryIndex)
     updateLayers();
@@ -126,6 +126,12 @@ watch(
   () => canvasStore.canvasInstances[canvasStore.activePageIndex]?.activeLayerIndex,
   () => {
     updateLayers();
+  }
+);
+watch(
+  () => [canvasStore.selectedObjectAtBack, canvasStore.selectedObjectAtFront],
+  () => {
+    updateLayers();      
   }
 );
 </script>

@@ -20,15 +20,19 @@ onMounted(async () => {
   setTimeout(() => {
     const contentElement = document.querySelector('.editor');
     
-    const width = contentElement.offsetWidth - 100;
-    console.log(width)
-    const height = contentElement.offsetHeight - 100;
+    //const width = contentElement.offsetWidth - 100;
+    const width = 1080
+    // const height = contentElement.offsetHeight - 100;
+    const height = 1080
     console.log(height)
     canvasStore.pageWidth = width
     canvasStore.pageHeight = height
+    canvasStore.zoomLevel = 47
     canvasStore.addNewPage(); 
     loading.value = false  
+    
   }, 1500);
+  
   
  
 });
