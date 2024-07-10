@@ -23,9 +23,11 @@ import { useSubmenuStore } from '../../store/submenuStore'
 import BxsLayer from '~icons/bxs/layer';
 import FluentColorBackground24Regular from '~icons/fluent/color-background-24-regular';
 import MdiResize from '~icons/mdi/resize';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { useCanvasStore } from '~/store/canvasStore';
 
 const submenuStore = useSubmenuStore();
+const canvasStore = useCanvasStore();
 
 const { t } = useI18n();
 
@@ -36,6 +38,13 @@ const openSubmenu = (menu) => {
 }
 
 
+
+watch(
+  () => canvasStore.changeSelected,
+  (n, o) => {
+    console.log("oi2", n, o)
+  }
+)
 
 const menus = [
   { icon: HugeiconsGeometricShapes01, text: 'sidebar.shapes', link: 'Shapes' },

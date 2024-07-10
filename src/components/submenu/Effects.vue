@@ -9,6 +9,10 @@ const hasStroke = ref(false)
 const hasBackground = ref(false)
 const hasShadow = ref(false)
 const hasBlur = ref(false)
+const hasBrightness = ref(false)
+const hasSepia = ref(false)
+const hasGrayscale = ref(false)
+const hasCornerRadius = ref(false)
 
 interface Mark {
   style: CSSProperties
@@ -35,7 +39,7 @@ const handleChangeTextStroke = () =>{
 const handleDisableStroke = () =>{
   if (!hasStroke.value) {
     canvasStore.selectedTextStroke = 0
-    canvasStore.selectedTextStrokeColor = "#000"
+    canvasStore.selectedTextStrokeColor = ""
     canvasStore.changeTextStroke()
     canvasStore.changeTextStrokeColor()
   }else{
@@ -75,23 +79,115 @@ const handleDisableShadow = () => {
   }
 }
 
+const handleDisableBlur = () => {
+  if (!hasBlur.value) {    
+    canvasStore.selectedBlur = 0    
+    canvasStore.changeBlur()
+  }else{    
+    canvasStore.selectedBlur = 10    
+    canvasStore.changeBlur()
+  }
+}
 
-onMounted(() => {
-  if (canvasStore.selectedTextStroke > 1 || canvasStore.selectedTextStrokeColor != "#000"){
+const handleDisableBrightness = () => {
+  if (!hasBrightness.value) {    
+    // canvasStore.selectedBrightness = 100    
+    canvasStore.removeBrightness()
+  }else{    
+    canvasStore.selectedBrightness = 100
+    canvasStore.changeBrightness()
+  }
+}
+
+
+const handleDisableSepia = () => {
+  if (!hasSepia.value) {    
+    canvasStore.selectedSepia = false 
+    canvasStore.changeSepia()
+  }else{    
+    canvasStore.selectedSepia = true    
+    canvasStore.changeSepia()
+  }
+}
+
+const handleDisableGrayscale = () => {
+  if (!hasGrayscale.value) {    
+    canvasStore.selectedGrayscale = false 
+    canvasStore.changeGrayscale()
+  }else{    
+    canvasStore.selectedGrayscale = true    
+    canvasStore.changeGrayscale()
+  }
+}
+
+const handleDisableCornerRadius = () => {
+  if (!hasCornerRadius.value) {    
+    canvasStore.selectedCornerRadius = 0    
+    canvasStore.changeCornerRadius()
+  }else{    
+    canvasStore.selectedCornerRadius = 10    
+    canvasStore.changeCornerRadius()
+  }
+}
+
+const checkValues = () =>{
+  if (canvasStore.selectedTextStroke > 1 || canvasStore.selectedTextStrokeColor){
     hasStroke.value = true
+  }else{
+    hasStroke.value = false
   }
   if (canvasStore.selectedTextBackgroundColor || canvasStore.selectedBackgroundCornerRadius > 0 || canvasStore.selectedBackgroundPadding > 0) {
     hasBackground.value = true
+  }else{
+    hasBackground.value = false
   }
   if (canvasStore.selectedShadowColor){
     hasShadow.value = true
+  }else{
+    hasShadow.value = false
   }
+  if (canvasStore.selectedBlur > 0){
+    hasBlur.value = true
+  }else{
+    hasBlur.value = false
+  }
+
+  if (canvasStore.selectedBrightness){
+    hasBrightness.value = true
+  }else{
+    hasBrightness.value = false
+  }
+
+  if (canvasStore.selectedSepia){
+    hasSepia.value = true
+  }else{
+    hasSepia.value = false
+  }
+
+  if (canvasStore.selectedGrayscale){
+    hasGrayscale.value = true
+  }else{
+    hasGrayscale.value = false
+  }
+
+  if (canvasStore.selectedCornerRadius){
+    hasCornerRadius.value = true
+  }else{
+    hasCornerRadius.value = false
+  }
+}
+
+onMounted(() => {
+  checkValues()
 });
+
+
 
 watch(
   () => canvasStore.isThisObjectSelected,
   (newVal, oldVal) => {
     console.log("canvasStore.isThisObjectSelected", canvasStore.isThisObjectSelected)
+   
     if (!newVal){
       if (submenuStore.lastActive){
         submenuStore.openSubmenu(submenuStore.lastActive, submenuStore.lastComponent)
@@ -103,8 +199,20 @@ watch(
 );
 
 watch(
+  () => canvasStore.changeSelected,
+  (newVal, oldVal) => {
+    console.log("canvasStore.changeSelected", canvasStore.changeSelected)
+    checkValues()
+    
+  }
+);
+
+
+
+
+watch(
   () => canvasStore.selectedTextStrokeColor,
-  () => {
+  (newVal, oldVal) => {   
     canvasStore.changeTextStrokeColor();
   }
 );
@@ -137,6 +245,21 @@ watch(
   }
 );
 
+watch(
+  () => canvasStore.selectedBrightness,
+  () => {
+    if (canvasStore.selectedBrightness)
+      canvasStore.changeBrightness();
+  }
+);
+
+watch(
+  () => canvasStore.selectedCornerRadius,
+  () => {
+    canvasStore.changeCornerRadius();
+  }
+);
+
 
 watch(
   () => [canvasStore.selectedShadowColor, canvasStore.selectedShadowOffSetX, canvasStore.selectedShadowOffSetY, canvasStore.selectedShadowBlur],
@@ -144,6 +267,8 @@ watch(
     canvasStore.changeShadow();
   }
 );
+
+
 </script>
 
 <template>
@@ -160,7 +285,7 @@ watch(
           <el-switch v-model="hasStroke" @change="handleDisableStroke"   />
         </div>        
       </div>
-      <div v-show="hasStroke" style="display:flex" class="tools-open">
+      <div v-show="hasStroke && canvasStore.selectedObjectType == 'textboxça o'" style="display:flex" class="tools-open">
         <div class="color-picker">
           <color-picker v-model:pureColor="canvasStore.selectedTextStrokeColor"  picker-type="chrome"/>
         </div>
@@ -214,6 +339,125 @@ watch(
           <el-slider v-model="canvasStore.selectedBackgroundCornerRadius" />
         </div>
       </div>
+
+
+      <div style="display: flex;margin-top: 10px;" v-if="canvasStore.selectedObjectType == 'image'">
+        <div class="mt-1">
+          <span>{{ $t('menu_header.blur') }}</span>
+        </div>
+        <div class="flex-grow"></div>
+        <div>
+          <el-switch v-model="hasBlur" @change="handleDisableBlur" />
+        </div> 
+      </div>
+      <div class="tools-open" v-show="hasBlur">
+        <div class="mt-3"  style="display:flex">
+          <div class="mt-2">
+            <span>{{ $t('menu_header.blur') }}</span>
+          </div>
+          <div class="flex-grow"/>
+          <div >
+            <el-input-number v-model="canvasStore.selectedBlur" :min="0" :max="100"  controls-position="right"  />
+          </div>
+        </div>
+        <div  style="width: 300px;">
+          <el-slider v-model="canvasStore.selectedBlur" />
+        </div>
+      </div>
+
+
+      <div style="display: flex;margin-top: 10px;" v-if="canvasStore.selectedObjectType == 'image'">
+        <div class="mt-1">
+          <span>{{ $t('menu_header.brightness') }}</span>
+        </div>
+        <div class="flex-grow"></div>
+        <div>
+          <el-switch v-model="hasBrightness" @change="handleDisableBrightness" />
+        </div> 
+      </div>
+      <div class="tools-open" v-show="hasBrightness">
+        <div class="mt-3"  style="display:flex">
+          <div class="mt-2">
+            <span>{{ $t('menu_header.brightness') }}</span>
+          </div>
+          <div class="flex-grow"/>
+          <div >
+            <el-input-number v-model="canvasStore.selectedBrightness" :min="1" :max="200"  controls-position="right"  />
+          </div>
+        </div>
+        <div  style="width: 300px;">
+          <el-slider v-model="canvasStore.selectedBrightness" :max="200" />
+        </div>
+      </div>
+
+       
+
+
+      <div style="display: flex;margin-top: 10px;" v-if="canvasStore.selectedObjectType == 'image'">
+        <div class="mt-1">
+          <span>{{ $t('menu_header.sepia') }}</span>
+        </div>
+        <div class="flex-grow"></div>
+        <div>
+          <el-switch v-model="hasSepia" @change="handleDisableSepia" />
+        </div> 
+      </div>      
+
+
+      <div style="display: flex;margin-top: 10px;" v-if="canvasStore.selectedObjectType == 'image'">
+        <div class="mt-1">
+          <span>{{ $t('menu_header.grayscale') }}</span>
+        </div>
+        <div class="flex-grow"></div>
+        <div>
+          <el-switch v-model="hasGrayscale" @change="handleDisableGrayscale" />
+        </div> 
+      </div>  
+
+      <div class="mt-3" style="display: flex;"  v-if="canvasStore.selectedObjectType == 'image'">
+        <div class="mt-1">
+          <span>{{ $t('menu_header.border') }}</span>
+        </div>
+        <div class="flex-grow"></div>
+        <div>
+          <el-switch v-model="hasStroke" @change="handleDisableStroke"   />
+        </div>        
+      </div>
+      <div v-show="hasStroke" style="display:flex" class="tools-open">
+        <div class="color-picker">
+          <color-picker v-model:pureColor="canvasStore.selectedTextStrokeColor"  picker-type="chrome"/>
+        </div>
+        <div class="flex-grow"></div>
+        <div>
+          <el-input-number v-model="canvasStore.selectedTextStroke" :min="1"   controls-position="right" @change="handleChangeTextStroke" />
+        </div>
+      </div>  
+
+
+      <div style="display: flex;margin-top: 10px;" v-if="canvasStore.selectedObjectType == 'image'">
+        <div class="mt-1">
+          <span>{{ $t('menu_header.corner_radius') }}</span>
+        </div>
+        <div class="flex-grow"></div>
+        <div>
+          <el-switch v-model="hasCornerRadius" @change="handleDisableCornerRadius" />
+        </div> 
+      </div>
+      <div class="tools-open" v-show="hasCornerRadius">
+        <div class="mt-3"  style="display:flex">
+          <div class="mt-2">
+            <span>{{ $t('menu_header.corner_radius') }}</span>
+          </div>
+          <div class="flex-grow"/>
+          <div >
+            <el-input-number v-model="canvasStore.selectedCornerRadius" :min="0" :max="100"  controls-position="right"  />
+          </div>
+        </div>
+        <div  style="width: 300px;">
+          <el-slider v-model="canvasStore.selectedCornerRadius" />
+        </div>
+      </div>
+      
 
       <div style="display: flex;margin-top: 10px;">
         <div class="mt-1">

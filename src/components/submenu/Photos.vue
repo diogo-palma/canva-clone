@@ -132,7 +132,7 @@ watch(photos, distributePhotos);
     </div>
     <el-col :span="12">
       <div v-for="photo in col1" :key="photo.id" class="photo-item">
-        <img @click="handleAddImage(photo.urls.full)" :src="photo.urls.small" :alt="photo.alt_description" />
+        <img @click="handleAddImage(photo.urls.small)" :src="photo.urls.small" :alt="photo.alt_description" />
       </div>
       <div v-if="loading">
         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
@@ -145,7 +145,7 @@ watch(photos, distributePhotos);
     </el-col>
     <el-col :span="12">
       <div v-for="photo in col2" :key="photo.id" class="photo-item">
-        <img @click="handleAddImage(photo.urls.full)" :src="photo.urls.small" :alt="photo.alt_description" />
+        <img @click="handleAddImage(photo.urls.small)" :src="photo.urls.small" :alt="photo.alt_description" />
       </div>
       <div v-if="loading">
         <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">

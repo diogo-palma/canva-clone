@@ -3,11 +3,13 @@ import { useCanvasStore } from "~/store/canvasStore";
 import { useSubmenuStore } from '../../store/submenuStore'
 import { useI18n } from 'vue-i18n';
 import MaterialSymbolsEvShadowOutline from '~icons/material-symbols/ev-shadow-outline';
+import { watch } from "vue";
 
 
 const { t } = useI18n();
 const canvasStore = useCanvasStore();
 const submenuStore = useSubmenuStore();
+
 
 </script>
 

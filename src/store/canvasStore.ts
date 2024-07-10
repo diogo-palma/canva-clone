@@ -6,7 +6,9 @@ import ControlsPlugin from '~/core/ControlHandlers';
 import shortid from 'shortid'
 
 
-
+if (fabric.isWebglSupported()){  
+  fabric.textureSize = 65536;
+} 
 export const useCanvasStore = defineStore('canvasStore', {
   state: () => ({
     canvasInstances: [] as { canvas: fabric.Canvas, activeLayerIndex: number }[],
@@ -33,7 +35,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     selectedLineHeight: 100,
     selectedLetterSpace: 0,
     selectedTextStroke: 1,
-    selectedTextStrokeColor: "#000",
+    selectedTextStrokeColor: "",
     selectedTextBackgroundColor: '',
     selectedBackgroundPadding: 0,
     selectedBackgroundCornerRadius: 0,
@@ -42,6 +44,9 @@ export const useCanvasStore = defineStore('canvasStore', {
     selectedShadowOffSetY: 5,
     selectedShadowBlur: 0,
     selectedBlur: 0,
+    selectedBrightness: 0,
+    selectedSepia: false,
+    selectedGrayscale: true,
     selectedAnimationDuration: 1,
     selectdElevationAnimationInitialTop: 0,
     selectdElevationAnimationFinalTop: 0,
@@ -53,6 +58,8 @@ export const useCanvasStore = defineStore('canvasStore', {
     selectedLock: false,
     removedPagesCount: [],
     selectedOpacity: 1,
+    changeSelected: false,
+    selectedCornerRadius: 0
   }),
   actions: {
     async addNewPage(move: boolean = true) {
@@ -126,6 +133,7 @@ export const useCanvasStore = defineStore('canvasStore', {
               delete obj.customSelectionBox;
           }
         });
+        this.changeSelected = true
         const activeObject = fabricCanvasObj.getActiveObject();
         this.updateObjectSelection(!!activeObject);
         if (activeObject) {
@@ -144,6 +152,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       const handleMovingStart = () => {
         isMoving = true;        
         this.changeBackgroundColor()
+        this.changeCornerRadius()
       };
       
 
@@ -489,21 +498,20 @@ export const useCanvasStore = defineStore('canvasStore', {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
     
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
-        activeObject.set('strokeWidth', this.selectedTextStroke);
-        canvas.renderAll();
-        this.saveCanvasState();
-      }
+      
+      activeObject.set('strokeWidth', this.selectedTextStroke);
+      canvas.renderAll();
+      this.saveCanvasState();
+      
     },
     changeTextStrokeColor() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
     
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
-        activeObject.set('stroke', this.selectedTextStrokeColor); 
-        canvas.renderAll();
-        this.saveCanvasState();
-      }
+      activeObject.set('stroke', this.selectedTextStrokeColor); 
+      canvas.renderAll();
+      this.saveCanvasState();
+      
     },
     changeBackgroundColor() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
@@ -636,10 +644,128 @@ export const useCanvasStore = defineStore('canvasStore', {
     changeBlur() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
-  
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
-        activeObject.setBlur(this.selectedBlur);
+    
+      if (activeObject && activeObject.type === 'image') {
+        const blurValue = this.selectedBlur / 100;
+    
+        const blurFilter = new fabric.Image.filters.Blur({
+          blur: blurValue
+        });
+           
+        if (!activeObject.filters) {
+          activeObject.filters = [];
+        }
+           
+        activeObject.filters = activeObject.filters.filter(filter => !(filter instanceof fabric.Image.filters.Blur));
+           
+        activeObject.filters.push(blurFilter);
+           
+        activeObject.applyFilters();
         canvas.renderAll();
+           
+        this.saveCanvasState();
+      } 
+    },
+    changeBrightness() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      if (activeObject && activeObject.type === 'image') {
+        function mapBrightness(value) {
+          // Mapear o valor de 1 a 200 para -1 a 1
+          const minValue = 1;
+          const maxValue = 200;
+          const minMappedValue = -1;
+          const maxMappedValue = 1;
+        
+         
+          const mappedValue = ((value - minValue) / (maxValue - minValue)) * (maxMappedValue - minMappedValue) + minMappedValue;
+        
+          return mappedValue;
+        }
+        const mappedBrightness = mapBrightness(this.selectedBrightness);
+        const brightnessFilter = new fabric.Image.filters.Brightness({
+          brightness: mappedBrightness
+        });
+        if (!activeObject.filters) {
+          activeObject.filters = [];
+        }
+        activeObject.filters = activeObject.filters.filter(filter => !(filter instanceof fabric.Image.filters.Brightness));
+        activeObject.filters.push(brightnessFilter);
+        activeObject.applyFilters();
+        canvas.renderAll();
+        this.saveCanvasState();
+      } 
+    },
+    removeBrightness() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      if (activeObject && activeObject.type === 'image') {
+        if (activeObject.filters) {
+          activeObject.filters = activeObject.filters.filter(filter => !(filter instanceof fabric.Image.filters.Brightness));
+          activeObject.applyFilters();
+          canvas.renderAll();
+          this.saveCanvasState();
+        }
+      }
+    },
+    changeSepia() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      if (activeObject && activeObject.type === 'image') {
+        const hasSepiaFilter = activeObject.filters.some(filter => filter instanceof fabric.Image.filters.Sepia);
+        this.selectedSepia = hasSepiaFilter;
+        if (hasSepiaFilter) {
+          activeObject.filters = activeObject.filters.filter(filter => !(filter instanceof fabric.Image.filters.Sepia));
+        } else {
+          const sepiaFilter = new fabric.Image.filters.Sepia();
+          activeObject.filters.push(sepiaFilter);
+        }
+    
+        activeObject.applyFilters();
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
+    },
+    changeGrayscale() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      if (activeObject && activeObject.type === 'image') {
+        const hasGrayscaleFilter = activeObject.filters.some(filter => filter instanceof fabric.Image.filters.Grayscale);
+
+        this.selectedGrayscale = hasGrayscaleFilter
+        if (hasGrayscaleFilter) {
+          activeObject.filters = activeObject.filters.filter(filter => !(filter instanceof fabric.Image.filters.Grayscale));
+        } else {
+          const grayscaleFilter = new fabric.Image.filters.Grayscale();
+          activeObject.filters.push(grayscaleFilter);
+        }
+    
+        activeObject.applyFilters();
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
+    },
+    changeCornerRadius() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+    
+      if (activeObject && activeObject.type === 'image') {
+        const cornerRadius = this.selectedCornerRadius;
+        if (this.selectedCornerRadius > 0){
+          const clipPath = new fabric.Rect({
+            left: activeObject.left,
+            top: activeObject.top,
+            rx: cornerRadius,
+            ry: cornerRadius,
+            width: activeObject.width * activeObject.scaleX,
+            height: activeObject.height * activeObject.scaleY,
+            absolutePositioned: true
+          });
+      
+          activeObject.set({ clipPath });
+          activeObject.set('cornerRadius', this.selectedCornerRadius)
+          canvas.renderAll();
+        }
       }
     },
     changeBackgroundCornerRadius() {
@@ -888,7 +1014,7 @@ export const useCanvasStore = defineStore('canvasStore', {
         canvas.add(image).setActiveObject(image);
         canvas.renderAll();
         this.saveCanvasState();
-      });
+      }, { crossOrigin: 'anonymous' });
     },
     updateSelectedObjectColor(activeObject: any) {
       
@@ -1027,7 +1153,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     },
     checkObjectType(obj: any) {      
       const activeObjects = obj.getActiveObjects();
-
+      
       if (activeObjects.length === 1) {
               
         console.log("selectedObjectType", this.selectedObjectType) 
@@ -1036,6 +1162,44 @@ export const useCanvasStore = defineStore('canvasStore', {
         this.selectedVisibility = activeObject.visible
         this.selectedLock = activeObject.get('lockRotation')
         this.selectedOpacity = activeObject.get('opacity') * 100
+        this.selectedCornerRadius = activeObject.get('cornerRadius')
+       
+        this.selectedBlur  = 0;
+        this.selectedBrightness = null;
+        this.selectedSepia = false
+        this.selectedGrayscale = false
+
+        function unmapBrightness(mappedValue) {
+          const minValue = 1;
+          const maxValue = 200;
+          const minMappedValue = -1;
+          const maxMappedValue = 1;
+        
+          const value = ((mappedValue - minMappedValue) / (maxMappedValue - minMappedValue)) * (maxValue - minValue) + minValue;
+        
+          return value;
+        }
+
+        if (activeObject.filters) {
+          activeObject.filters.forEach(filter => {
+            if (filter instanceof fabric.Image.filters.Blur) {
+              
+              this.selectedBlur = filter.blur * 100; 
+            }
+            if (filter instanceof fabric.Image.filters.Brightness){
+              this.selectedBrightness = unmapBrightness(filter.brightness)
+            }
+            if (filter instanceof fabric.Image.filters.Sepia){
+              this.selectedSepia = true
+            }
+            if (filter instanceof fabric.Image.filters.Grayscale){
+              this.selectedGrayscale = true
+            }
+          });
+        }
+
+        
+
         if (activeObject.type === 'text' || activeObject.type === 'textbox') {        
           this.selectedFont = activeObject.fontFamily;
           this.fontSize = activeObject.fontSize;
@@ -1048,6 +1212,7 @@ export const useCanvasStore = defineStore('canvasStore', {
           this.selectedTextItalic = isItalic;
           const isLinethrough = activeObject.get('linethrough');
           this.selectedTextStrikethrough = isLinethrough;
+          this.selectedTextStrokeColor = activeObject.get('stroke')
           this.selectedLineHeight = activeObject.get('lineHeight') * 10
           this.selectedBackgroundPadding = activeObject.get('textPadding');
           this.selectedTextBackgroundColor = activeObject.get('backgroundColor');
@@ -1066,6 +1231,10 @@ export const useCanvasStore = defineStore('canvasStore', {
       }else{
         this.selectedObjectType = 'groups';
       }
+      setTimeout(() => {
+        this.changeSelected = false  
+      }, 1000);
+      
     },
     setZoom(applyZoom = true) {
       let zoomLevel = this.zoomLevel;

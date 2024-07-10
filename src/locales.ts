@@ -100,7 +100,12 @@ const locales = {
       align_right: "Align right",
       align_bottom: "Align bottom",
       group: "Group",
-      ungroup: "Ungroup"
+      ungroup: "Ungroup",
+      brightness: "Brightness",
+      sepia: "Sepia",
+      grayscale: "Grayscale",
+      border: "Border",      
+      
     },
     
     shapes:{

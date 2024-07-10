@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, unref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, unref, watch, nextTick } from 'vue'
 import { useI18n } from 'vue-i18n';
 import SolarUndoLeftRoundBroken from '~icons/solar/undo-left-round-broken';
 import SolarUndoRightRoundBroken from '~icons/solar/undo-right-round-broken';
@@ -77,7 +77,7 @@ const handleResize = () => {
       // moreTools.value.appendChild(componentToMove);
       moreTools.value.insertAdjacentElement('afterbegin', componentToMove)      
     }
-  } else if (currentWindowWidth > lastWindowWidth.value && toolsPosition.right + 100 <= toolsRoghtPosition.left) {
+  } else if (currentWindowWidth >= lastWindowWidth.value && toolsPosition.right + 100 <= toolsRoghtPosition.left) {
     const moreToolComponents = Array.from(moreTools.value.children);
     const componentToMoveBack = moreToolComponents.shift();
     if (componentToMoveBack) {
@@ -148,9 +148,23 @@ const getLock = computed(() => {
 
 watch(
   () => canvasStore.isThisObjectSelected,
-  (newVal, oldVal) => {
+  async (newVal, oldVal) => {
+    await nextTick()
     setTimeout(() => {
+      
       handleMoreTools();  
+    }, 100);
+    
+  }
+);
+
+
+watch(
+  () => canvasStore.selectedObjectType,
+  async (newVal, oldVal) => {
+    await nextTick()
+    setTimeout(() => {      
+      handleResize();  
     }, 100);
     
   }
