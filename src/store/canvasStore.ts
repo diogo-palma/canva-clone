@@ -110,7 +110,9 @@ export const useCanvasStore = defineStore('canvasStore', {
     
       const handleScalingStart = () => {
         isScaling = true;
+        console.log("scale")
         this.changeBackgroundPadding
+        this.changeTextStroke
       };
     
       const handleMouseUp = () => {
@@ -152,8 +154,13 @@ export const useCanvasStore = defineStore('canvasStore', {
       const handleMovingStart = () => {
         isMoving = true;        
         this.changeBackgroundColor()
-        this.changeCornerRadius()
+        this.changeCornerRadius()        
       };
+
+      const handleObjectModified = () =>{
+        this.changeBackgroundColor
+        this.changeCornerRadius
+      }
       
 
 
@@ -164,7 +171,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       fabricCanvasObj.on('selection:created', handleSelectionChanged);
       fabricCanvasObj.on('selection:updated', handleSelectionChanged);
       fabricCanvasObj.on('selection:cleared', handleSelectionChanged);
-      fabricCanvasObj.on('object:modified', this.changeBackgroundColor)
+      fabricCanvasObj.on('object:modified', handleObjectModified)
       fabricCanvasObj.on('mouse:move', (e) => {
         const target = e.target;
         const active = fabricCanvasObj.getActiveObjects().includes(target)
@@ -497,11 +504,14 @@ export const useCanvasStore = defineStore('canvasStore', {
     changeTextStroke() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
-    
       
-      activeObject.set('strokeWidth', this.selectedTextStroke);
-      canvas.renderAll();
-      this.saveCanvasState();
+      if (activeObject.type == "image" && this.selectedCornerRadius > 0){
+        this.changeCornerRadius()
+      }else{
+        activeObject.set('strokeWidth', this.selectedTextStroke);
+        canvas.renderAll();
+        this.saveCanvasState();
+      }
       
     },
     changeTextStrokeColor() {
@@ -615,6 +625,8 @@ export const useCanvasStore = defineStore('canvasStore', {
         }
 
         const padding = this.selectedBackgroundPadding || 1; 
+
+        console.log("setou padding", padding)
 
         activeObject.set('textPadding', padding);
     
@@ -751,14 +763,19 @@ export const useCanvasStore = defineStore('canvasStore', {
     
       if (activeObject && activeObject.type === 'image') {
         const cornerRadius = this.selectedCornerRadius;
+        if (activeObject.clipPath) {
+          activeObject.clipPath = null;
+        }
         if (this.selectedCornerRadius > 0){
           const clipPath = new fabric.Rect({
             left: activeObject.left,
             top: activeObject.top,
             rx: cornerRadius,
             ry: cornerRadius,
-            width: activeObject.width * activeObject.scaleX,
-            height: activeObject.height * activeObject.scaleY,
+            stroke: this.selectedTextStrokeColor,
+            strokeWidth: this.selectedTextStroke,
+            width: activeObject.width * activeObject.scaleX ,
+            height: activeObject.height * activeObject.scaleY ,
             absolutePositioned: true
           });
       
@@ -847,7 +864,8 @@ export const useCanvasStore = defineStore('canvasStore', {
           fontSize: fontSize,
         });
         activeObject.set('width', tempText.width);
-        this.changeBackgroundPadding()
+        if (this.selectedBackgroundPadding)
+          this.changeBackgroundPadding()
         canvas.renderAll();
         this.saveCanvasState();
       }
@@ -1589,6 +1607,10 @@ export const useCanvasStore = defineStore('canvasStore', {
         this.saveCanvasState()
       }
     },
+    canvasToJson() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      console.log(JSON.stringify(canvas)) 
+    }
   },
   getters: {
     currentCanvasState: (state) => state.canvasHistory[state.canvasHistoryIndex],

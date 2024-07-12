@@ -21,13 +21,13 @@ onMounted(async () => {
     const contentElement = document.querySelector('.editor');
     
     //const width = contentElement.offsetWidth - 100;
-    const width = 1080
+    const width = 300
     // const height = contentElement.offsetHeight - 100;
-    const height = 1080
+    const height = 300
     console.log(height)
     canvasStore.pageWidth = width
     canvasStore.pageHeight = height
-    canvasStore.zoomLevel = 47
+    // canvasStore.zoomLevel = 47
     canvasStore.addNewPage(); 
     loading.value = false  
     

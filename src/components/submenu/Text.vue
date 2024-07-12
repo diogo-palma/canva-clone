@@ -45,6 +45,14 @@ const addText = (type: string) => {
     <div @click="addText('text')">
       <span class="create-text">{{$t('canvas.create_text')}}</span>
     </div>
+    
+      <el-row>
+        <el-col :span="12">
+          <img class="text-img" src="../../assets/texts/text-life-is-an-adventure.png" alt="" srcset="">
+        </el-col>
+      </el-row>        
+      
+    
   </div>
 </template>
 
@@ -59,9 +67,17 @@ const addText = (type: string) => {
 .text-list > div{
   cursor: pointer;
 }
+.text-img{
+  width: 100%;
+}
 .create-title{
   font-size: 22px;
   font-weight: 800;
+}
+
+.text-examples{
+  display: flex;
+  flex-direction: row;
 }
 
 .create-subtitle{

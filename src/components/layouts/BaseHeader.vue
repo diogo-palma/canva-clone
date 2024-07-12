@@ -38,6 +38,7 @@ const saveImage = () => {
               </el-menu-item>
               <el-menu-item index="2-2-3">PDF</el-menu-item>
             </el-sub-menu>
+            <el-menu-item index="2-3" @click="canvasStore.canvasToJson">JSON</el-menu-item> 
           </el-sub-menu>
           
         </el-menu>

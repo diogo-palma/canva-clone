@@ -8,8 +8,6 @@ const lines = ref([]);
 const shapes = ref([]);
 const isLoading = ref(true);
 
-const lineImports = import.meta.glob('~/assets/lines/*.svg', { eager: true });
-const shapeImports = import.meta.glob('~/assets/shapes/*.svg', { eager: true });
 
 
 const fetchFileCreationDate = async (path) => {
