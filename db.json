@@ -1,0 +1,27 @@
+{
+  "texts": [
+    {
+      "id": "eff9",
+      "filename": "life_is_an_adventure.png",
+      "textsObjs": [
+        {
+          "text": "Life is an",
+          "left": 53,
+          "top": 100,
+          "fontSize": 25,
+          "fill": "rgb(0,0,0)",
+          "fontFamily": "Verdana"
+        },
+        {
+          "text": "Adventure",
+          "left": 16,
+          "top": 115,
+          "fontSize": 65,
+          "fill": "rgb(0,0,0)",
+          "fontFamily": "Aerovias Brasil NF"
+        }
+      ]
+    }
+  ],
+  "templates": []
+}

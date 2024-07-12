@@ -4,7 +4,9 @@ import { nextTick } from 'vue';
 import { markRaw } from 'vue';
 import ControlsPlugin from '~/core/ControlHandlers';
 import shortid from 'shortid'
+import axios from 'axios'
 
+const URL_API = import.meta.env.VITE_API_URL;
 
 if (fabric.isWebglSupported()){  
   fabric.textureSize = 65536;
@@ -1140,6 +1142,44 @@ export const useCanvasStore = defineStore('canvasStore', {
         link.click();
         document.body.removeChild(link);
       }
+    },
+    async saveTextsTemplates(filename: string) {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const objects = canvas.getObjects('textbox');
+      const textsObjs = objects.map(obj => ({
+        text: obj.text,
+        left: obj.left,
+        top: obj.top,
+        fontSize: obj.fontSize,
+        fill: obj.fill,
+        fontFamily: obj.fontFamily,
+      }));
+
+      console.log("textsObjs", textsObjs)
+
+      const data = {
+        filename: filename + ".png",
+        textsObjs
+      }
+      console.log("data", data)
+      await axios.post(URL_API+ '/texts', data)
+
+    },
+    loadTextsTemplates(obj: any){
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+
+      obj.forEach(text => {
+        const textObj = new fabric.Text(text.text, {
+          left: text.left,
+          top: text.top,
+          fontSize: text.fontSize,
+          fill: text.fill,
+          fontFamily: text.fontFamily,
+        });
+        canvas.add(textObj);
+      });
+      canvas.renderAll();
+      this.saveCanvasState();
     },
     changeShadow() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;

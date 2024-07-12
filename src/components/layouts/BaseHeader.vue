@@ -6,6 +6,8 @@ import { useI18n } from 'vue-i18n';
 
 const canvasStore = useCanvasStore();
 const dialogVisible = ref(false)
+const dialogVisibleTexts = ref(false)
+const inputTextName = ref('')
 const imageFormat = ref('png')
 const { t } = useI18n();
 
@@ -13,6 +15,11 @@ const saveImage = () => {
   console.log("imageFormat.value", imageFormat.value)
   canvasStore.saveImage(imageFormat.value)
   dialogVisible.value = false
+}
+
+const handleSaveTextTemplate = () =>{
+  canvasStore.saveTextsTemplates(inputTextName.value)
+  dialogVisibleTexts.value = false
 }
 </script>
 
@@ -38,7 +45,7 @@ const saveImage = () => {
               </el-menu-item>
               <el-menu-item index="2-2-3">PDF</el-menu-item>
             </el-sub-menu>
-            <el-menu-item index="2-3" @click="canvasStore.canvasToJson">JSON</el-menu-item> 
+            <el-menu-item index="2-3" @click="dialogVisibleTexts = true">Text template</el-menu-item> 
           </el-sub-menu>
           
         </el-menu>
@@ -47,6 +54,22 @@ const saveImage = () => {
       <div class="flex-align-center">
         <LocaleChanger/>
       </div>
+
+      <el-dialog
+        v-model="dialogVisibleTexts"
+        title="Tips"
+        width="500"        
+      >
+        <el-input v-model="inputTextName" style="width: 240px"  />
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button @click="dialogVisible = false">Cancel</el-button>
+            <el-button type="primary" @click="handleSaveTextTemplate">
+              Confirm
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
       
       <el-dialog
         v-model="dialogVisible"        

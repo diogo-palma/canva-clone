@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { fontWeight } from 'html2canvas/dist/types/css/property-descriptors/font-weight';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useCanvasStore } from '~/store/canvasStore';
+import axios from 'axios';
 
+const URL_API = import.meta.env.VITE_API_URL;
+const textsTemplates = ref([])
 const canvasStore = useCanvasStore()
 const textItems = ref([
   {
@@ -32,6 +35,12 @@ const addText = (type: string) => {
   console.log(item[type])
   canvasStore.addText(item[type])
 }
+
+onMounted(async () => {
+  const response = await axios.get(URL_API +'/texts');
+  console.log("response", response.data)
+  textsTemplates.value = response.data;
+})
 </script>
 
 <template>
@@ -46,11 +55,11 @@ const addText = (type: string) => {
       <span class="create-text">{{$t('canvas.create_text')}}</span>
     </div>
     
-      <el-row>
-        <el-col :span="12">
-          <img class="text-img" src="../../assets/texts/text-life-is-an-adventure.png" alt="" srcset="">
-        </el-col>
-      </el-row>        
+    <el-row>
+      <el-col v-for="template in textsTemplates" :key="template.id" :span="12">
+        <img @click="canvasStore.loadTextsTemplates(template.textsObjs)" :src="'/src/assets/texts/'+template.filename" alt="" srcset="" style="width: 100%;max-height: 300px;">
+      </el-col>
+    </el-row>        
       
     
   </div>
