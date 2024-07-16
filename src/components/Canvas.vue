@@ -21,13 +21,12 @@ onMounted(async () => {
     const contentElement = document.querySelector('.editor');
     
     //const width = contentElement.offsetWidth - 100;
-    const width = 300
+    const width = 1080
     // const height = contentElement.offsetHeight - 100;
-    const height = 300
-    console.log(height)
+    const height = 720
     canvasStore.pageWidth = width
     canvasStore.pageHeight = height
-    // canvasStore.zoomLevel = 47
+    canvasStore.zoomLevel = 67
     canvasStore.addNewPage(); 
     loading.value = false  
     
@@ -45,6 +44,30 @@ watch(
     
   }
 )
+
+window.addEventListener('keydown', (e) => {
+  const canvas = canvasStore.canvasInstances[canvasStore.activePageIndex].canvas;
+  const activeObject = canvas.getActiveObject();
+  const inputComFoco = document.activeElement;
+
+ const isCanvasFocused = inputComFoco && inputComFoco.tagName === 'INPUT'
+ 
+  if (!isCanvasFocused){
+    if (e.key == 'Delete'){
+      const isEditingText = activeObject && activeObject.isEditing;
+      if (!isEditingText)
+        canvasStore.removeObject()
+    } else if (e.ctrlKey && e.key === 'c') {
+      canvasStore.copyObject();
+    } else if (e.ctrlKey && e.key === 'v') {
+      canvasStore.pasteObject();
+    } else if (e.ctrlKey && e.key === 'z') {
+      canvasStore.undo()
+    } else if (e.ctrlKey && e.key === 'y') {
+      canvasStore.redo();
+    } 
+  }
+})
 
 </script>
 

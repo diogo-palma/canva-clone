@@ -25,6 +25,7 @@ import FluentColorBackground24Regular from '~icons/fluent/color-background-24-re
 import MdiResize from '~icons/mdi/resize';
 import { ref, watch } from 'vue';
 import { useCanvasStore } from '~/store/canvasStore';
+import TablerTemplate from '~icons/tabler/template';
 
 const submenuStore = useSubmenuStore();
 const canvasStore = useCanvasStore();
@@ -47,6 +48,7 @@ watch(
 )
 
 const menus = [
+  { icon: TablerTemplate, text: 'sidebar.templates', link: 'Templates' },
   { icon: HugeiconsGeometricShapes01, text: 'sidebar.shapes', link: 'Shapes' },
   { icon: IconParkOutlineText, text: 'sidebar.text', link: 'Text'},
   { icon: BiImages, text: 'sidebar.photos', link: 'Photos' },

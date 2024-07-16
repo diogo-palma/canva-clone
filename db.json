@@ -903,6 +903,11 @@
           "fontFamily": "TalkingToTheMoon"
         }
       ]
+    },
+    {
+      "id": "f2bc",
+      "filename": ".png",
+      "textsObjs": []
     }
   ],
   "templates": []

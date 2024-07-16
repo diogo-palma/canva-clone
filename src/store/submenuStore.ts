@@ -9,6 +9,7 @@ import Photos from '../components/submenu/Photos.vue'
 import Upload from '../components/submenu/Upload.vue'
 import Background from '../components/submenu/Background.vue'
 import Resize from '../components/submenu/Resize.vue'
+import Templates from '../components/submenu/Templates.vue'
 
 
 export const useSubmenuStore = defineStore('submenu', {
@@ -47,7 +48,8 @@ export const useSubmenuStore = defineStore('submenu', {
         Photos,
         Upload,
         Background,
-        Resize
+        Resize,
+        Templates
       };
       
       this.currentComponent = markRaw(availableComponents[componentName]) || null;

@@ -7,7 +7,9 @@ import { useI18n } from 'vue-i18n';
 const canvasStore = useCanvasStore();
 const dialogVisible = ref(false)
 const dialogVisibleTexts = ref(false)
+const dialogVisibleTemplates = ref(false)
 const inputTextName = ref('')
+const inputTemplateName = ref('')
 const imageFormat = ref('png')
 const { t } = useI18n();
 
@@ -20,6 +22,11 @@ const saveImage = () => {
 const handleSaveTextTemplate = () =>{
   canvasStore.saveTextsTemplates(inputTextName.value)
   dialogVisibleTexts.value = false
+}
+
+const handleSaveDesignTemplate = () =>{
+  canvasStore.saveDesignTemplates(inputTemplateName.value)
+  dialogVisibleTemplates.value = false
 }
 </script>
 
@@ -46,6 +53,7 @@ const handleSaveTextTemplate = () =>{
               <el-menu-item index="2-2-3">PDF</el-menu-item>
             </el-sub-menu>
             <el-menu-item index="2-3" @click="dialogVisibleTexts = true">Text template</el-menu-item> 
+            <el-menu-item index="2-4" @click="dialogVisibleTemplates = true">Design template</el-menu-item> 
           </el-sub-menu>
           
         </el-menu>
@@ -65,6 +73,22 @@ const handleSaveTextTemplate = () =>{
           <div class="dialog-footer">
             <el-button @click="dialogVisible = false">Cancel</el-button>
             <el-button type="primary" @click="handleSaveTextTemplate">
+              Confirm
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
+
+      <el-dialog
+        v-model="dialogVisibleTemplates"
+        title="Tips"
+        width="500"        
+      >
+        <el-input v-model="inputTemplateName" style="width: 240px"  />
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button @click="dialogVisibleTemplates = false">Cancel</el-button>
+            <el-button type="primary" @click="handleSaveDesignTemplate">
               Confirm
             </el-button>
           </div>

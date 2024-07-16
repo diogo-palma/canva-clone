@@ -19,7 +19,8 @@ const locales = {
       layers: "Layers",
       photos: "Photos",
       background: "Background",
-      resize: "Resize"
+      resize: "Resize",
+      templates: "Templates"
     },
     upload:{
       only_images: "Only images"

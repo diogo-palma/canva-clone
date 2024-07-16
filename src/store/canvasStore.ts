@@ -11,6 +11,8 @@ const URL_API = import.meta.env.VITE_API_URL;
 if (fabric.isWebglSupported()){  
   fabric.textureSize = 65536;
 } 
+
+
 export const useCanvasStore = defineStore('canvasStore', {
   state: () => ({
     canvasInstances: [] as { canvas: fabric.Canvas, activeLayerIndex: number }[],
@@ -61,7 +63,8 @@ export const useCanvasStore = defineStore('canvasStore', {
     removedPagesCount: [],
     selectedOpacity: 1,
     changeSelected: false,
-    selectedCornerRadius: 0
+    selectedCornerRadius: 0,
+    clonedObject: null,    
   }),
   actions: {
     async addNewPage(move: boolean = true) {
@@ -587,6 +590,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
 
       const activeObjects = canvas.getActiveObjects();
+      this.saveCanvasState();
       if (activeObjects.length == 1){
         const activeObject = activeObjects[0]
         if (activeObject) {
@@ -1179,6 +1183,58 @@ export const useCanvasStore = defineStore('canvasStore', {
       await axios.post(URL_API+ '/texts', data)
 
     },
+    async saveDesignTemplates(filename: string) {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+
+      const backgroundColor = canvas.backgroundColor;
+      const backgroundImage = canvas.backgroundImage ? canvas.backgroundImage.src : null;
+
+      const textObjects = canvas.getObjects('i-text').map(obj => ({
+        type: 'i-text',
+        text: obj.text,
+        left: obj.left,
+        top: obj.top,
+        fontSize: obj.fontSize,
+        fill: obj.fill,
+        fontFamily: obj.fontFamily,
+        angle: obj.angle,
+      }));
+
+      const svgObjects = canvas.getObjects('path').map(obj => ({
+        type: 'svg',
+        svg: obj.src,
+        left: obj.left,
+        top: obj.top,
+        scaleX: obj.scaleX,
+        scaleY: obj.scaleY,
+        angle: obj.angle,
+      }));
+
+      const imageObjects = canvas.getObjects('image').map(obj => ({
+        type: 'image',
+        src: obj.getSrc(),
+        left: obj.left,
+        top: obj.top,
+        scaleX: obj.scaleX,
+        scaleY: obj.scaleY,
+        angle: obj.angle,
+        stroke: obj.stroke
+      }));
+
+      const allObjects = [...textObjects, ...svgObjects, ...imageObjects];
+
+      const data = {
+        filename: filename + ".png",
+        backgroundColor,
+        backgroundImage,
+        objects: allObjects,
+        width: canvas.width,
+        height: canvas.height
+      };
+
+      console.log("data", data)
+
+    },
     loadTextsTemplates(obj: any){
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
 
@@ -1600,33 +1656,56 @@ export const useCanvasStore = defineStore('canvasStore', {
         this.saveCanvasState();
     },
     changeTransparency() {
+
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
-      const activeObject = canvas.getActiveObject();
-      const opacity = this.selectedOpacity / 100
+      const activeObjects = canvas.getActiveObjects();
       
-      if (activeObject) {
-        activeObject.set({ opacity: opacity });
-        canvas.renderAll();
-        this.saveCanvasState();
+      const opacity = this.selectedOpacity / 100
+
+      if (activeObjects.length == 1){  
+        const activeObject = activeObjects[0]
+        activeObject.set({ opacity: opacity });        
+      }else{
+        for (let index = 0; index < activeObjects.length; index++) {
+          const activeObject = activeObjects[index];
+          activeObject.set({ opacity: opacity }); 
+        }
       }
+
+      canvas.renderAll();
+      this.saveCanvasState();
+      
     },
     duplicateObject() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
-      const activeObject = canvas.getActiveObject();
+      const activeObjects = canvas.getActiveObjects();
       
-      if (activeObject) {
-        activeObject.clone((cloned) => {
-          cloned.set({
-            left: activeObject.left + 10, 
-            top: activeObject.top + 10,
-            evented: true
+      function duplicateObject(activeObject: any){
+        if (activeObject) {
+          activeObject.clone((cloned) => {
+            cloned.set({
+              left: activeObject.left + 10, 
+              top: activeObject.top + 10,
+              evented: true
+            });
+            canvas.add(cloned);
+            canvas.setActiveObject(cloned);
+          
           });
-          canvas.add(cloned);
-          canvas.setActiveObject(cloned);
-          canvas.renderAll();
-          this.saveCanvasState();
-        });
+        }
       }
+      if (activeObjects.length == 1){
+        const activeObject = activeObjects[0]
+        duplicateObject(activeObject)
+      }else{
+        for (let index = 0; index < activeObjects.length; index++) {
+          const activeObject = activeObjects[index];
+          duplicateObject(activeObject)
+        }
+      }
+
+      canvas.renderAll();
+      this.saveCanvasState();
     },
     groupObjects() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
@@ -1664,7 +1743,48 @@ export const useCanvasStore = defineStore('canvasStore', {
     canvasToJson() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       console.log(JSON.stringify(canvas)) 
-    }
+    },
+    copyObject() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      
+      if (activeObject) {
+        activeObject.clone((cloned) => {
+          this.clonedObject = cloned;
+        });
+      }
+    },
+    pasteObject() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      
+      if (this.clonedObject) {
+        this.clonedObject.clone((clonedObj) => {
+          canvas.discardActiveObject();
+          clonedObj.set({
+            left: clonedObj.left + 10,
+            top: clonedObj.top + 10,
+            evented: true,
+          });
+          if (clonedObj.type === 'activeSelection') {
+            // active selection needs a reference to the canvas.
+            clonedObj.canvas = canvas;
+            clonedObj.forEachObject(function(obj) {
+              canvas.add(obj);
+            });
+            // this should solve the unselectability
+            clonedObj.setCoords();
+          } else {
+            canvas.add(clonedObj);
+          }
+          this.clonedObject.top += 10;
+          this.clonedObject.left += 10;
+          canvas.setActiveObject(clonedObj);
+          canvas.requestRenderAll();
+          this.saveCanvasState();
+        });
+      }
+    },
+    
   },
   getters: {
     currentCanvasState: (state) => state.canvasHistory[state.canvasHistoryIndex],

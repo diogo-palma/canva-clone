@@ -71,6 +71,7 @@ declare module 'vue' {
     Photos: typeof import('./components/submenu/Photos.vue')['default']
     Resize: typeof import('./components/submenu/Resize.vue')['default']
     Shapes: typeof import('./components/submenu/Shapes.vue')['default']
+    Templates: typeof import('./components/submenu/Templates.vue')['default']
     Text: typeof import('./components/submenu/Text.vue')['default']
     TextAlign: typeof import('./components/tools/TextAlign.vue')['default']
     TextBold: typeof import('./components/tools/TextBold.vue')['default']

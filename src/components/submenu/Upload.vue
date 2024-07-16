@@ -15,6 +15,24 @@ const canvasStore = useCanvasStore();
 
 const fileList = ref<UploadUserFile[]>([])
 
+const importAll = (context) => Object.keys(context).map(key => ({ key, module: context[key]() }));
+
+const imageModules = importAll(import.meta.glob('/src/assets/templates/*.{png,jpg,jpeg,svg}'));
+
+Promise.all(imageModules.map(({ module }) => module)).then(images => {
+  images.forEach((image, index) => {
+    const file = {
+      name: `image-${index}`,
+      url: image.default,
+      uid: `${index}`,
+      raw: {
+        type: 'image/png'
+      }
+    };
+    fileList.value.push(file);
+  });
+});
+
 const handlePictureCardPreview = (file) => {
   if (file.url) {
     console.log("file.raw.type", file.raw.type)
