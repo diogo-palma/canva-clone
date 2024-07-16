@@ -201,6 +201,7 @@ export const useCanvasStore = defineStore('canvasStore', {
                   strokeWidth: 2,
                   selectable: false,
                   evented: false,
+                  angle: target.angle
               });
   
               target.customSelectionBox = selectionBox;
@@ -419,7 +420,7 @@ export const useCanvasStore = defineStore('canvasStore', {
         lastTop = lastObject.top + lastTop;
       }
     
-      const newText = new fabric.Textbox(attributes.text, {
+      const newText = new fabric.IText(attributes.text, {
         ...attributes
       });
     
@@ -436,7 +437,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     
       const id = shortid.generate();
     
-      const addText = new fabric.Textbox(attributes.text, {
+      const addText = new fabric.IText(attributes.text, {
         id,
         left: lastLeft,
         top: lastTop,
@@ -454,7 +455,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       this.selectedFont = font; 
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+      if (activeObject && (activeObject.type === 'i-text' || activeObject.type === 'text')) {
         activeObject.set('fontFamily', font); 
         canvas.renderAll();
         this.saveCanvasState();
@@ -463,7 +464,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     changeLineHeight(lineHeight: number) {      
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+      if (activeObject && (activeObject.type === 'i-text' || activeObject.type === 'text')) {
           activeObject.set('lineHeight', lineHeight );
           canvas.renderAll();
           this.saveCanvasState();
@@ -472,7 +473,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     changeLetterSpacing(letterSpacing: number) {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+      if (activeObject && (activeObject.type === 'i-text' || activeObject.type === 'text')) {
           activeObject.set('charSpacing', letterSpacing);
           this.selectedLetterSpace = letterSpacing
           canvas.renderAll();
@@ -485,7 +486,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
       
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+      if (activeObject && (activeObject.type === 'i-text' || activeObject.type === 'text')) {
         activeObject.set('textAlign', alignment);
         canvas.renderAll();
         this.saveCanvasState();
@@ -495,7 +496,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
     
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+      if (activeObject && (activeObject.type === 'i-text' || activeObject.type === 'text')) {
         const isBold = activeObject.get('fontWeight') === 'bold';
         this.selectedTextBold = !isBold
         activeObject.set('fontWeight', isBold ? 'normal' : 'bold');
@@ -529,7 +530,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
   
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+      if (activeObject && (activeObject.type === 'i-text' || activeObject.type === 'text')) {
         activeObject.set('backgroundColor', this.selectedTextBackgroundColor);
         if (this.selectedBackgroundPadding > 0){
           this.changeBackgroundPadding()
@@ -575,7 +576,7 @@ export const useCanvasStore = defineStore('canvasStore', {
           mtr: isLocked
         });
         this.selectedLock = !isLocked; 
-        if (activeObject.type === 'text' || activeObject.type === 'i-text' || activeObject.type === 'textbox') {
+        if (activeObject.type === 'text' || activeObject.type === 'i-text' || activeObject.type === 'i-text') {
           activeObject.editable = isLocked;
         } 
         canvas.renderAll();
@@ -584,13 +585,26 @@ export const useCanvasStore = defineStore('canvasStore', {
     },
     removeObject() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
-      const activeObject = canvas.getActiveObject();
-    
-      if (activeObject) {
-        canvas.remove(activeObject);
-        canvas.discardActiveObject(); 
-        canvas.renderAll();
-        this.saveCanvasState();
+
+      const activeObjects = canvas.getActiveObjects();
+      if (activeObjects.length == 1){
+        const activeObject = activeObjects[0]
+        if (activeObject) {
+          canvas.remove(activeObject);
+          canvas.discardActiveObject(); 
+          canvas.renderAll();
+          this.saveCanvasState();
+        }
+      }else{
+        for (let index = 0; index < activeObjects.length; index++) {
+          const activeObject = activeObjects[index];
+          if (activeObject) {
+            canvas.remove(activeObject);
+            canvas.discardActiveObject(); 
+            canvas.renderAll();
+            this.saveCanvasState();
+          }
+        }
       }
     },
     changeCanvasBackgroundColor(color: string) {
@@ -615,7 +629,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
     
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+      if (activeObject && (activeObject.type === 'i-text' || activeObject.type === 'text')) {
     
         if (this.selectedBackgroundCornerRadius){
           this.changeBackgroundCornerRadius()
@@ -790,7 +804,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     changeBackgroundCornerRadius() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+      if (activeObject && (activeObject.type === 'i-text' || activeObject.type === 'text')) {
         if (this.selectedBackgroundCornerRadius){
           const cornerRadius = this.selectedBackgroundCornerRadius; 
           activeObject.set('cornerRadius', cornerRadius);        
@@ -826,7 +840,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
     
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+      if (activeObject && (activeObject.type === 'i-text' || activeObject.type === 'text')) {
         const isUnderline = activeObject.get('underline');
         this.selectedTextUnderline = !isUnderline;
         activeObject.set('underline', !isUnderline);
@@ -837,7 +851,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     changeItalic() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+      if (activeObject && (activeObject.type === 'i-text' || activeObject.type === 'text')) {
         const isItalic = activeObject.get('fontStyle') === 'italic';
         this.selectedTextItalic = !isItalic;
         activeObject.set('fontStyle', isItalic ? 'normal' : 'italic');
@@ -848,7 +862,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     changeStrikethrough() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+      if (activeObject && (activeObject.type === 'i-text' || activeObject.type === 'text')) {
         const isLinethrough = activeObject.get('linethrough');
         this.selectedTextStrikethrough = !isLinethrough;
         activeObject.set('linethrough', !isLinethrough);
@@ -859,7 +873,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     changeFontSize(fontSize: number) {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
-      if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+      if (activeObject && (activeObject.type === 'i-text' || activeObject.type === 'text')) {
         activeObject.set('fontSize', fontSize); 
         const tempText = new fabric.Textbox(activeObject.text, {
           ...activeObject.toObject(),
@@ -1039,7 +1053,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     updateSelectedObjectColor(activeObject: any) {
       
       if (activeObject) {
-        if (activeObject.type === 'textbox' || activeObject.type === 'text') {
+        if (activeObject.type === 'i-text' || activeObject.type === 'text') {
           this.selectedObjectColor = activeObject.fill;
         } else if (activeObject.type === 'group') {
           const firstObject = activeObject.getObjects()[0];
@@ -1060,7 +1074,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       const activeObjects = canvas.getActiveObjects();
 
       function changeColorObject(activeObject: any, color: string){
-        if (activeObject.type === 'textbox' || activeObject.type === 'text') {
+        if (activeObject.type === 'i-text' || activeObject.type === 'text') {
           activeObject.set('fill', color);
         } 
         else if (activeObject.type === 'group') {
@@ -1145,7 +1159,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     },
     async saveTextsTemplates(filename: string) {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
-      const objects = canvas.getObjects('textbox');
+      const objects = canvas.getObjects('i-text');
       const textsObjs = objects.map(obj => ({
         text: obj.text,
         left: obj.left,
@@ -1185,7 +1199,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
     
-      // if (activeObject && (activeObject.type === 'textbox' || activeObject.type === 'text')) {
+      // if (activeObject && (activeObject.type === 'i-text' || activeObject.type === 'text')) {
         activeObject.set('shadow', { color: this.selectedShadowColor,  offsetX: this.selectedShadowOffSetX,  offsetY: this.selectedShadowOffSetY, blur: this.selectedShadowBlur });
         canvas.renderAll();
         this.saveCanvasState();
@@ -1258,7 +1272,7 @@ export const useCanvasStore = defineStore('canvasStore', {
 
         
 
-        if (activeObject.type === 'text' || activeObject.type === 'textbox') {        
+        if (activeObject.type === 'text' || activeObject.type === 'i-text') {        
           this.selectedFont = activeObject.fontFamily;
           this.fontSize = activeObject.fontSize;
           this.selectedTextAlign = activeObject.textAlign;

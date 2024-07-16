@@ -8,7 +8,7 @@ const canvasStore = useCanvasStore();
 </script>
 
 <template>
-  <div class="text-underline" v-if="canvasStore.selectedObjectType == 'textbox' || canvasStore.selectedObjectType == 'text'">
+  <div class="text-underline" v-if="canvasStore.selectedObjectType == 'i-text' || canvasStore.selectedObjectType == 'text'">
     <el-tooltip
       class="box-item"
       effect="dark"

@@ -20,7 +20,7 @@ const page = ref(1);
 const fetchPhotos = async () => {
   loading.value = true;
   try {
-    const newPhotos = await getPhotos(page.value, 6);
+    const newPhotos = await getPhotos(page.value, 10);
     photos.value.push(...newPhotos);
     
     distributePhotos();

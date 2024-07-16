@@ -45,17 +45,20 @@ onMounted(async () => {
 
 <template>
   <div class="text-list">
-    <div @click="addText('title')">
-      <span class="create-title">{{$t('canvas.create_title')}}</span>
-    </div>
-    <div @click="addText('subtitle')">
-      <span class="create-subtitle">{{$t('canvas.create_subtitle')}}</span>
-    </div>
-    <div @click="addText('text')">
-      <span class="create-text">{{$t('canvas.create_text')}}</span>
+    <div class="mb-4">
+      <div @click="addText('title')">
+        <span class="create-title">{{$t('canvas.create_title')}}</span>
+      </div>
+      <div @click="addText('subtitle')">
+        <span class="create-subtitle">{{$t('canvas.create_subtitle')}}</span>
+      </div>
+      <div @click="addText('text')">
+        <span class="create-text">{{$t('canvas.create_text')}}</span>
+      </div>
     </div>
     
-    <el-row>
+    
+    <el-row class="texts-templates">
       <el-col v-for="template in textsTemplates" :key="template.id" :span="12">
         <img @click="canvasStore.loadTextsTemplates(template.textsObjs)" :src="'/src/assets/texts/'+template.filename" alt="" srcset="" style="width: 100%;max-height: 300px;">
       </el-col>
@@ -101,4 +104,10 @@ onMounted(async () => {
   margin-top: 8px;
   display: block;
 }
+
+.texts-templates{
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
 </style>

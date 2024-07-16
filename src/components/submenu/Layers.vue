@@ -22,7 +22,7 @@
             <template v-else-if="element.object.type === 'group'">
               Group
             </template>
-            <template v-else-if="element.object.type === 'textbox'">
+            <template v-else-if="element.object.type === 'i-text'">
               {{ element.object.text }}
             </template>            
           </div>

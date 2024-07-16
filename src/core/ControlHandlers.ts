@@ -182,7 +182,7 @@ class ControlsPlugin {
       cornerStrokeColor: "#0E98FC",
       borderOpacityWhenMoving: 1,
     });
-    // textbox保持一致
+    // i-text保持一致
     fabric.Textbox.prototype.controls = fabric.Object.prototype.controls;
   }
 

@@ -276,7 +276,7 @@ watch(
     <span style="font-weight: 600;font-size: 16px;">{{ $t('menu_header.effects') }}</span>
     <div class="mt-5" >
       
-      <div class="mt-3" style="display: flex;"  v-if="canvasStore.selectedObjectType == 'textbox' || canvasStore.selectedObjectType == 'text'">
+      <div class="mt-3" style="display: flex;"  v-if="canvasStore.selectedObjectType == 'i-text' || canvasStore.selectedObjectType == 'text'">
         <div class="mt-1">
           <span>{{ $t('menu_header.text_stroke') }}</span>
         </div>
@@ -285,7 +285,7 @@ watch(
           <el-switch v-model="hasStroke" @change="handleDisableStroke"   />
         </div>        
       </div>
-      <div v-show="hasStroke && canvasStore.selectedObjectType == 'textboxça o'" style="display:flex" class="tools-open">
+      <div v-show="hasStroke && canvasStore.selectedObjectType == 'i-textça o'" style="display:flex" class="tools-open">
         <div class="color-picker">
           <color-picker v-model:pureColor="canvasStore.selectedTextStrokeColor"  picker-type="chrome"/>
         </div>
@@ -294,7 +294,7 @@ watch(
           <el-input-number v-model="canvasStore.selectedTextStroke" :min="1"   controls-position="right" @change="handleChangeTextStroke" />
         </div>
       </div>   
-      <div style="display: flex;margin-top: 10px;"  v-if="canvasStore.selectedObjectType == 'textbox' || canvasStore.selectedObjectType == 'text'">
+      <div style="display: flex;margin-top: 10px;"  v-if="canvasStore.selectedObjectType == 'i-text' || canvasStore.selectedObjectType == 'text'">
         <div class="mt-1">
           <span>{{ $t('menu_header.background') }}</span>
         </div>

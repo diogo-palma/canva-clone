@@ -188,6 +188,7 @@ watch(
           <FontSize/>
           <TextAlign/>
           <TextBold/>
+          <TextItalic/>
           <TextUnderline/>            
           <TextStrikeThrough/>
           <TextChangeSpace/>

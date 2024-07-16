@@ -62,7 +62,7 @@ watch(
 </script>
 
 <template>
-  <div class="text-align" v-if="canvasStore.selectedObjectType == 'textbox' || canvasStore.selectedObjectType == 'text'">
+  <div class="text-align" v-if="canvasStore.selectedObjectType == 'i-text' || canvasStore.selectedObjectType == 'text'">
     <el-tooltip
       v-if="canvasStore.isThisObjectSelected"
       class="box-item"
