@@ -9,7 +9,8 @@ const locales = {
       video: "Video",
       choose_format: "Choose Format",
       save: "Save",
-      cancel: "Cancel"
+      cancel: "Cancel",
+      confirm_new_canvas: "This will remove the Design, are you sure?"
     },
     sidebar:{
       shapes: "Shapes",

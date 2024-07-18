@@ -3,6 +3,7 @@ import { fontWeight } from 'html2canvas/dist/types/css/property-descriptors/font
 import { onMounted, ref } from 'vue';
 import { useCanvasStore } from '~/store/canvasStore';
 import axios from 'axios';
+import Texts from '~/data/texts'
 
 const URL_API = import.meta.env.VITE_API_URL;
 const textsTemplates = ref([])
@@ -37,9 +38,7 @@ const addText = (type: string) => {
 }
 
 onMounted(async () => {
-  const response = await axios.get(URL_API +'/texts');
-  console.log("response", response.data)
-  textsTemplates.value = response.data;
+  textsTemplates.value = Texts;
 })
 </script>
 

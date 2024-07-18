@@ -5,6 +5,7 @@ import { useI18n } from 'vue-i18n';
 
 
 const canvasStore = useCanvasStore();
+const dialogVisibleNewCanvas = ref(false)
 const dialogVisible = ref(false)
 const dialogVisibleTexts = ref(false)
 const dialogVisibleTemplates = ref(false)
@@ -28,6 +29,13 @@ const handleSaveDesignTemplate = () =>{
   canvasStore.saveDesignTemplates(inputTemplateName.value)
   dialogVisibleTemplates.value = false
 }
+
+const newCanvas = () =>{
+  canvasStore.newCanvas()
+  dialogVisibleNewCanvas.value = false
+}
+
+
 </script>
 
 <template>
@@ -44,7 +52,7 @@ const handleSaveDesignTemplate = () =>{
         >
           <el-sub-menu index="1">
             <template #title>{{ $t('header.file')}}</template>
-            <el-menu-item index="2-1">New</el-menu-item>           
+            <el-menu-item index="2-1" @click="dialogVisibleNewCanvas = true">New</el-menu-item>           
             <el-sub-menu index="2-2">
               <template #title>Save as...</template>
               <el-menu-item index="2-2-1" @click="dialogVisible = true">
@@ -115,6 +123,21 @@ const handleSaveDesignTemplate = () =>{
             </el-button>
             <el-button type="primary" @click="saveImage">
               {{ $t('header.save') }}
+            </el-button>
+          </div>
+        </template>
+      </el-dialog>
+
+      <el-dialog
+        v-model="dialogVisibleNewCanvas"        
+        width="400"        
+      >
+        <h4>{{ $t('header.confirm_new_canvas')}}</h4>
+        <template #footer>
+          <div class="dialog-footer">
+            <el-button @click="dialogVisibleNewCanvas = false">Cancel</el-button>
+            <el-button type="primary" @click="newCanvas">
+              Confirm
             </el-button>
           </div>
         </template>

@@ -423,7 +423,7 @@ watch(
           <el-switch v-model="hasStroke" @change="handleDisableStroke"   />
         </div>        
       </div>
-      <div v-show="hasStroke" style="display:flex" class="tools-open">
+      <div v-show="hasStroke && canvasStore.selectedObjectType == 'image'" style="display:flex" class="tools-open">
         <div class="color-picker">
           <color-picker v-model:pureColor="canvasStore.selectedTextStrokeColor"  picker-type="chrome"/>
         </div>

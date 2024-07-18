@@ -5,6 +5,7 @@ import { markRaw } from 'vue';
 import ControlsPlugin from '~/core/ControlHandlers';
 import shortid from 'shortid'
 import axios from 'axios'
+import { UploadUserFile } from "element-plus";
 
 const URL_API = import.meta.env.VITE_API_URL;
 
@@ -15,6 +16,7 @@ if (fabric.isWebglSupported()){
 
 export const useCanvasStore = defineStore('canvasStore', {
   state: () => ({
+    fileList: [] as UploadUserFile[],
     canvasInstances: [] as { canvas: fabric.Canvas, activeLayerIndex: number }[],
     pagesCount: [1] as number[],
     canvasHistory: [] as any[],
@@ -64,9 +66,18 @@ export const useCanvasStore = defineStore('canvasStore', {
     selectedOpacity: 1,
     changeSelected: false,
     selectedCornerRadius: 0,
-    clonedObject: null,    
+    clonedObject: null,  
+    
   }),
   actions: {
+    async newCanvas(){
+      this.pagesCount = []
+      await nextTick();
+      this.canvasHistory = []
+      this.canvasHistoryIndex = -1
+      this.canvasInstances = []
+      this.addNewPage()
+    },
     async addNewPage(move: boolean = true) {
       this.idPage = this.canvasInstances.length + 1;
       if (!this.pagesCount.includes(this.idPage)) {
@@ -1004,18 +1015,18 @@ export const useCanvasStore = defineStore('canvasStore', {
     },   
     async addSvg(svgUrl: string) {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
-      const zoom = canvas.getZoom();  // Obtém o fator de zoom atual do canvas
+      const zoom = canvas.getZoom();  //
       
       fabric.loadSVGFromURL(svgUrl, (objects, options) => {
           const svgObject = fabric.util.groupSVGElements(objects, options);
           
           svgObject.set({
-              top: canvas.height / (2 * zoom),   // Ajusta a posição com base no fator de zoom
-              left: canvas.width / (2 * zoom),   // Ajusta a posição com base no fator de zoom
+              top: canvas.height / (2 * zoom),   
+              left: canvas.width / (2 * zoom),   
               originX: 'center',
               originY: 'center',
-              scaleX: 2.0 / zoom,  // Ajusta a escala com base no fator de zoom
-              scaleY: 2.0 / zoom   // Ajusta a escala com base no fator de zoom
+              scaleX: 2.0 / zoom,  
+              scaleY: 2.0 / zoom   
           });
           
           canvas.add(markRaw(svgObject)).setActiveObject(svgObject);
@@ -1198,17 +1209,26 @@ export const useCanvasStore = defineStore('canvasStore', {
         fill: obj.fill,
         fontFamily: obj.fontFamily,
         angle: obj.angle,
+        opacity: obj.opacity,
+        stroke: obj.stroke,
+        strokeWidth: obj.strokeWidth,
+        backgroundColor: obj.backgroundColor,
+        textPadding: obj.textPadding,
+        
       }));
 
       const svgObjects = canvas.getObjects('path').map(obj => ({
         type: 'svg',
-        svg: obj.src,
+        src: obj.src,
         left: obj.left,
         top: obj.top,
         scaleX: obj.scaleX,
         scaleY: obj.scaleY,
         angle: obj.angle,
+        opacity: obj.opacity,
+        fill: obj.fill,        
       }));
+
 
       const imageObjects = canvas.getObjects('image').map(obj => ({
         type: 'image',
@@ -1218,7 +1238,8 @@ export const useCanvasStore = defineStore('canvasStore', {
         scaleX: obj.scaleX,
         scaleY: obj.scaleY,
         angle: obj.angle,
-        stroke: obj.stroke
+        stroke: obj.stroke,
+        opacity: obj.opacity
       }));
 
       const allObjects = [...textObjects, ...svgObjects, ...imageObjects];
@@ -1228,11 +1249,103 @@ export const useCanvasStore = defineStore('canvasStore', {
         backgroundColor,
         backgroundImage,
         objects: allObjects,
-        width: canvas.width,
-        height: canvas.height
+        width: this.pageWidth,
+        height: this.pageHeight
       };
 
       console.log("data", data)
+
+      await axios.post(URL_API+ '/templates', data)
+
+    },
+    loadDesignTemplates(obj: any){
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      canvas.clear()
+      this.resizeCanvas(obj.width, obj.height, false, false)
+      
+      if (obj.backgroundColor)
+        canvas.backgroundColor = obj.backgroundColor;
+
+
+      if (obj.backgroundImage) {
+        fabric.Image.fromURL(data.backgroundImage, (img) => {
+          canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
+        });
+      }
+      
+
+      const loadObjects = (objects) => {
+        return Promise.all(objects.map((obj) => {
+          return new Promise((resolve) => {
+            if (obj.type === 'svg') {
+              fabric.loadSVGFromURL(obj.src, (objects, options) => {
+                let fabricObject = fabric.util.groupSVGElements(objects, options);
+                fabricObject.set({
+                  left: obj.left,
+                  top: obj.top,
+                  originX: 'center',
+                  originY: 'center',
+                  scaleX: obj.scaleX,
+                  scaleY: obj.scaleY,
+                  angle: obj.angle,
+                  opacity: obj.opacity,
+                  fill: obj.fill
+                });
+                canvas.add(markRaw(fabricObject));
+                resolve();
+              });
+            } else if (obj.type === 'image') {
+              fabric.Image.fromURL(obj.src, (img) => {
+                img.set({
+                  left: obj.left,
+                  top: obj.top,
+                  scaleX: obj.scaleX,
+                  scaleY: obj.scaleY,
+                  angle: obj.angle,
+                  opacity: obj.opacity,
+                });
+      
+                if (obj.stroke) {
+                  img.set({
+                    stroke: obj.stroke,
+                    strokeWidth: obj.strokeWidth || 1,
+                  });
+                }
+      
+                canvas.add(img);
+                resolve();
+              });
+            } else {
+              resolve();
+            }
+          });
+        }));
+      };
+
+      loadObjects(obj.objects).then(() => {
+        obj.objects.forEach((obj) => {
+          if (obj.type === 'i-text') {
+            let fabricObject = new fabric.IText(obj.text, {
+              left: obj.left,
+              top: obj.top,
+              fontSize: obj.fontSize,
+              fill: obj.fill,
+              fontFamily: obj.fontFamily,
+              angle: obj.angle,
+              opacity: obj.opacity,
+              stroke: obj.stroke,
+              strokeWidth: obj.strokeWidth,
+              backgroundColor: obj.backgroundColor,
+              textPadding: obj.textPadding,
+            });
+            canvas.add(markRaw(fabricObject));
+            canvas.bringToFront(fabricObject);
+          }
+        });
+      });
+
+      canvas.renderAll();
+      this.saveCanvasState();
 
     },
     loadTextsTemplates(obj: any){
@@ -1423,7 +1536,30 @@ export const useCanvasStore = defineStore('canvasStore', {
       const scrollRightValue = Math.max(0, (contentWidth - containerWidth) / 2);
       editorContainer.scrollLeft = scrollRightValue;
     },
-    resizeCanvas(width: number, height: number, applyZoom: boolean){
+    setZoomOnlyCanvas(){
+      let zoomLevel = this.zoomLevel;
+    
+      if (zoomLevel < 10) {
+        zoomLevel = 10;
+      }
+      zoomLevel = zoomLevel / 100;
+
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+
+      canvas.setZoom(zoomLevel);
+  
+      const currentScreenWidth = this.pageWidth * zoomLevel;
+      const currentScreenHeight = this.pageHeight * zoomLevel;
+      
+      canvas.setDimensions({
+        width: currentScreenWidth,
+        height: currentScreenHeight
+      });    
+  
+      canvas.renderAll();
+
+    },
+    resizeCanvas(width: number, height: number, applyZoom: boolean, setZoom: boolean = true){
       const contentElement = document.getElementById('content');
       const maxWidth = contentElement.offsetWidth - 50;
       const maxHeight = contentElement.offsetHeight - 50;      
@@ -1436,7 +1572,11 @@ export const useCanvasStore = defineStore('canvasStore', {
       this.pageWidth = width
       this.pageHeight = height
       this.zoomLevel = Number (Math.round(zoomLevel * 100).toFixed(2));
-      this.setZoom(applyZoom)
+      if (setZoom)
+        this.setZoom(applyZoom)
+      else{
+        this.setZoomOnlyCanvas()
+      }
     
     },
     checkPosition(canvas: any, activeObject: any){
@@ -1545,11 +1685,28 @@ export const useCanvasStore = defineStore('canvasStore', {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObjects = canvas.getActiveObjects();
 
-      function alignCenter(activeObject: any){
+      function alignCenter(activeObject: any) {
         const zoom = canvas.getZoom();
         const canvasWidth = canvas.getWidth() / zoom;
+        const canvasHeight = canvas.getHeight() / zoom;
         const objectWidth = activeObject.getScaledWidth();
-        activeObject.set({ left: (canvasWidth - objectWidth) / 2 });
+        const objectHeight = activeObject.getScaledHeight();
+    
+        const angle = fabric.util.degreesToRadians(activeObject.angle);
+    
+        // Calcule a nova posição central
+        const centerX = canvasWidth / 2;
+        const centerY = canvasHeight / 2;
+    
+        // Ajuste a posição levando em conta o ângulo
+        const offsetX = (objectWidth / 2) * Math.cos(angle) - (objectHeight / 2) * Math.sin(angle);
+        const offsetY = (objectWidth / 2) * Math.sin(angle) + (objectHeight / 2) * Math.cos(angle);
+    
+        activeObject.set({
+          left: centerX - offsetX,
+          top: centerY - offsetY
+        });
+    
         activeObject.setCoords();
       }
 

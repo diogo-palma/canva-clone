@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { UploadUserFile } from "element-plus";
-import { ref } from "vue";
+
+import { onUnmounted, ref } from "vue";
 import { Plus, Delete } from '@element-plus/icons-vue'
 import SolarAddSquareBold from '~icons/solar/add-square-bold';
 import { useCanvasStore } from '~/store/canvasStore'
@@ -13,7 +13,6 @@ const { t } = useI18n();
 
 const canvasStore = useCanvasStore();
 
-const fileList = ref<UploadUserFile[]>([])
 
 const importAll = (context) => Object.keys(context).map(key => ({ key, module: context[key]() }));
 
@@ -29,7 +28,7 @@ Promise.all(imageModules.map(({ module }) => module)).then(images => {
         type: 'image/png'
       }
     };
-    fileList.value.push(file);
+    canvasStore.fileList.push(file);
   });
 });
 
@@ -39,7 +38,7 @@ const handlePictureCardPreview = (file) => {
     const isImage = file.raw.type.startsWith('image/');
     if (!isImage) {
       ElMessage.error(t('upload.only_images'));
-      fileList.value = fileList.value.filter(item => item.uid !== file.uid);
+      canvasStore.fileList = canvasStore.fileList.filter(item => item.uid !== file.uid);
     }
     canvasStore.addImage(file.url);     
   }
@@ -48,14 +47,18 @@ const handlePictureCardPreview = (file) => {
 
 const handleRemove = (file) => {
   console.log(file)
-  fileList.value = fileList.value.filter(item => item.uid !== file.uid);
+  canvasStore.fileList = canvasStore.fileList.filter(item => item.uid !== file.uid);
 };
+
+onUnmounted(() =>{
+  canvasStore.fileList = []
+})
 </script>
 
 <template>
   <div class="p-3">
     <el-upload
-      v-model:file-list="fileList"
+      v-model:file-list="canvasStore.fileList"
       list-type="picture-card"
       :on-preview="handlePictureCardPreview"
       :on-remove="handleRemove"
