@@ -1663,8 +1663,22 @@ export const useCanvasStore = defineStore('canvasStore', {
       const activeObjects = canvas.getActiveObjects();
 
       function alignTop(activeObject: any){
-        activeObject.set({ top: 0 });
-        activeObject.setCoords();
+        var top;
+        if(activeObject.angle <= 90) {
+          top = 0;
+        }
+        if(activeObject.angle > 90 && activeObject.angle <= 180) {
+          top = activeObject.aCoords.tl.y - activeObject.aCoords.bl.y;
+        }
+        if(activeObject.angle > 180 && activeObject.angle <= 270) {
+          top = activeObject.aCoords.tl.y - activeObject.aCoords.br.y;
+        }
+        if(activeObject.angle > 270) {
+          top = activeObject.aCoords.tl.y - activeObject.aCoords.tr.y;
+        }
+        activeObject.set({
+          top: top
+        });
       }
       if (activeObjects.length == 1){
         const activeObject = activeObjects[0]
@@ -1687,24 +1701,15 @@ export const useCanvasStore = defineStore('canvasStore', {
 
       function alignCenter(activeObject: any) {
         const zoom = canvas.getZoom();
-        const canvasWidth = canvas.getWidth() / zoom;
-        const canvasHeight = canvas.getHeight() / zoom;
+        const canvasWidth = canvas.getWidth() / zoom;        
         const objectWidth = activeObject.getScaledWidth();
         const objectHeight = activeObject.getScaledHeight();
-    
-        const angle = fabric.util.degreesToRadians(activeObject.angle);
-    
-        // Calcule a nova posição central
-        const centerX = canvasWidth / 2;
-        const centerY = canvasHeight / 2;
-    
-        // Ajuste a posição levando em conta o ângulo
-        const offsetX = (objectWidth / 2) * Math.cos(angle) - (objectHeight / 2) * Math.sin(angle);
-        const offsetY = (objectWidth / 2) * Math.sin(angle) + (objectHeight / 2) * Math.cos(angle);
+        const angle = fabric.util.degreesToRadians(activeObject.angle);    
+        const centerX = canvasWidth / 2;        
+        const offsetX = (objectWidth / 2) * Math.cos(angle) - (objectHeight / 2) * Math.sin(angle);        
     
         activeObject.set({
-          left: centerX - offsetX,
-          top: centerY - offsetY
+          left: centerX - offsetX,          
         });
     
         activeObject.setCoords();
@@ -1729,12 +1734,16 @@ export const useCanvasStore = defineStore('canvasStore', {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObjects = canvas.getActiveObjects();
 
-      function alignMiddle(activeObject: any){
+      function alignMiddle(activeObject: any) {
         const zoom = canvas.getZoom();
         const canvasHeight = canvas.getHeight() / zoom;
         const objectHeight = activeObject.getScaledHeight();
-        
-        activeObject.set({ top: (canvasHeight - objectHeight) / 2 });
+        const objectWidth = activeObject.getScaledWidth();
+        const angle = fabric.util.degreesToRadians(activeObject.angle);
+        const centerY = canvasHeight / 2;
+        const offsetY = (objectWidth / 2) * Math.sin(angle) + (objectHeight / 2) * Math.cos(angle);
+
+        activeObject.set({ top: centerY - offsetY });
         activeObject.setCoords();
       }
       
@@ -1761,9 +1770,23 @@ export const useCanvasStore = defineStore('canvasStore', {
         function alignRight(activeObject: any){
           const zoom = canvas.getZoom();
           const canvasWidth = canvas.getWidth() / zoom;
-          const objectWidth = activeObject.getScaledWidth();
-          
-          activeObject.set({ left: canvasWidth - objectWidth });
+        
+          var left;
+          if(activeObject.angle <= 90) {
+            left = activeObject.aCoords.tl.x + (canvasWidth - activeObject.aCoords.tr.x);
+          }
+          if(activeObject.angle > 90 && activeObject.angle <= 180) {
+            left = canvasWidth;
+          }
+          if(activeObject.angle > 180 && activeObject.angle <= 270) {
+            left = activeObject.aCoords.tl.x + (canvasWidth - activeObject.aCoords.bl.x);
+          }
+          if(activeObject.angle > 270) {
+            left = activeObject.aCoords.tl.x + (canvasWidth - activeObject.aCoords.br.x);
+          }
+          activeObject.set({
+            left: left
+          });
           activeObject.setCoords();
         }
 
@@ -1792,7 +1815,23 @@ export const useCanvasStore = defineStore('canvasStore', {
           const canvasHeight = canvas.getHeight() / zoom;
           const objectHeight = activeObject.getScaledHeight();
           
-          activeObject.set({ top: canvasHeight - objectHeight });
+          var top;
+          if(activeObject.angle <= 90) {
+            top = activeObject.aCoords.tl.y + (canvasHeight - activeObject.aCoords.br.y);
+          }
+          if(activeObject.angle > 90 && activeObject.angle <= 180) {
+            top = activeObject.aCoords.tl.y + (canvasHeight - activeObject.aCoords.tr.y);
+          }
+          if(activeObject.angle > 180 && activeObject.angle <= 270) {
+            top = canvasHeight;
+          }
+          if(activeObject.angle > 270) {
+            top = activeObject.aCoords.tl.y + (canvasHeight - activeObject.aCoords.bl.y);
+          }
+          activeObject.set({
+            top: top
+          });
+          
           activeObject.setCoords();
         }
         
