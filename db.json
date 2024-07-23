@@ -1,4 +1,121 @@
 {
-  "texts":[],
-  "templates": [],
+  "texts": [],
+  "templates": [
+    {
+      "id": "723a",
+      "filename": "TESTE.png",
+      "backgroundColor": "rgb(79, 10, 141)",
+      "backgroundImage": null,
+      "objects": [
+        {
+          "type": "i-text",
+          "text": "Galaxy Armada League",
+          "left": 63.73238174298638,
+          "top": 516.3577318147001,
+          "fontSize": 34,
+          "fill": "rgb(255, 255, 255)",
+          "fontFamily": "telegrafico_by_ficod",
+          "angle": 0,
+          "opacity": 1,
+          "stroke": null,
+          "strokeWidth": 1,
+          "backgroundColor": "",
+          "shadow": null,
+          "index": 6
+        },
+        {
+          "type": "i-text",
+          "text": "BASIC \nBEGINNERS \nGUIDE",
+          "left": 66.6605047597551,
+          "top": 105.90996695576553,
+          "fontSize": 99,
+          "fill": "rgb(255, 255, 255)",
+          "fontFamily": "SF Sports Night NS Upright",
+          "angle": 0,
+          "opacity": 1,
+          "stroke": null,
+          "strokeWidth": 1,
+          "backgroundColor": "",
+          "shadow": {
+            "color": "rgb(227, 20, 217)",
+            "blur": 0,
+            "offsetX": -15,
+            "offsetY": 1,
+            "affectStroke": false
+          },
+          "index": 7
+        },
+        {
+          "type": "svg",
+          "left": 211.30125079329252,
+          "top": 343.2233627621038,
+          "scaleX": 30.2366,
+          "scaleY": 42.5874,
+          "angle": 9.4263,
+          "opacity": 1,
+          "fill": "rgb(144, 19, 254)",
+          "index": 1
+        },
+        {
+          "type": "svg",
+          "left": 99.94487100532287,
+          "top": 618.2089421560338,
+          "scaleX": 2.9850746268656714,
+          "scaleY": 2.9850746268656714,
+          "angle": 0,
+          "opacity": 1,
+          "fill": "rgb(93, 53, 176)",
+          "index": 2
+        },
+        {
+          "type": "svg",
+          "left": 117.4034325137072,
+          "top": 632.6865538697222,
+          "scaleX": 2.9851,
+          "scaleY": 2.9851,
+          "angle": 0,
+          "opacity": 1,
+          "fill": "rgb(255, 255, 255)",
+          "index": 3
+        },
+        {
+          "type": "svg",
+          "left": 552.5415559779084,
+          "top": 63.582251696294016,
+          "scaleX": 2.9851,
+          "scaleY": 2.9851,
+          "angle": 0,
+          "opacity": 1,
+          "fill": "rgb(255, 255, 255)",
+          "index": 4
+        },
+        {
+          "type": "svg",
+          "left": 535.0830559779084,
+          "top": 49.10465169629402,
+          "scaleX": 2.9851,
+          "scaleY": 2.9851,
+          "angle": 0,
+          "opacity": 1,
+          "fill": "rgb(93, 53, 176)",
+          "index": 5
+        },
+        {
+          "type": "image",
+          "src": "http://localhost:5173/src/assets/templates/control.jpg",
+          "left": 383.6343,
+          "top": -4.8278,
+          "scaleX": 0.2199,
+          "scaleY": 0.274,
+          "angle": 0,
+          "stroke": "rgb(0,0,0)",
+          "strokeWidth": 1,
+          "opacity": 1,
+          "index": 0
+        }
+      ],
+      "width": 1080,
+      "height": 720
+    }
+  ]
 }

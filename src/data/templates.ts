@@ -17,7 +17,8 @@ const Templates = [
         opacity: 1,
         stroke: null,
         strokeWidth: 1,
-        backgroundColor: ""
+        backgroundColor: "",
+        index: 5
       },
       {
         type: "i-text",
@@ -31,7 +32,8 @@ const Templates = [
         opacity: 1,
         stroke: null,
         strokeWidth: 1,
-        backgroundColor: ""
+        backgroundColor: "",
+        index: 5
       },
       {
         type: "i-text",
@@ -45,7 +47,8 @@ const Templates = [
         opacity: 1,
         stroke: null,
         strokeWidth: 1,
-        backgroundColor: ""
+        backgroundColor: "",
+        index: 4
       },
       {
         type: "svg",
@@ -57,6 +60,7 @@ const Templates = [
         opacity: 1,
         src: "http://localhost:5173/src/assets/shapes/triangle.svg",
         fill: "rgb(19, 134, 108)",
+        index: 1
       },
       {
         type: "svg",
@@ -68,17 +72,19 @@ const Templates = [
         opacity: 1,
         src: "http://localhost:5173/src/assets/shapes/circle.svg",
         fill: "rgb(19, 134, 108)",
+        index: 2
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/united_state.svg?t=1721251686544",
+        src: "http://localhost:5173/src/assets/templates/united_state.svg",
         left: -10.884292504559653,
         top: 26.95017487950065,
         scaleX: 0.7493164868721097,
         scaleY: 0.7493164868721097,
         angle: 0,
         stroke: "rgb(0,0,0)",
-        opacity: 0.18
+        opacity: 0.18,
+        index: 3
       },
       {
         type: "image",
@@ -90,7 +96,8 @@ const Templates = [
         angle: 340.4590673195304,
         stroke: "rgb(255, 255, 255)",
         strokeWidth: 12,
-        opacity: 1
+        opacity: 1,
+        index: 0
       },
       {
         type: "image",
@@ -101,7 +108,8 @@ const Templates = [
         scaleY: 0.2935364577505324,
         angle: 0,
         stroke: "rgb(0,0,0)",
-        opacity: 1
+        opacity: 1,
+        index: 8
       },
       {
         type: "image",
@@ -112,12 +120,314 @@ const Templates = [
         scaleY: 0.265748342486566,
         angle: 0,
         stroke: "rgb(0,0,0)",
-        opacity: 1
+        opacity: 1,
+        index: 7
       }
     ],
     width: 1080,
     height: 720
-  }
+  },
+  {
+    id: "32b2",
+    filename: "easy_salad_recipes.png",
+    backgroundColor: "",
+    backgroundImage: null,
+    objects: [
+      {
+        type: "i-text",
+        text: "Easy",
+        left: 412.16458404541015,
+        top: 235.22387274119956,
+        fontSize: 112,
+        fill: "rgb(250, 231, 6)",
+        fontFamily: "stentiga",
+        angle: 0,
+        opacity: 1,
+        stroke: "rgb(255, 255, 255)",
+        strokeWidth: 3,
+        backgroundColor: "",
+        index: 3  
+      },
+      {
+        type: "i-text",
+        text: "SaladRecipes",
+        left: 212.8888,
+        top: 345.4313405642614,
+        fontSize: 113,
+        fill: "rgb(10, 250, 32)",
+        fontFamily: "SourceSansPro-Black",
+        angle: 0,
+        opacity: 1,
+        stroke: "rgb(255, 255, 255)",
+        strokeWidth: 4,
+        backgroundColor: "",
+        index: 2
+      },
+      {
+        type: "svg",
+        left: 562.6738984018945,
+        top: 370.5696466677461,
+        scaleX: 40.877569551333,
+        scaleY: 17.13773119666845,
+        angle: 0,
+        opacity: 1,
+        fill: "rgba(67, 204, 155, 0.55)",
+        src: "http://localhost:5173/src/assets/shapes/square.svg",
+        index: 1
+      },
+      {
+        type: "image",
+        src: "http://localhost:5173/src/assets/templates/easy_salada_recipes.jpeg",
+        left: -24.08807425191003,
+        top: 716.4564584908985,
+        scaleX: 0.6850202675222985,
+        scaleY: 0.6850202675222985,
+        angle: 270.18465661414865,
+        stroke: "rgb(0,0,0)",
+        opacity: 1,
+        index: 0
+      }
+    ],
+    width: 1080,
+    height: 720
+  }, 
+  {
+    id: "a555",
+    filename: "learn_basic_analysis.png",
+    backgroundColor: "rgb(76, 112, 49)",
+    backgroundImage: null,
+    objects: [
+      {
+        type: "i-text",
+        text: "LEARN BASIC",
+        left: 100.8137,
+        top: 311.9323,
+        fontSize: 94,
+        fill: "rgb(255, 255, 255)",
+        fontFamily: "regular",
+        angle: 0,
+        opacity: 1,
+        stroke: "",
+        strokeWidth: 0,
+        backgroundColor: "",
+        index: 6     
+      },
+      {
+        type: "i-text",
+        text: "ANALYSIS",
+        left: 95.8965,
+        top: 438.3502,
+        fontSize: 94,
+        fill: "rgb(255, 255, 255)",
+        fontFamily: "regular",
+        angle: 0,
+        opacity: 1,
+        stroke: "",
+        strokeWidth: 0,
+        backgroundColor: "",
+        index: 5
+      },
+      {
+        type: "i-text",
+        text: "By Jasminie Andreas",
+        left: 95.95178491615638,
+        top: 559.1044221978426,
+        fontSize: 35,
+        fill: "rgb(255, 255, 255)",
+        fontFamily: "Nirmala",
+        angle: 0,
+        opacity: 1,
+        stroke: null,
+        strokeWidth: 1,
+        backgroundColor: "",
+        index: 4
+      },
+      {
+        type: "svg",
+        left: 779.3232426353838,
+        top: 771.0345635794461,
+        scaleX: 44.95691336601204,
+        scaleY: 44.95691336601204,
+        angle: 270,
+        opacity: 1,
+        fill: "rgb(175, 122, 143)",        
+        src: "http://localhost:5173/src/assets/shapes/triangle.svg",
+        index: 3
+      },
+      {
+        type: "svg",
+        left: 322.2873,
+        top: 488.7786,
+        scaleX: 25.6697,
+        scaleY: 5.276,
+        angle: 0,
+        opacity: 1,
+        fill: "rgb(175, 122, 143)",        
+        src: "http://localhost:5173/src/assets/shapes/square.svg",
+        index: 2
+      },
+      {
+        type: "svg",
+        left: 357.5635,
+        top: 357.8831,
+        scaleX: 29.1794,
+        scaleY: 5.276,
+        angle: 0,
+        opacity: 1,
+        fill: "rgb(175, 122, 143)",        
+        src: "http://localhost:5173/src/assets/shapes/square.svg",
+        index: 1
+      },
+      {
+        type: "image",
+        src: "http://localhost:5173/src/assets/templates/flower-material.png",
+        left: 335.9942,
+        top: -70.1573,
+        scaleX: 0.2201,
+        scaleY: 0.2201,
+        angle: 90,
+        stroke: "rgb(0,0,0)",
+        strokeWidth: 1,
+        opacity: 1,
+        index: 0
+      },
+      {
+        type: "image",
+        src: "http://localhost:5173/src/assets/templates/learn_basic_analysis.png",
+        left: 638.4529,
+        top: 55.6525,
+        scaleX: 0.8145,
+        scaleY: 0.8145,
+        angle: 0,
+        stroke: "rgb(255, 252, 252)",
+        strokeWidth: 10,
+        opacity: 1,
+        index: 7   
+      }
+    ],
+    width: 1080,
+    height: 720
+  },
+  {
+    id: "9dee",
+    filename: "basic_beginners_guide.png",
+    backgroundColor: "rgb(79, 10, 141)",
+    backgroundImage: null,
+    objects: [
+      {
+        type: "i-text",
+        text: "BASIC \nBEGINNERS \nGUIDE",
+        left: 66.6605047597551,
+        top: 105.90996695576553,
+        fontSize: 99,
+        fill: "rgb(255, 255, 255)",
+        fontFamily: "SF Sports Night NS Upright",
+        angle: 0,
+        opacity: 1,
+        stroke: null,
+        strokeWidth: 1,
+        backgroundColor: "",
+        shadow: {
+          color: "rgb(227, 20, 217)",
+          blur: 0,
+          offsetX: -15,
+          offsetY: 1,
+          affectStroke: false
+        },
+        index: 7
+      },
+      {
+        type: "i-text",
+        text: "Galaxy Armada League",
+        left: 63.73238174298638,
+        top: 516.3577318147001,
+        fontSize: 34,
+        fill: "rgb(255, 255, 255)",
+        fontFamily: "telegrafico_by_ficod",
+        angle: 0,
+        opacity: 1,
+        stroke: null,
+        strokeWidth: 1,
+        backgroundColor: "",
+        index: 6
+      },
+      {
+        type: "svg",
+        left: 211.30125079329252,
+        top: 343.2233627621038,
+        scaleX: 30.2366,
+        scaleY: 42.5874,
+        angle: 9.4263,
+        opacity: 1,
+        fill: "rgb(144, 19, 254)",
+        src: "http://localhost:5173/src/assets/shapes/square.svg",
+        index: 1
+      },
+      {
+        type: "svg",
+        left: 99.94487100532287,
+        top: 618.2089421560338,
+        scaleX: 2.9850746268656714,
+        scaleY: 2.9850746268656714,
+        angle: 0,
+        opacity: 1,
+        fill: "rgb(93, 53, 176)",
+        src: "http://localhost:5173/src/assets/shapes/triangle.svg",
+        index: 2
+      },
+      {
+        type: "svg",
+        left: 117.4034325137072,
+        top: 632.6865538697222,
+        scaleX: 2.9851,
+        scaleY: 2.9851,
+        angle: 0,
+        opacity: 1,
+        fill: "rgb(255, 255, 255)",
+        src: "http://localhost:5173/src/assets/shapes/triangle.svg",
+        index: 4
+        
+      },
+      {
+        type: "svg",
+        left: 535.0830559779084,
+        top: 49.10465169629402,
+        scaleX: 2.9851,
+        scaleY: 2.9851,
+        angle: 0,
+        opacity: 1,
+        fill: "rgb(93, 53, 176)",
+        src: "http://localhost:5173/src/assets/shapes/triangle.svg",
+        index: 3
+      },
+      {
+        type: "svg",
+        left: 552.5415559779084,
+        top: 63.582251696294016,
+        scaleX: 2.9851,
+        scaleY: 2.9851,
+        angle: 0,
+        opacity: 1,
+        fill: "rgb(255, 255, 255)",
+        src: "http://localhost:5173/src/assets/shapes/triangle.svg",
+        index: 5
+      },
+      {
+        type: "image",
+        src: "http://localhost:5173/src/assets/templates/control.jpg",
+        left: 383.6343,
+        top: -4.8278,
+        scaleX: 0.2199,
+        scaleY: 0.274,
+        angle: 0,
+        stroke: "rgb(0,0,0)",
+        opacity: 1,
+        index: 0
+      }
+    ],
+    width: 1080,
+    height: 720
+  },
 ]
 
 

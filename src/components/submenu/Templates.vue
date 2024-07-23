@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
 import { useCanvasStore } from '~/store/canvasStore'
-import axios from 'axios';
+
 import Templates from '~/data/templates';
 
-const URL_API = import.meta.env.VITE_API_URL;
 const FOLDER_TEMPLATES = 'src/assets/templates/data/'
 const canvasStore = useCanvasStore();
 
@@ -29,6 +28,7 @@ const distributeImages = () => {
 
 onMounted(() => {
   templates.value = Templates;
+  console.log("temapltes", templates.value)
   distributeImages();
   
 });
@@ -36,13 +36,12 @@ onMounted(() => {
 
 <template>
   <div>
-    <el-row class="menu-container">     
-      <el-col :span="12">
+    <el-row class="menu-container" style="padding:20px">     
+      <el-col :span="12" >
         <div v-for="template in col1" :key="template.id" class="template-item">          
           <div>
-            <img @click="canvasStore.loadDesignTemplates(template)" :src=" FOLDER_TEMPLATES + template.filename" />
+            <img @click="canvasStore.loadDesignTemplates(template)" :src=" FOLDER_TEMPLATES + template.filename" class="full-width-image" />
           </div>
-          
         </div>
         <div v-if="loading">
           <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
@@ -54,8 +53,8 @@ onMounted(() => {
         </div>
       </el-col>
       <el-col :span="12">
-        <div v-for="temaplte in col2" :key="temaplte.id" class="temaplte-item">
-          <img @click="canvasStore.loadDesignTemplates(template)" :src=" FOLDER_TEMPLATES + template.filename" :alt="temaplte.alt_description" />
+        <div v-for="template in col2" :key="template.id" class="template-item">
+          <img @click="canvasStore.loadDesignTemplates(template)" :src=" FOLDER_TEMPLATES + template.filename" class="full-width-image" />
         </div>
         <div v-if="loading">
           <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
@@ -69,17 +68,17 @@ onMounted(() => {
     </el-row>
   </div>
 </template>
-
-
 <style scoped>
-.template-item {
-  margin: 10px;
+.template-item {  
   cursor: pointer;
 }
-
 .template-item img {
-  max-width: 100%;
-  height: auto;
   border-radius: 20px;
+}
+.full-width-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin-top: 15px;
 }
 </style>

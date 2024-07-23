@@ -67,6 +67,7 @@ export const useCanvasStore = defineStore('canvasStore', {
     changeSelected: false,
     selectedCornerRadius: 0,
     clonedObject: null,  
+    selectedAngle: 0,
     
   }),
   actions: {
@@ -173,9 +174,13 @@ export const useCanvasStore = defineStore('canvasStore', {
         this.changeCornerRadius()        
       };
 
-      const handleObjectModified = () =>{
+      const handleObjectModified = (e) =>{
         this.changeBackgroundColor
         this.changeCornerRadius
+        const activeObject = e.target;
+        if (activeObject) {
+          this.selectedAngle = activeObject.angle;
+        }
       }
       
 
@@ -187,7 +192,9 @@ export const useCanvasStore = defineStore('canvasStore', {
       fabricCanvasObj.on('selection:created', handleSelectionChanged);
       fabricCanvasObj.on('selection:updated', handleSelectionChanged);
       fabricCanvasObj.on('selection:cleared', handleSelectionChanged);
-      fabricCanvasObj.on('object:modified', handleObjectModified)
+      fabricCanvasObj.on('object:modified', (e) => {
+        handleObjectModified(e)
+      })
       fabricCanvasObj.on('mouse:move', (e) => {
         const target = e.target;
         const active = fabricCanvasObj.getActiveObjects().includes(target)
@@ -788,6 +795,16 @@ export const useCanvasStore = defineStore('canvasStore', {
         this.saveCanvasState();
       }
     },
+    changeAngle() {
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const activeObject = canvas.getActiveObject();
+      
+      if (activeObject) {
+        const angle = this.selectedAngle;
+        activeObject.set('angle', angle).setCoords();
+        canvas.renderAll();
+      }
+    },
     changeCornerRadius() {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
       const activeObject = canvas.getActiveObject();
@@ -1195,7 +1212,7 @@ export const useCanvasStore = defineStore('canvasStore', {
 
     },
     async saveDesignTemplates(filename: string) {
-      const canvas = this.canvasInstances[this.activePageIndex].canvas;
+      const canvas = this.canvasInstances[this.activePageIndex].canvas;      
 
       const backgroundColor = canvas.backgroundColor;
       const backgroundImage = canvas.backgroundImage ? canvas.backgroundImage.src : null;
@@ -1214,7 +1231,14 @@ export const useCanvasStore = defineStore('canvasStore', {
         strokeWidth: obj.strokeWidth,
         backgroundColor: obj.backgroundColor,
         textPadding: obj.textPadding,
-        
+        shadow: obj.shadow ? {
+          color: obj.shadow.color,
+          blur: obj.shadow.blur,
+          offsetX: obj.shadow.offsetX,
+          offsetY: obj.shadow.offsetY,
+          affectStroke: obj.shadow.affectStroke
+        } : null,
+        index: canvas.getObjects().indexOf(obj)
       }));
 
       const svgObjects = canvas.getObjects('path').map(obj => ({
@@ -1226,7 +1250,8 @@ export const useCanvasStore = defineStore('canvasStore', {
         scaleY: obj.scaleY,
         angle: obj.angle,
         opacity: obj.opacity,
-        fill: obj.fill,        
+        fill: obj.fill,     
+        index: canvas.getObjects().indexOf(obj)        
       }));
 
 
@@ -1239,7 +1264,9 @@ export const useCanvasStore = defineStore('canvasStore', {
         scaleY: obj.scaleY,
         angle: obj.angle,
         stroke: obj.stroke,
-        opacity: obj.opacity
+        strokeWidth: obj.strokeWidth,
+        opacity: obj.opacity,        
+        index: canvas.getObjects().indexOf(obj) 
       }));
 
       const allObjects = [...textObjects, ...svgObjects, ...imageObjects];
@@ -1258,95 +1285,127 @@ export const useCanvasStore = defineStore('canvasStore', {
       await axios.post(URL_API+ '/templates', data)
 
     },
-    loadDesignTemplates(obj: any){
+    loadDesignTemplates(obj) {
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
-      canvas.clear()
-      this.resizeCanvas(obj.width, obj.height, false, false)
+      canvas.clear();
+     
       
-      if (obj.backgroundColor)
-        canvas.backgroundColor = obj.backgroundColor;
-
-
-      if (obj.backgroundImage) {
-        fabric.Image.fromURL(data.backgroundImage, (img) => {
-          canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
-        });
+      this.resizeCanvas(obj.width, obj.height, false, false);
+      if (obj.backgroundColor) {
+          canvas.backgroundColor = obj.backgroundColor;
       }
-      
-
-      const loadObjects = (objects) => {
-        return Promise.all(objects.map((obj) => {
-          return new Promise((resolve) => {
-            if (obj.type === 'svg') {
-              fabric.loadSVGFromURL(obj.src, (objects, options) => {
-                let fabricObject = fabric.util.groupSVGElements(objects, options);
-                fabricObject.set({
-                  left: obj.left,
-                  top: obj.top,
-                  originX: 'center',
-                  originY: 'center',
-                  scaleX: obj.scaleX,
-                  scaleY: obj.scaleY,
-                  angle: obj.angle,
-                  opacity: obj.opacity,
-                  fill: obj.fill
-                });
-                canvas.add(markRaw(fabricObject));
-                resolve();
-              });
-            } else if (obj.type === 'image') {
-              fabric.Image.fromURL(obj.src, (img) => {
-                img.set({
-                  left: obj.left,
-                  top: obj.top,
-                  scaleX: obj.scaleX,
-                  scaleY: obj.scaleY,
-                  angle: obj.angle,
-                  opacity: obj.opacity,
-                });
-      
-                if (obj.stroke) {
-                  img.set({
-                    stroke: obj.stroke,
-                    strokeWidth: obj.strokeWidth || 1,
-                  });
-                }
-      
-                canvas.add(img);
-                resolve();
-              });
-            } else {
-              resolve();
-            }
+      if (obj.backgroundImage) {
+          fabric.Image.fromURL(obj.backgroundImage, (img) => {
+              canvas.setBackgroundImage(img, canvas.renderAll.bind(canvas));
           });
-        }));
+      }
+  
+      const loadObjects = (objects) => {
+          return Promise.all(objects.map((obj, index) => {
+              return new Promise((resolve) => {
+                  if (obj.type === 'image') {
+                      fabric.Image.fromURL(obj.src, (img) => {
+                          img.set({
+                              left: obj.left,
+                              top: obj.top,
+                              scaleX: obj.scaleX,
+                              scaleY: obj.scaleY,
+                              angle: obj.angle,
+                              opacity: obj.opacity,
+                              stroke: obj.stroke,
+                              strokeWidth: obj.strokeWidth,
+                              index: obj.index 
+                          });
+                          if (obj.stroke) {
+                              img.set({
+                                  stroke: obj.stroke,
+                                  strokeWidth: obj.strokeWidth || 1,
+                              });
+                          }
+                          canvas.add(img);
+                          resolve();
+                      });
+                  } else if (obj.type === 'svg') {
+                      fabric.loadSVGFromURL(obj.src, (objects, options) => {
+                          let fabricObject = fabric.util.groupSVGElements(objects, options);
+                          fabricObject.set({
+                              left: obj.left,
+                              top: obj.top,
+                              originX: 'center',
+                              originY: 'center',
+                              scaleX: obj.scaleX,
+                              scaleY: obj.scaleY,
+                              angle: obj.angle,
+                              opacity: obj.opacity,
+                              fill: obj.fill,
+                              index: obj.index
+                          });
+                          canvas.add(fabricObject);
+                          resolve();
+                      });
+                  } else if (obj.type === 'i-text') {
+                    let shadow = obj.shadow ? new fabric.Shadow({
+                      color: obj.shadow.color,
+                      blur: obj.shadow.blur,
+                      offsetX: obj.shadow.offsetX,
+                      offsetY: obj.shadow.offsetY,
+                      affectStroke: obj.shadow.affectStroke
+                    }) : null;
+                
+                    let fabricObject = new fabric.IText(obj.text, {
+                      left: obj.left,
+                      top: obj.top,
+                      fontSize: obj.fontSize,
+                      fill: obj.fill,
+                      fontFamily: obj.fontFamily,
+                      angle: obj.angle,
+                      opacity: obj.opacity,
+                      stroke: obj.stroke,
+                      strokeWidth: obj.strokeWidth,
+                      backgroundColor: obj.backgroundColor,
+                      textPadding: obj.textPadding,
+                      shadow: shadow,
+                      index: obj.index
+                    });
+                      canvas.add(fabricObject);
+                      canvas.bringToFront(fabricObject);
+                      resolve();
+                  } else {
+                      resolve();
+                  }
+              });
+          }));
       };
-
-      loadObjects(obj.objects).then(() => {
-        obj.objects.forEach((obj) => {
-          if (obj.type === 'i-text') {
-            let fabricObject = new fabric.IText(obj.text, {
-              left: obj.left,
-              top: obj.top,
-              fontSize: obj.fontSize,
-              fill: obj.fill,
-              fontFamily: obj.fontFamily,
-              angle: obj.angle,
-              opacity: obj.opacity,
-              stroke: obj.stroke,
-              strokeWidth: obj.strokeWidth,
-              backgroundColor: obj.backgroundColor,
-              textPadding: obj.textPadding,
+  
+      loadObjects(obj.objects).then(async () => {
+        const zoom = canvas.getZoom();
+        
+        obj.objects.forEach(async (objData) => {
+            const adjustedLeft = Math.round(objData.left);
+            const adjustedTop = Math.round(objData.top);
+    
+            
+    
+            canvas.getObjects().forEach(obj => {                
+                console.log("Rounded obj.left:", Math.round(obj.left), "Rounded obj.top:", Math.round(obj.top));
             });
-            canvas.add(markRaw(fabricObject));
-            canvas.bringToFront(fabricObject);
-          }
+    
+            const fabricObject = canvas.getObjects().find(obj => 
+                Math.round(obj.left) === adjustedLeft && 
+                Math.round(obj.top) === adjustedTop
+            );
+    
+            
+    
+            if (fabricObject) {
+                console.log("fabricObject:", fabricObject);            
+                console.log("fabricObject index:", objData.index);
+                fabricObject.moveTo(objData.index);
+            }
         });
+        canvas.renderAll();
+        this.saveCanvasState();
       });
-
-      canvas.renderAll();
-      this.saveCanvasState();
-
     },
     loadTextsTemplates(obj: any){
       const canvas = this.canvasInstances[this.activePageIndex].canvas;
@@ -1409,6 +1468,7 @@ export const useCanvasStore = defineStore('canvasStore', {
         this.selectedBrightness = null;
         this.selectedSepia = false
         this.selectedGrayscale = false
+        this.selectedAngle = activeObject.get('angle')
 
         function unmapBrightness(mappedValue) {
           const minValue = 1;
@@ -1639,8 +1699,22 @@ export const useCanvasStore = defineStore('canvasStore', {
       const activeObjects = canvas.getActiveObjects();
 
       function alignLeft(activeObject: any){
-        activeObject.set({ left: 0 });
-        activeObject.setCoords();
+        var left;
+        if(activeObject.angle <= 90) {
+          left = activeObject.aCoords.tl.x - activeObject.aCoords.bl.x;
+        }
+        if(activeObject.angle > 90 && activeObject.angle <= 180) {
+          left = activeObject.aCoords.tl.x - activeObject.aCoords.br.x;
+        }
+        if(activeObject.angle > 180 && activeObject.angle <= 270) {
+          left = activeObject.aCoords.tl.x - activeObject.aCoords.tr.x;
+        }
+        if(activeObject.angle > 270) {
+          left = 0;
+        }
+        activeObject.set({
+          left: left
+        });
       }
       if (activeObjects.length == 1){
         const activeObject = activeObjects[0]
@@ -1650,10 +1724,8 @@ export const useCanvasStore = defineStore('canvasStore', {
           this.checkPosition(canvas, activeObject);
         }
       }else{
-        for (let index = 0; index < activeObjects.length; index++) {
-          const activeObject = activeObjects[index];
-          alignLeft(activeObject)
-        }
+        var activeObject = canvas.getActiveObject()
+        alignLeft(activeObject)
       }
       canvas.renderAll();
       this.saveCanvasState();
@@ -1687,10 +1759,8 @@ export const useCanvasStore = defineStore('canvasStore', {
           this.checkPosition(canvas, activeObject);    
         }
       }else{
-        for (let index = 0; index < activeObjects.length; index++) {
-          const activeObject = activeObjects[index];
-          alignTop(activeObject)
-        }
+        var activeObject = canvas.getActiveObject()
+        alignTop(activeObject)
       }
       canvas.renderAll();
       this.saveCanvasState();
@@ -1722,10 +1792,8 @@ export const useCanvasStore = defineStore('canvasStore', {
             this.checkPosition(canvas, activeObject);
         }
       }else{
-        for (let index = 0; index < activeObjects.length; index++) {
-          const activeObject = activeObjects[index];
-          alignCenter(activeObject)
-        }
+        var activeObject = canvas.getActiveObject()
+        alignCenter(activeObject)
       }
       canvas.renderAll();
       this.saveCanvasState();
@@ -1754,10 +1822,8 @@ export const useCanvasStore = defineStore('canvasStore', {
           this.checkPosition(canvas, activeObject);
         }
       }else{
-        for (let index = 0; index < activeObjects.length; index++) {
-          const activeObject = activeObjects[index];
-          alignMiddle(activeObject)
-        }
+        var activeObject = canvas.getActiveObject()
+        alignMiddle(activeObject)
       }
 
       canvas.renderAll();
@@ -1797,10 +1863,8 @@ export const useCanvasStore = defineStore('canvasStore', {
             this.checkPosition(canvas, activeObject);
           }
         }else{
-          for (let index = 0; index < activeObjects.length; index++) {
-            const activeObject = activeObjects[index];
-            alignRight(activeObject)
-          }
+          var activeObject = canvas.getActiveObject()
+          alignRight(activeObject)
         }
 
         canvas.renderAll();
@@ -1842,10 +1906,8 @@ export const useCanvasStore = defineStore('canvasStore', {
             this.checkPosition(canvas, activeObject);
           }
         }else{
-          for (let index = 0; index < activeObjects.length; index++) {
-            const activeObject = activeObjects[index];
-            alignBottom(activeObject)
-          }
+          var activeObject = canvas.getActiveObject()
+          alignBottom(activeObject)
         }
         
         canvas.renderAll();

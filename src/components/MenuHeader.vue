@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, unref, watch, nextTick } from 'vue'
+import { computed, onMounted, onUnmounted, ref, unref, watch, nextTick, reactive } from 'vue'
 import { useI18n } from 'vue-i18n';
 import SolarUndoLeftRoundBroken from '~icons/solar/undo-left-round-broken';
 import SolarUndoRightRoundBroken from '~icons/solar/undo-right-round-broken';
@@ -24,7 +24,24 @@ import PhAlignRightFill from '~icons/ph/align-right-fill';
 import PhAlignBottomFill from '~icons/ph/align-bottom-fill';
 import IconParkOutlineGroup from '~icons/icon-park-outline/group';
 import MdiUngroup from '~icons/mdi/ungroup';
+import type { CSSProperties } from 'vue'
 
+interface Mark {
+  style: CSSProperties
+  label: string
+}
+
+const marks = reactive<Marks>({
+  0: '0°',  
+  90: '90°',
+  180: {
+    style: {
+      color: '#1989FA',
+    },
+    label: '180°',
+  },
+  270: '270°',
+})
 
 const buttonRefPosition = ref()
 const buttonRefMoreTools = ref()
@@ -170,6 +187,12 @@ watch(
   }
 );
 
+watch(
+  () => canvasStore.selectedAngle,
+  () =>{
+    canvasStore.changeAngle()
+  }
+)
 
 </script>
 
@@ -369,8 +392,22 @@ watch(
                       {{ $t('menu_header.align_bottom') }}
                     </div>                  
                   </div>
+
   
-                </div>  
+                </div> 
+                <el-divider style="margin: 10px 0px" />   
+                <div>
+                  <span class="title_position">{{$t('menu_header.angle')}}</span>
+                  <div style="display:flex;margin-bottom: 10px">
+                    <div style="width: 140px;margin-right: 10px">
+                      <el-slider v-model="canvasStore.selectedAngle"  size="small" :min="0" :max="360" :marks="marks"/>
+                    </div>
+                    <div>
+                      <el-input-number v-model="canvasStore.selectedAngle" size="small" :min="0" :max="360"  controls-position="right"  />
+                    </div>
+                  </div>
+                  
+                </div>
               </div>             
              
             </div>
@@ -515,7 +552,11 @@ watch(
   color: #ccc;
 }
 .ep-input-number--small{
-  width: 75px;
+  width: 80px;
+}
+
+:deep(.ep-slider__marks-text){
+  font-size: 12px;
 }
 
 

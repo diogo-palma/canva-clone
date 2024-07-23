@@ -106,7 +106,8 @@ const locales = {
       brightness: "Brightness",
       sepia: "Sepia",
       grayscale: "Grayscale",
-      border: "Border",      
+      border: "Border",  
+      angle: "Angle"    
       
     },
     
