@@ -6,6 +6,7 @@ import { ColorPicker } from "vue3-colorpicker";
 
 
 const hasStroke = ref(false)
+const hasStrokeImage = ref(false)
 const hasBackground = ref(false)
 const hasShadow = ref(false)
 const hasBlur = ref(false)
@@ -37,7 +38,21 @@ const handleChangeTextStroke = () =>{
 }
 
 const handleDisableStroke = () =>{
-  if (!hasStroke.value) {
+  if (!hasStroke.value && canvasStore.selectedObjectType != 'image') {
+    canvasStore.selectedTextStroke = 0
+    canvasStore.selectedTextStrokeColor = ""
+    canvasStore.changeTextStroke()
+    canvasStore.changeTextStrokeColor()
+  }else{
+    canvasStore.selectedTextStroke = 1
+    canvasStore.selectedTextStrokeColor = "#000"
+    canvasStore.changeTextStroke()
+    canvasStore.changeTextStrokeColor()
+  }
+}
+
+const handleDisableStrokeImage = () =>{
+  if (!hasStrokeImage.value && canvasStore.selectedObjectType == 'image') {
     canvasStore.selectedTextStroke = 0
     canvasStore.selectedTextStrokeColor = ""
     canvasStore.changeTextStroke()
@@ -133,8 +148,10 @@ const handleDisableCornerRadius = () => {
 const checkValues = () =>{
   if (canvasStore.selectedTextStroke > 1 || canvasStore.selectedTextStrokeColor){
     hasStroke.value = true
+    hasStrokeImage.value = true
   }else{
     hasStroke.value = false
+    hasStrokeImage.value = false
   }
   if (canvasStore.selectedTextBackgroundColor || canvasStore.selectedBackgroundCornerRadius > 0 || canvasStore.selectedBackgroundPadding > 0) {
     hasBackground.value = true
@@ -420,10 +437,10 @@ watch(
         </div>
         <div class="flex-grow"></div>
         <div>
-          <el-switch v-model="hasStroke" @change="handleDisableStroke"   />
+          <el-switch v-model="hasStrokeImage" @change="handleDisableStrokeImage"   />
         </div>        
       </div>
-      <div v-show="hasStroke && canvasStore.selectedObjectType == 'image'" style="display:flex" class="tools-open">
+      <div v-show="hasStrokeImage && canvasStore.selectedObjectType == 'image'" style="display:flex" class="tools-open">
         <div class="color-picker">
           <color-picker v-model:pureColor="canvasStore.selectedTextStrokeColor"  picker-type="chrome"/>
         </div>

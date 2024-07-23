@@ -1292,7 +1292,7 @@ export const useCanvasStore = defineStore('canvasStore', {
       
       this.resizeCanvas(obj.width, obj.height, false, false);
       if (obj.backgroundColor) {
-          canvas.backgroundColor = obj.backgroundColor;
+          canvas.backgroundColor = obj.backgroundColor;          
       }
       if (obj.backgroundImage) {
           fabric.Image.fromURL(obj.backgroundImage, (img) => {
@@ -1463,12 +1463,13 @@ export const useCanvasStore = defineStore('canvasStore', {
         this.selectedLock = activeObject.get('lockRotation')
         this.selectedOpacity = activeObject.get('opacity') * 100
         this.selectedCornerRadius = activeObject.get('cornerRadius')
+        this.selectedObjectColor = activeObject.get('fill')
        
         this.selectedBlur  = 0;
         this.selectedBrightness = null;
         this.selectedSepia = false
         this.selectedGrayscale = false
-        this.selectedAngle = activeObject.get('angle')
+        this.selectedAngle = Math.round(activeObject.get('angle'))
 
         function unmapBrightness(mappedValue) {
           const minValue = 1;
@@ -1499,7 +1500,9 @@ export const useCanvasStore = defineStore('canvasStore', {
           });
         }
 
-        
+        this.selectedTextStrokeColor = activeObject.get('stroke')
+        this.selectedTextStroke = activeObject.get('strokeWidth')
+        this.selectedTextBackgroundColor = activeObject.get('backgroundColor');
 
         if (activeObject.type === 'text' || activeObject.type === 'i-text') {        
           this.selectedFont = activeObject.fontFamily;
@@ -1513,10 +1516,10 @@ export const useCanvasStore = defineStore('canvasStore', {
           this.selectedTextItalic = isItalic;
           const isLinethrough = activeObject.get('linethrough');
           this.selectedTextStrikethrough = isLinethrough;
-          this.selectedTextStrokeColor = activeObject.get('stroke')
+          
           this.selectedLineHeight = activeObject.get('lineHeight') * 10
           this.selectedBackgroundPadding = activeObject.get('textPadding');
-          this.selectedTextBackgroundColor = activeObject.get('backgroundColor');
+          
           this.selectedBackgroundCornerRadius = activeObject.get('cornerRadius')
           this.selectdElevationAnimationInitialTop = obj.height;
           this.selectdElevationAnimationFinalTop = activeObject.top;

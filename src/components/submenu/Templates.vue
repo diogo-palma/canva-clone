@@ -71,9 +71,10 @@ onMounted(() => {
 <style scoped>
 .template-item {  
   cursor: pointer;
+  margin: 10px;
 }
 .template-item img {
-  border-radius: 20px;
+  border-radius: 8px; 
 }
 .full-width-image {
   width: 100%;

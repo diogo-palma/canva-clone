@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { ColorPicker } from "vue3-colorpicker";
 import FluentColor24Regular from '~icons/fluent/color-24-regular';
 import { useCanvasStore } from '~/store/canvasStore'
@@ -20,6 +20,11 @@ function getLuminance(color: string) {
 function changeBackgroundColor(color: string){
   backgroundColor.value = color
 }
+
+onMounted(() => {
+  const canvas = canvasStore.canvasInstances[canvasStore.activePageIndex].canvas;
+  backgroundColor.value = canvas.backgroundColor;
+})
 
 watch(backgroundColor, (newColor) => {
   console.log("backgroundColor", newColor)
