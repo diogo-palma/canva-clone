@@ -179,7 +179,7 @@ export const useCanvasStore = defineStore('canvasStore', {
         this.changeCornerRadius
         const activeObject = e.target;
         if (activeObject) {
-          this.selectedAngle = activeObject.angle;
+          this.selectedAngle = Math.round(activeObject.angle);
         }
       }
       
@@ -1255,19 +1255,23 @@ export const useCanvasStore = defineStore('canvasStore', {
       }));
 
 
-      const imageObjects = canvas.getObjects('image').map(obj => ({
-        type: 'image',
-        src: obj.getSrc(),
-        left: obj.left,
-        top: obj.top,
-        scaleX: obj.scaleX,
-        scaleY: obj.scaleY,
-        angle: obj.angle,
-        stroke: obj.stroke,
-        strokeWidth: obj.strokeWidth,
-        opacity: obj.opacity,        
-        index: canvas.getObjects().indexOf(obj) 
-      }));
+      const imageObjects = canvas.getObjects('image').map(obj => {
+        const grayscaleFilter = obj.filters.find(filter => filter.type === 'Grayscale');
+        return {
+          type: 'image',
+          src: obj.getSrc(),
+          left: obj.left,
+          top: obj.top,
+          scaleX: obj.scaleX,
+          scaleY: obj.scaleY,
+          angle: obj.angle,
+          stroke: obj.stroke,
+          strokeWidth: obj.strokeWidth,
+          opacity: obj.opacity,
+          index: canvas.getObjects().indexOf(obj),
+          grayscale: !!grayscaleFilter 
+        };
+      });
 
       const allObjects = [...textObjects, ...svgObjects, ...imageObjects];
 
@@ -1321,6 +1325,10 @@ export const useCanvasStore = defineStore('canvasStore', {
                                   stroke: obj.stroke,
                                   strokeWidth: obj.strokeWidth || 1,
                               });
+                          }
+                          if (obj.grayscale) {
+                            img.filters.push(new fabric.Image.filters.Grayscale());
+                            img.applyFilters();
                           }
                           canvas.add(img);
                           resolve();
