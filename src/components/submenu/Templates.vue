@@ -4,7 +4,7 @@ import { useCanvasStore } from '~/store/canvasStore'
 
 import Templates from '~/data/templates';
 
-const FOLDER_TEMPLATES = 'src/assets/templates/data/'
+const FOLDER_TEMPLATES = '/templates/data/'
 const canvasStore = useCanvasStore();
 
 const templates = ref([]);

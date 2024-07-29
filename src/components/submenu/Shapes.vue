@@ -41,10 +41,20 @@ const addSvg = (url) => {
 
 onMounted(async () => {
 
-  const lineImports = await sortAndMapEntries(Object.entries(import.meta.glob('~/assets/lines/*.svg')));
-  const shapeImports = await sortAndMapEntries(Object.entries(import.meta.glob('~/assets/shapes/*.svg')));
-  lines.value = lineImports;
-  shapes.value = shapeImports;
+  const lineImports = await sortAndMapEntries(Object.entries(import.meta.glob('/public/lines/*.svg')));
+  const shapeImports = await sortAndMapEntries(Object.entries(import.meta.glob('/public/shapes/*.svg')));
+
+  const adjustPaths = (entries) => {
+    return entries.map((obj) => {
+      const adjustedPath = obj.default.replace('/public', '');
+      return {
+        ...obj,
+        default: adjustedPath
+      }
+    })
+  };
+  lines.value = adjustPaths(lineImports);
+  shapes.value = adjustPaths(shapeImports);
 
   const imagesLoaded = await Promise.all([...lines.value, ...shapes.value].map(image => {
       return new Promise(resolve => {

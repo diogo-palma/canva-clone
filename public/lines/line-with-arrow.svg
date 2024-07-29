@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" >
+  <path
+    stroke="#000"
+    stroke-width="3"
+    d="M 90 15 L 100 20 "    
+    stroke-linejoin="round"
+    stroke-linecap="round"
+  ></path>
+  <path
+    stroke="#000"
+    stroke-width="3"
+    d="M 90 25 L 100 20"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+  ></path>
+  <path
+    stroke="#000"
+    stroke-width="2"
+    d="M 2.5 20 L 100 20"
+    stroke-linejoin="round"
+    stroke-linecap="round"
+  ></path>
+</svg>

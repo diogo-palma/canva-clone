@@ -59,7 +59,7 @@ onMounted(async () => {
     
     <el-row class="texts-templates">
       <el-col v-for="template in textsTemplates" :key="template.id" :span="12">
-        <img @click="canvasStore.loadTextsTemplates(template.textsObjs)" :src="'/src/assets/texts/'+template.filename" alt="" srcset="" style="width: 100%;max-height: 300px;">
+        <img @click="canvasStore.loadTextsTemplates(template.textsObjs)" :src="'/texts/'+template.filename" alt="" srcset="" style="width: 100%;max-height: 300px;">
       </el-col>
     </el-row>        
       

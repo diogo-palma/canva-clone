@@ -26,6 +26,13 @@ export default defineConfig({
       '~/': `${pathSrc}/`,
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        assetFileNames: 'assets/[name].[hash][extname]'
+      }
+    }
+  },
   css: {
     preprocessorOptions: {
       scss: {
