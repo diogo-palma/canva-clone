@@ -15,7 +15,7 @@ export async function loadFonts() {
     { value: 'Impact', label: 'Impact', url: null },
   ];
 
-  const modules = import.meta.glob('~/assets/fonts/*.{ttf,otf,woff,woff2}');
+  const modules = import.meta.glob('/public/fonts/*.{ttf,otf,woff,woff2}');
   const customFonts = Object.keys(modules).map(async (key) => {
     const fontName = key.split('/').pop()?.split('.')[0];
     const fontUrl = await modules[key]();
