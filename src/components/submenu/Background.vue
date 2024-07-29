@@ -28,13 +28,15 @@ onMounted(() => {
 
 watch(backgroundColor, (newColor) => {
   console.log("backgroundColor", newColor)
-  const luminance = getLuminance(newColor);
-  console.log("luminance", luminance)  
-  strokeColor.value = luminance > 128 ? '#000' : '#fff'; 
-  if (luminance == 0){
-    strokeColor.value = "#000"
+  if (newColor){
+    const luminance = getLuminance(newColor);
+    console.log("luminance", luminance)  
+    strokeColor.value = luminance > 128 ? '#000' : '#fff'; 
+    if (luminance == 0){
+      strokeColor.value = "#000"
+    }
+    canvasStore.changeCanvasBackgroundColor(newColor)
   }
-  canvasStore.changeCanvasBackgroundColor(newColor)
 });
 </script>
 

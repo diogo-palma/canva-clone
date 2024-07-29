@@ -23,10 +23,10 @@ onMounted(async () => {
     //const width = contentElement.offsetWidth - 100;
     const width = 1080
     // const height = contentElement.offsetHeight - 100;
-    const height = 1920
+    const height = 1080
     canvasStore.pageWidth = width
     canvasStore.pageHeight = height
-    canvasStore.zoomLevel = 29
+    canvasStore.zoomLevel = 47
     canvasStore.addNewPage(); 
     loading.value = false  
     

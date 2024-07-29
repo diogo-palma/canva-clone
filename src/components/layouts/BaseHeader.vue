@@ -58,10 +58,10 @@ const newCanvas = () =>{
               <el-menu-item index="2-2-1" @click="dialogVisible = true">
                 {{ $t('header.image') }} 
               </el-menu-item>
-              <el-menu-item index="2-2-3">PDF</el-menu-item>
+              <el-menu-item index="2-2-3" @click="canvasStore.savePdf()">PDF</el-menu-item>
             </el-sub-menu>
-            <el-menu-item index="2-3" @click="dialogVisibleTexts = true">Text template</el-menu-item> 
-            <el-menu-item index="2-4" @click="dialogVisibleTemplates = true">Design template</el-menu-item> 
+            <!-- <el-menu-item index="2-3" @click="dialogVisibleTexts = true">Text template</el-menu-item> 
+            <el-menu-item index="2-4" @click="dialogVisibleTemplates = true">Design template</el-menu-item>  -->
           </el-sub-menu>
           
         </el-menu>

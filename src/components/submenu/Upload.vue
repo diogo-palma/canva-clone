@@ -14,23 +14,23 @@ const { t } = useI18n();
 const canvasStore = useCanvasStore();
 
 
-const importAll = (context) => Object.keys(context).map(key => ({ key, module: context[key]() }));
+// const importAll = (context) => Object.keys(context).map(key => ({ key, module: context[key]() }));
 
-const imageModules = importAll(import.meta.glob('/src/assets/templates/*.{png,jpg,jpeg,svg}'));
+// const imageModules = importAll(import.meta.glob('/src/assets/templates/*.{png,jpg,jpeg,svg}'));
 
-Promise.all(imageModules.map(({ module }) => module)).then(images => {
-  images.forEach((image, index) => {
-    const file = {
-      name: `image-${index}`,
-      url: image.default,
-      uid: `${index}`,
-      raw: {
-        type: 'image/png'
-      }
-    };
-    canvasStore.fileList.push(file);
-  });
-});
+// Promise.all(imageModules.map(({ module }) => module)).then(images => {
+//   images.forEach((image, index) => {
+//     const file = {
+//       name: `image-${index}`,
+//       url: image.default,
+//       uid: `${index}`,
+//       raw: {
+//         type: 'image/png'
+//       }
+//     };
+//     canvasStore.fileList.push(file);
+//   });
+// });
 
 const handlePictureCardPreview = (file) => {
   if (file.url) {

@@ -6,6 +6,9 @@ import ControlsPlugin from '~/core/ControlHandlers';
 import shortid from 'shortid'
 import axios from 'axios'
 import { UploadUserFile } from "element-plus";
+import { AlignGuidelines } from "fabric-guideline-plugin";
+import jsPDF from 'jspdf';
+
 
 const URL_API = import.meta.env.VITE_API_URL;
 
@@ -116,8 +119,15 @@ export const useCanvasStore = defineStore('canvasStore', {
 
       new ControlsPlugin();
 
+      const guideline = new AlignGuidelines({
+        canvas: fabricCanvasObj,        
+        aligningOptions: {
+          lineColor: "#32D10A",
+          lineMargin: 8
+        }
+      });
+      guideline.init();
       
-
       let isScaling = false;
       let isMoving = false;
 
@@ -1187,6 +1197,55 @@ export const useCanvasStore = defineStore('canvasStore', {
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
+      }
+    },
+    savePdf() {
+      const { canvasInstances, pageWidth, pageHeight, zoomLevel } = this;
+      if (canvasInstances && canvasInstances.length > 0) {        
+        const pdf = new jsPDF({
+          orientation: pageWidth > pageHeight ? 'landscape' : 'portrait',
+          unit: 'px',
+          format: [pageWidth, pageHeight],
+        });
+    
+        canvasInstances.forEach((instance, index) => {
+          const canvas = instance.canvas;
+    
+          if (canvas) {            
+            canvas.setZoom(1);
+            canvas.setDimensions({
+              width: pageWidth,
+              height: pageHeight,
+            });
+    
+            const dataURL = canvas.toDataURL({
+              left: 0,
+              top: 0,
+              format: 'png',
+              quality: 1.0,
+            });
+    
+            let currentZoomLevel = zoomLevel;
+    
+            if (currentZoomLevel < 10) {
+              currentZoomLevel = 10;
+            }
+            currentZoomLevel = currentZoomLevel / 100;
+    
+            canvas.setZoom(currentZoomLevel);
+            canvas.setDimensions({
+              width: pageWidth * currentZoomLevel,
+              height: pageHeight * currentZoomLevel,
+            });
+    
+            if (index > 0) {
+              pdf.addPage([pageWidth, pageHeight], pageWidth > pageHeight ? 'landscape' : 'portrait');
+            }
+            pdf.addImage(dataURL, 'PNG', 0, 0, pageWidth, pageHeight);
+          }
+        });
+    
+        pdf.save('canvas.pdf');
       }
     },
     async saveTextsTemplates(filename: string) {
