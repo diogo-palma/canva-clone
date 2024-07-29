@@ -58,7 +58,7 @@ const Templates = [
         scaleY: 27.3795,
         angle: 270.3311,
         opacity: 1,
-        src: "/src/assets/shapes/triangle.svg",
+        src: "/shapes/triangle.svg",
         fill: "rgb(19, 134, 108)",
         index: 1
       },
@@ -70,13 +70,13 @@ const Templates = [
         scaleY: 30.7577,
         angle: 0,
         opacity: 1,
-        src: "/src/assets/shapes/circle.svg",
+        src: "/shapes/circle.svg",
         fill: "rgb(19, 134, 108)",
         index: 2
       },
       {
         type: "image",
-        src: "/src/assets/templates/united_state.svg",
+        src: "/templates/united_state.svg",
         left: -10.884292504559653,
         top: 26.95017487950065,
         scaleX: 0.7493164868721097,
@@ -88,7 +88,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "/src/assets/templates/united_state.jpg",
+        src: "/templates/united_state.jpg",
         left: 466.9625285016924,
         top: 371.51986216659714,
         scaleX: 0.5276,
@@ -102,7 +102,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "/src/assets/templates/bussola.png",
+        src: "/templates/bussola.png",
         left: 412.0727591496821,
         top: 464.6153846153846,
         scaleX: 0.2935364577505324,
@@ -114,7 +114,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "/src/assets/templates/binoculars.png",
+        src: "/templates/binoculars.png",
         left: 784.1683103221566,
         top: 73.84615384615383,
         scaleX: 0.265748342486566,
@@ -173,12 +173,12 @@ const Templates = [
         angle: 0,
         opacity: 1,
         fill: "rgba(67, 204, 155, 0.55)",
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
         index: 1
       },
       {
         type: "image",
-        src: "/src/assets/templates/easy_salada_recipes.jpeg",
+        src: "/templates/easy_salada_recipes.jpeg",
         left: -24.08807425191003,
         top: 716.4564584908985,
         scaleX: 0.6850202675222985,
@@ -252,7 +252,7 @@ const Templates = [
         angle: 270,
         opacity: 1,
         fill: "rgb(175, 122, 143)",        
-        src: "/src/assets/shapes/triangle.svg",
+        src: "/shapes/triangle.svg",
         index: 3
       },
       {
@@ -264,7 +264,7 @@ const Templates = [
         angle: 0,
         opacity: 1,
         fill: "rgb(175, 122, 143)",        
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
         index: 2
       },
       {
@@ -276,12 +276,12 @@ const Templates = [
         angle: 0,
         opacity: 1,
         fill: "rgb(175, 122, 143)",        
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
         index: 1
       },
       {
         type: "image",
-        src: "/src/assets/templates/flower-material.png",
+        src: "/templates/flower-material.png",
         left: 335.9942,
         top: -70.1573,
         scaleX: 0.2201,
@@ -294,7 +294,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "/src/assets/templates/learn_basic_analysis.png",
+        src: "/templates/learn_basic_analysis.png",
         left: 638.4529,
         top: 55.6525,
         scaleX: 0.8145,
@@ -361,7 +361,7 @@ const Templates = [
         angle: 9.4263,
         opacity: 1,
         fill: "rgb(144, 19, 254)",
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
         index: 1
       },
       {
@@ -373,7 +373,7 @@ const Templates = [
         angle: 0,
         opacity: 1,
         fill: "rgb(93, 53, 176)",
-        src: "/src/assets/shapes/triangle.svg",
+        src: "/shapes/triangle.svg",
         index: 2
       },
       {
@@ -385,7 +385,7 @@ const Templates = [
         angle: 0,
         opacity: 1,
         fill: "rgb(255, 255, 255)",
-        src: "/src/assets/shapes/triangle.svg",
+        src: "/shapes/triangle.svg",
         index: 4
         
       },
@@ -398,7 +398,7 @@ const Templates = [
         angle: 0,
         opacity: 1,
         fill: "rgb(93, 53, 176)",
-        src: "/src/assets/shapes/triangle.svg",
+        src: "/shapes/triangle.svg",
         index: 3
       },
       {
@@ -410,12 +410,12 @@ const Templates = [
         angle: 0,
         opacity: 1,
         fill: "rgb(255, 255, 255)",
-        src: "/src/assets/shapes/triangle.svg",
+        src: "/shapes/triangle.svg",
         index: 5
       },
       {
         type: "image",
-        src: "/src/assets/templates/control.jpg",
+        src: "/templates/control.jpg",
         left: 383.6343,
         top: -4.8278,
         scaleX: 0.2199,
@@ -483,11 +483,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(80, 150, 1)",
         index: 0,
-        src: "/src/assets/shapes/triangle.svg",
+        src: "/shapes/triangle.svg",
       },
       {
         type: "image",
-        src: "/src/assets/templates/easy_diet.jpg",
+        src: "/templates/easy_diet.jpg",
         left: 689.1711,
         top: 117.2245,
         scaleX: 0.2529,
@@ -582,7 +582,7 @@ const Templates = [
         opacity: 0.54,
         fill: "rgb(196, 173, 30)",
         index: 1,
-        src: "/src/assets/shapes/hexagon.svg",        
+        src: "/shapes/hexagon.svg",        
       },
       {
         type: "svg",
@@ -594,7 +594,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(196, 173, 30)",
         index: 2,
-        src: "/src/assets/shapes/hexagon.svg",
+        src: "/shapes/hexagon.svg",
       },
       {
         type: "svg",
@@ -606,7 +606,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(255, 255, 255)",
         index: 3,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "svg",
@@ -618,11 +618,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(196, 173, 30)",
         index: 7,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/cardio_exercice.png",
+        src: "/templates/cardio_exercice.png",
         left: 249.116,
         top: 1.7042,
         scaleX: 1.0646,
@@ -685,11 +685,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(233, 158, 34)",
         index: 4,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/men-walk.png",
+        src: "/templates/men-walk.png",
         left: 730.9390015865853,
         top: 187.35801292430887,
         scaleX: 0.9173260387375275,
@@ -701,7 +701,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/bitcoins.png",
+        src: "/templates/bitcoins.png",
         left: 341.6021670727177,
         top: 348.8675916134844,
         scaleX: 0.20494685193636092,
@@ -714,7 +714,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/bitcoin.png",
+        src: "/templates/bitcoin.png",
         left: 8.05,
         top: 44.2902,
         scaleX: 0.2743,
@@ -727,7 +727,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/bitcoin.png",
+        src: "/templates/bitcoin.png",
         left: 96.37964817563531,
         top: 362.17789228879076,
         scaleX: 0.1848998984247475,
@@ -740,7 +740,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/bitcoin.png",
+        src: "/templates/bitcoin.png",
         left: 139.911028599656,
         top: 541.4124377303104,
         scaleX: 0.14275087093795522,
@@ -753,7 +753,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/bitcoin.png",
+        src: "/templates/bitcoin.png",
         left: 623.1450687911815,
         top: 362.3279816186718,
         scaleX: 0.24259575030879252,
@@ -766,7 +766,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/bitcoin.png",
+        src: "/templates/bitcoin.png",
         left: 876.3998415309098,
         top: 76.12299925392722,
         scaleX: 0.25428355832049665,
@@ -779,7 +779,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/bitcoin.png",
+        src: "/templates/bitcoin.png",
         left: 729.4567088555624,
         top: 571.5994514939491,
         scaleX: 0.14476464454012725,
@@ -792,7 +792,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/bitcoin.png",
+        src: "/templates/bitcoin.png",
         left: 909.796406364177,
         top: 542.1906218410786,
         scaleX: 0.31784390514285804,
@@ -805,7 +805,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/bitcoin.png",
+        src: "/templates/bitcoin.png",
         left: 1042.3727041720474,
         top: 238.5422420623221,
         scaleX: 0.18920676354503332,
@@ -911,7 +911,7 @@ const Templates = [
         angle: 345,
         opacity: 1,
         fill: "rgb(255, 235, 3)",
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
         index: 2
       },
       {
@@ -923,12 +923,12 @@ const Templates = [
         angle: 0,
         opacity: 1,
         fill: "rgb(208, 2, 27)",
-        src: "/src/assets/shapes/circle.svg",
+        src: "/shapes/circle.svg",
         index: 4
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/red_background.jpg",
+        src: "/templates/red_background.jpg",
         left: 519.2285,
         top: 1870.7085,
         scaleX: 0.4214,
@@ -941,7 +941,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/girl_yellow.jpg",
+        src: "/templates/girl_yellow.jpg",
         left: 49.684,
         top: 320.3225,
         scaleX: 2.7002,
@@ -954,7 +954,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/global.png?t=1721775488657",
+        src: "/templates/global.png?t=1721775488657",
         left: 733.5447,
         top: 82.7586,
         scaleX: 0.4275,
@@ -1081,7 +1081,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(7, 4, 224)",
         index: 3,
-        src: "/src/assets/shapes/circle-with-arrow.svg"
+        src: "/shapes/circle-with-arrow.svg"
       },
       {
         type: "svg",
@@ -1093,7 +1093,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(7, 4, 224)",
         index: 4,
-        src: "/src/assets/shapes/square.svg"
+        src: "/shapes/square.svg"
       },
       {
         type: "svg",
@@ -1105,11 +1105,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(7, 4, 224)",
         index: 5,
-        src: "/src/assets/shapes/square.svg"
+        src: "/shapes/square.svg"
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/snoopy_beagle_dog.jpg",
+        src: "/templates/snoopy_beagle_dog.jpg",
         left: -222.7031652982572,
         top: 1664.6004886504652,
         scaleX: 0.7319037677085121,
@@ -1122,7 +1122,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/frame_orange.jpg",
+        src: "/templates/frame_orange.jpg",
         left: 381.93719999999996,
         top: 118.3563489663211,
         scaleX: 2.8977,
@@ -1135,7 +1135,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/dress_girl.jpg",
+        src: "/templates/dress_girl.jpg",
         left: 30.994856400921435,
         top: 365.3968962493309,
         scaleX: 1.662032316734941,
@@ -1198,7 +1198,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(233, 82, 134)",
         index: 0,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "svg",
@@ -1210,7 +1210,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(255, 255, 255)",
         index: 1,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "svg",
@@ -1222,11 +1222,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(233, 82, 134)",
         index: 5,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/girl_gym.jpg",
+        src: "/templates/girl_gym.jpg",
         left: 225.459645236202,
         top: 0.27957381451392394,
         scaleX: 0.6321309091592785,
@@ -1321,11 +1321,11 @@ const Templates = [
         opacity: 0.38,
         fill: "rgb(7, 245, 214)",
         index: 6,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/boy_occulos.jpeg",
+        src: "/templates/boy_occulos.jpeg",
         left: 130.35100411403897,
         top: 251.8177132891601,
         scaleX: 0.5120612448574513,
@@ -1339,7 +1339,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/girl_sleep.jpg",
+        src: "/templates/girl_sleep.jpg",
         left: 488.0180760082494,
         top: 972.413814422209,
         scaleX: 1.0130454394167427,
@@ -1417,7 +1417,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/girl_money.jpeg",
+        src: "/templates/girl_money.jpeg",
         left: 120.25572563803769,
         top: 400.45519542085754,
         scaleX: 0.25540773811399736,
@@ -1431,7 +1431,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/global.png",
+        src: "/templates/global.png",
         left: 27.5509743963147,
         top: 310.34483439006664,
         scaleX: 0.3878067548677422,
@@ -1527,7 +1527,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(255, 235, 60)",
         index: 5,
-        src: "/src/assets/shapes/pentagram.svg"
+        src: "/shapes/pentagram.svg"
       },
       {
         type: "svg",
@@ -1539,7 +1539,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(255, 235, 60)",
         index: 7,
-        src: "/src/assets/shapes/pentagram.svg"
+        src: "/shapes/pentagram.svg"
       },
       {
         type: "svg",
@@ -1551,7 +1551,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(255, 255, 255)",
         index: 8,
-        src: "/src/assets/shapes/pentagram.svg"
+        src: "/shapes/pentagram.svg"
       },
       {
         type: "svg",
@@ -1563,7 +1563,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(255, 255, 255)",
         index: 9,
-        src: "/src/assets/shapes/pentagram.svg"
+        src: "/shapes/pentagram.svg"
       },
       {
         type: "svg",
@@ -1575,11 +1575,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(255, 255, 255)",
         index: 10,
-        src: "/src/assets/shapes/pentagram.svg"
+        src: "/shapes/pentagram.svg"
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/girl_umbrella.jpg",
+        src: "/templates/girl_umbrella.jpg",
         left: 171.4562,
         top: 376.4183,
         scaleX: 0.3239,
@@ -1593,7 +1593,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/thunder-yellow.png",
+        src: "/templates/thunder-yellow.png",
         left: 98.6206,
         top: 634.5549,
         scaleX: 0.5052,
@@ -1705,7 +1705,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(245, 166, 35)",
         index: 1,
-        src: "/src/assets/shapes/circle-with-arrow.svg"
+        src: "/shapes/circle-with-arrow.svg"
         
       },
       {
@@ -1718,11 +1718,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(245, 166, 35)",
         index: 2,
-        src: "/src/assets/shapes/square.svg"
+        src: "/shapes/square.svg"
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/girls_on_the_stairs.jpg",
+        src: "/templates/girls_on_the_stairs.jpg",
         left: 254.6320828309169,
         top: 463.34404253276375,
         scaleX: 2.5644,
@@ -1792,7 +1792,7 @@ const Templates = [
         opacity: 0.72,
         fill: "rgb(169, 169, 169)",
         index: 0,
-        src: "/src/assets/shapes/circle.svg",
+        src: "/shapes/circle.svg",
       },
       {
         type: "svg",
@@ -1804,7 +1804,7 @@ const Templates = [
         opacity: 0.69,
         fill: "rgb(169, 169, 169)",
         index: 1,
-        src: "/src/assets/shapes/circle.svg",
+        src: "/shapes/circle.svg",
       },
       {
         type: "svg",
@@ -1816,7 +1816,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(21, 255, 0)",
         index: 3,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "svg",
@@ -1828,11 +1828,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(21, 255, 0)",
         index: 4,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/girl_seat.jpg",
+        src: "/templates/girl_seat.jpg",
         left: -15.3846,
         top: 246.1538,
         scaleX: 1.0433,
@@ -1944,7 +1944,7 @@ const Templates = [
         opacity: 0.72,
         fill: "rgb(33, 9, 37)",
         index: 1,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "svg",
@@ -1956,11 +1956,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(144, 19, 254)",
         index: 3,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/girl_gym2.jpg",
+        src: "/templates/girl_gym2.jpg",
         left: -933.4803602409173,
         top: -114.75486204255435,
         scaleX: 1.9937193228687864,
@@ -2056,7 +2056,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(109, 245, 5)",
         index: 1,
-        src: "/src/assets/shapes/pentagon.svg",
+        src: "/shapes/pentagon.svg",
       },
       {
         type: "svg",
@@ -2068,7 +2068,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(0, 0, 0)",
         index: 2,
-        src: "/src/assets/shapes/pentagon.svg",
+        src: "/shapes/pentagon.svg",
       },
       {
         type: "svg",
@@ -2080,7 +2080,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(109, 245, 5)",
         index: 3,
-        src: "/src/assets/shapes/pentagon.svg",
+        src: "/shapes/pentagon.svg",
       },
       {
         type: "svg",
@@ -2092,7 +2092,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(0, 0, 0)",
         index: 4,
-        src: "/src/assets/shapes/pentagon.svg",
+        src: "/shapes/pentagon.svg",
       },
       {
         type: "svg",
@@ -2104,11 +2104,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(109, 245, 5)",
         index: 5,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/girl_up_ball.jpg",
+        src: "/templates/girl_up_ball.jpg",
         left: 168.74967179953944,
         top: -27.58622781300234,
         scaleX: 1.8313,
@@ -2220,7 +2220,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(248, 41, 7)",
         index: 3,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "svg",
@@ -2232,7 +2232,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(248, 41, 7)",
         index: 4,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "svg",
@@ -2244,11 +2244,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(248, 41, 7)",
         index: 7,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/pato-de-borracha.png",
+        src: "/templates/pato-de-borracha.png",
         left: -153.5714161729427,
         top: 139.28572061110503,
         scaleX: 3.7654621150638405,
@@ -2328,7 +2328,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(34, 9, 97)",
         index: 0,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "svg",
@@ -2340,7 +2340,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(216, 27, 67)",
         index: 2,
-        src: "/src/assets/shapes/circle-with-arrow.svg",
+        src: "/shapes/circle-with-arrow.svg",
       },
       {
         type: "svg",
@@ -2352,7 +2352,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(216, 27, 67)",
         index: 3,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "svg",
@@ -2364,11 +2364,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(34, 9, 97)",
         index: 4,
-        src: "/src/assets/shapes/square.svg",
+        src: "/shapes/square.svg",
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/skateboarding-stance-hd-sports.jpg",
+        src: "/templates/skateboarding-stance-hd-sports.jpg",
         left: 221.91740922159306,
         top: 585.1851576258739,
         scaleX: 1.176057766201028,
@@ -2448,7 +2448,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(136, 5, 250)",
         index: 1,
-        src: "/src/assets/shapes/triangle.svg",
+        src: "/shapes/triangle.svg",
       },
       {
         type: "svg",
@@ -2460,7 +2460,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(250, 6, 159)",
         index: 5,
-        src: "/src/assets/shapes/pentagram.svg",
+        src: "/shapes/pentagram.svg",
       },
       {
         type: "svg",
@@ -2472,7 +2472,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(250, 6, 159)",
         index: 2,
-        src: "/src/assets/shapes/pentagram.svg",
+        src: "/shapes/pentagram.svg",
       },
       {
         type: "svg",
@@ -2484,11 +2484,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(250, 6, 159)",
         index: 7,
-        src: "/src/assets/shapes/pentagram.svg",
+        src: "/shapes/pentagram.svg",
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/girl_cordon.jpg",
+        src: "/templates/girl_cordon.jpg",
         left: -29.589,
         top: 629.6296,
         scaleX: 0.8498,
@@ -2584,7 +2584,7 @@ const Templates = [
         opacity: 0.25,
         fill: "rgb(184, 246, 4)",
         index: 0,
-        src: "/src/assets/shapes/square.svg"
+        src: "/shapes/square.svg"
       },
       {
         type: "svg",
@@ -2596,7 +2596,7 @@ const Templates = [
         opacity: 0.59,
         fill: "rgb(184, 246, 4)",
         index: 1,
-        src: "/src/assets/shapes/square.svg"
+        src: "/shapes/square.svg"
       },
       {
         type: "svg",
@@ -2608,7 +2608,7 @@ const Templates = [
         opacity: 0.59,
         fill: "rgb(184, 246, 4)",
         index: 2,
-        src: "/src/assets/shapes/square.svg"
+        src: "/shapes/square.svg"
       },
       {
         type: "svg",
@@ -2620,7 +2620,7 @@ const Templates = [
         opacity: 0.4,
         fill: "rgb(184, 246, 4)",
         index: 3,
-        src: "/src/assets/shapes/square.svg"
+        src: "/shapes/square.svg"
       },
       {
         type: "svg",
@@ -2632,7 +2632,7 @@ const Templates = [
         opacity: 0.49,
         fill: "rgb(253, 233, 5)",
         index: 5,
-        src: "/src/assets/shapes/square.svg"
+        src: "/shapes/square.svg"
       },
       {
         type: "svg",
@@ -2644,11 +2644,11 @@ const Templates = [
         opacity: 0.28,
         fill: "rgb(253, 233, 5)",
         index: 10,
-        src: "/src/assets/shapes/square.svg"
+        src: "/shapes/square.svg"
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/girl_model.jpg",
+        src: "/templates/girl_model.jpg",
         left: 171.74621529613728,
         top: 407.4844314479774,
         scaleX: 0.5395659849140846,
@@ -2744,7 +2744,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(245, 108, 35)",
         index: 2,
-        src: "/src/assets/shapes/square.svg"
+        src: "/shapes/square.svg"
       },
       {
         type: "svg",
@@ -2756,7 +2756,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(245, 108, 35)",
         index: 3,
-        src: "/src/assets/shapes/square.svg"
+        src: "/shapes/square.svg"
       },
       {
         type: "svg",
@@ -2768,11 +2768,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(245, 108, 35)",
         index: 5,
-        src: "/src/assets/shapes/square.svg"
+        src: "/shapes/square.svg"
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/men_model.jpg",
+        src: "/templates/men_model.jpg",
         left: 0,
         top: -8.3333,
         scaleX: 2.0446,
@@ -2786,7 +2786,7 @@ const Templates = [
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/girl_model2.jpg",
+        src: "/templates/girl_model2.jpg",
         left: 306.6944,
         top: 618.375,
         scaleX: 0.2966,
@@ -2834,7 +2834,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(245, 190, 102)",
         index: 0,
-        src: "/src/assets/shapes/square.svg"
+        src: "/shapes/square.svg"
       },
       {
         type: "svg",
@@ -2846,7 +2846,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(216, 155, 59)",
         index: 2,
-        src: "/src/assets/shapes/square.svg"
+        src: "/shapes/square.svg"
       },
       {
         type: "svg",
@@ -2858,7 +2858,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(255, 255, 255)",
         index: 4,
-        src: "/src/assets/shapes/pentagram.svg"
+        src: "/shapes/pentagram.svg"
       },
       {
         type: "svg",
@@ -2870,11 +2870,11 @@ const Templates = [
         opacity: 1,
         fill: "rgb(255, 255, 255)",
         index: 5,
-        src: "/src/assets/shapes/pentagram.svg"
+        src: "/shapes/pentagram.svg"
       },
       {
         type: "image",
-        src: "http://localhost:5173/src/assets/templates/waffler_table.jpg",
+        src: "/templates/waffler_table.jpg",
         left: 933.4966583203739,
         top: 310.9639519090817,
         scaleX: 0.13751412137703087,
@@ -2994,7 +2994,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(255, 255, 255)",
         index: 1,
-        src: "/src/assets/shapes/sun.svg"
+        src: "/shapes/sun.svg"
       },
       {
         type: "svg",
@@ -3006,7 +3006,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(255, 255, 255)",
         index: 2,
-        src: "/src/assets/shapes/sun.svg"
+        src: "/shapes/sun.svg"
       },
       {
         type: "svg",
@@ -3018,7 +3018,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(255, 255, 255)",
         index: 3,
-        src: "/src/assets/shapes/sun.svg"
+        src: "/shapes/sun.svg"
       },
       {
         type: "svg",
@@ -3030,7 +3030,7 @@ const Templates = [
         opacity: 1,
         fill: "rgb(255, 255, 255)",
         index: 4,
-        src: "/src/assets/shapes/sun.svg"
+        src: "/shapes/sun.svg"
       }
     ],
     width: 1080,
