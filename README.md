@@ -1,5 +1,6 @@
 # Canvas Clone
 - Preview: <https://antdesign-chi.vercel.app/>
+<br>
 Editor de design leve inspirado no Canva, construído com Vue 3, Vite, Pinia e Fabric.js.
 
 <p align="center">
