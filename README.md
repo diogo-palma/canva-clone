@@ -31,6 +31,7 @@ npm run build
 ```
 
 Notas
+- Renomeie o `.env.example`  para `.env` e coloque suas credenciais do UNPLASH.
 - A imagem de preview exibida acima vem do arquivo `image.png` na raiz do repositório.
 - Refatorei o store do canvas em módulos menores: `src/store/canvas/state.ts`, `src/store/canvas/actions.ts` e `src/store/canvas/getters.ts`.
 
