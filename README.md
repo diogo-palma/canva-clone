@@ -1,12 +1,6 @@
 # Canvas Clone
-
 - Preview: <https://antdesign-chi.vercel.app/>
-
-
-## Project setup
-
-# Canvas Clone
-
+<br>
 Editor de design leve inspirado no Canva, construído com Vue 3, Vite, Pinia e Fabric.js.
 
 <p align="center">
@@ -38,6 +32,7 @@ npm run build
 ```
 
 Notas
+- Renomeie o `.env.example`  para `.env` e coloque suas credenciais do UNPLASH.
 - A imagem de preview exibida acima vem do arquivo `image.png` na raiz do repositório.
 - Refatorei o store do canvas em módulos menores: `src/store/canvas/state.ts`, `src/store/canvas/actions.ts` e `src/store/canvas/getters.ts`.
 
