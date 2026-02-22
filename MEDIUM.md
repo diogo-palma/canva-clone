@@ -27,14 +27,12 @@ Editores de design online como Canva revolucionaram a forma como pessoas não-t�
 
 Aqui está o que escolhi para este projeto:
 
-| Tecnologia | Propósito |
-|-----------|----------|
-| **Vue 3** | Framework reativo para UI |
-| **Vite** | Build tool ultra-rápido |
-| **Pinia** | Gerenciamento de estado leve |
-| **Fabric.js** | Manipulação avançada de canvas |
-| **Element Plus** | Componentes UI prontos |
-| **jsPDF** | Exportação para PDF |
+- **Vue 3** — Framework reativo para UI
+- **Vite** — Build tool ultra-rápido
+- **Pinia** — Gerenciamento de estado leve
+- **Fabric.js** — Manipulação avançada de canvas
+- **Element Plus** — Componentes UI prontos
+- **jsPDF** — Exportação para PDF
 
 ---
 
@@ -246,12 +244,13 @@ export const useCanvasStore = defineStore('canvasStore', {
 
 ## Impacto da Refatoração
 
-| Métrica | Antes | Depois |
-|---------|-------|--------|
-| Linhas em um arquivo | 2.124 | ~15 |
-| Arquivos de store | 1 | 4 |
-| Tempo para encontrar uma ação | ~2 min | ~10 seg |
-| Testabilidade | Baixa | Alta |
+**Linhas em um arquivo:** 2.124 → ~15
+
+**Arquivos de store:** 1 → 4
+
+**Tempo para encontrar uma ação:** ~2 min → ~10 seg
+
+**Testabilidade:** Baixa → Alta
 
 ---
 
